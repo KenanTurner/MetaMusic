@@ -23,7 +23,29 @@ music-manager is a javascript library enabling the user to control playback of h
 
 ## Installation
 
-TODO
+First, import the JS file
+```
+<script type="text/javascript" src="music-manager.min.js"></script>
+```
+Next, add the HTML, Youtube, and Soundcloud embeds
+```
+<div style="display: none;"> <!-- hides the embeds from the user -->
+	<audio id="html-player" src="" preload="none" controls="true" preload="metadata"></audio> <!--html audio-->
+	<div id="yt-player"></div> <!--Youtube embed-->
+	<iframe id="sc-player" width="100%" height="144" scrolling="no" frameborder="no" allow="autoplay"
+	  src="https://w.soundcloud.com/player/?url=;"> <!--Soundcloud embed-->
+	</iframe>
+	<script>
+	    <!--music manager object must be created after embeds have been loaded -->
+		window.mm = new musicManager(
+			{'Youtube Folder':{'Kero Kero Bonito - Flamingo':'rY-FJvRqK0E','You Reposted in the Wrong Dimmadome':'SBxpeuxUiOA'},
+			'Soundcloud Folder':{'SCV 2018':'https://soundcloud.com/dneeltd/santa-clara-vanguard-2018-babylon-finals','Mercure Rétrograde':'https://soundcloud.com/agnes-aves/mercure-retrograde-w-agnes-aves-200520-lyl-radio'},
+			'HTML Folder':{'Mars':'https://upload.wikimedia.org/wikipedia/commons/8/85/Holst-_mars.ogg','Mercury':'https://upload.wikimedia.org/wikipedia/commons/8/89/Holst_The_Planets_Mercury.ogg'}}
+		);
+	</script>
+</div>
+```
+For advanced functionality, see the examples section.  
 
 ## Usage
 
