@@ -24,7 +24,7 @@ music-manager is a javascript library enabling the user to control playback of h
 
 ## Installation
 
-First, import the JS file
+First, import the JS file  
 *Note: Dependencies will be imported when music manager is initialized.*
 ```
 <script type="text/javascript" src="music-manager.min.js"></script>
@@ -47,16 +47,16 @@ Next, add the HTML, Youtube, and Soundcloud embeds. Then create the music manage
 	</script>
 </div>
 ```
-For advanced functionality, see the examples section.  
+
 
 ## Usage
 
 - To start and stop playing use `.togglePlay()`  
 - To move to the next track use `.findNextTrack(1)`  
-- To move to the previous track use `.findNextTrack(-1)`  
-- To fast Forward ten seconds use `.fastForward(10)`  
+- To move to the previous folder use `.findNextFolder(-1)`  
 - To fast Forward ten seconds use `.fastForward(10)`  
 - To decrease the volume by 50% use `.changeVolume(-0.5)`  
+For advanced functionality, see the examples section.  
 
 ## Help
 
