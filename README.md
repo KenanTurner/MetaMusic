@@ -10,6 +10,7 @@ music-manager is a javascript library enabling the user to control playback of h
 
 [Youtube embed api](https://www.youtube.com/iframe_api)  
 [Soundcloud embed api](https://w.soundcloud.com/player/api.js)  
+*Note: Dependencies are automatically installed if the JS file is not found. See Installation.*
 
 ## Features
 
@@ -24,10 +25,11 @@ music-manager is a javascript library enabling the user to control playback of h
 ## Installation
 
 First, import the JS file
+*Note: Dependencies will be imported when music manager is initialized.*
 ```
 <script type="text/javascript" src="music-manager.min.js"></script>
 ```
-Next, add the HTML, Youtube, and Soundcloud embeds
+Next, add the HTML, Youtube, and Soundcloud embeds. Then create the music manager object.
 ```
 <div style="display: none;"> <!-- hides the embeds from the user -->
 	<audio id="html-player" src="" preload="none" controls="true" preload="metadata"></audio> <!--html audio-->
@@ -49,7 +51,12 @@ For advanced functionality, see the examples section.
 
 ## Usage
 
-TODO
+- To start and stop playing use `.togglePlay()`  
+- To move to the next track use `.findNextTrack(1)`  
+- To move to the previous track use `.findNextTrack(-1)`  
+- To fast Forward ten seconds use `.fastForward(10)`  
+- To fast Forward ten seconds use `.fastForward(10)`  
+- To decrease the volume by 50% use `.changeVolume(-0.5)`  
 
 ## Help
 
