@@ -244,8 +244,6 @@ class musicManager {
 				break;
 		}
 		this._isPlaying=true;
-		//playBtn.textContent = "Pause";
-		//document.title = currentlyPlaying[0] + " // " + currentlyPlaying[1];
 		return this.currentlyPlaying;
 	}
 	
@@ -258,8 +256,6 @@ class musicManager {
 		this._YTAudio.pauseVideo();
 		this._SCAudio.pause();
 		this._isPlaying=false;
-		//playBtn.textContent = "Play";
-		//document.title = title;
 		return this.currentlyPlaying;
 	}
 	
@@ -307,7 +303,6 @@ class musicManager {
 		if(this._isPlaying){
 			this.play();
 		}
-		//console.log(this.currentlyPlaying);
 		return this.currentlyPlaying;
 		
 	}
@@ -482,12 +477,8 @@ class musicManager {
 	toggleLoop(){
 		if(this._isLooping){
 			this._isLooping = false;
-			//document.getElementById("loopBtn").textContent = "Loop";
-			//document.getElementById("loopBtn").className = "";
 		}else{
 			this._isLooping = true;
-			//document.getElementById("loopBtn").textContent = "Stop Looping";
-			//document.getElementById("loopBtn").className = "pressed";
 		}
 		return this._isLooping;
 	}
@@ -499,8 +490,6 @@ class musicManager {
 	toggleShuffle(){
 		if(this._isShuffling){
 			this._isShuffling = false;
-			//document.getElementById("shuffleBtn").textContent = "Shuffle";
-			//document.getElementById("shuffleBtn").className = "";
 			this.currentlyPlaying['track'] = Object.keys(this.data[this.currentlyPlaying['folder']])[0];
 			this.findNextTrack(0);
 		}else{
@@ -511,8 +500,6 @@ class musicManager {
 			if(this._isPlayingLiked){
 				this.toggleLikedTracks();
 			}
-			//document.getElementById("shuffleBtn").textContent = "Stop Shuffling";
-			//document.getElementById("shuffleBtn").className = "pressed";
 			this.currentlyPlaying['track'] = Object.keys(this.shuffled[this.currentlyPlaying['folder']])[0];
 			this.findNextTrack(0);
 		}
@@ -526,8 +513,6 @@ class musicManager {
 	toggleShuffleAll(){
 		if(this._isShufflingAll){
 			this._isShufflingAll = false;
-			//document.getElementById("shuffleAllBtn").textContent = "Shuffle All";
-			//document.getElementById("shuffleAllBtn").className = "";
 		}else{
 			this._isShufflingAll = true;
 			if(this._isShuffling){
@@ -536,8 +521,6 @@ class musicManager {
 			if(this._isPlayingLiked){
 				this._toggleLikedTracks();
 			}
-			//document.getElementById("shuffleAllBtn").textContent = "Stop Shuffling";
-			//document.getElementById("shuffleAllBtn").className = "pressed";
 			this.findNextTrack(0);
 		}
 		return this._isShufflingAll;
@@ -550,8 +533,6 @@ class musicManager {
 	toggleLikedTracks(){
 		if(this._isPlayingLiked){
 			this._isPlayingLiked = false;
-			//document.getElementById("likeBtn").textContent = "Liked Tracks";
-			//document.getElementById("likeBtn").className = "";
 			this.currentlyPlaying['track'] = Object.keys(this.data[this.currentlyPlaying['folder']])[0];
 			this.findNextTrack(0);
 		}else{
@@ -579,8 +560,6 @@ class musicManager {
 			if(!nothingToSee){
 				this._isPlayingLiked = true;
 				this._likedTracks = musicManager.shuffleDict(this._likedTracks);
-				//document.getElementById("likeBtn").textContent = "Stop Playing";
-				//document.getElementById("likeBtn").className = "pressed";
 				this.currentlyPlaying['src'] = Object.keys(this._likedTracks)[0];
 				this.findNextTrack(0,true);
 			}else{
@@ -638,8 +617,6 @@ class musicManager {
 	_setDuration(duration){
 		this.currentDuration = duration;
 		return this.currentDuration;
-		//dur = document.getElementById('currentDur');
-		//dur.innerText = fancyTimeFormat(duration);
 	}
 	
 	/**
@@ -650,15 +627,6 @@ class musicManager {
 	_updateTime(time){
 		this.currentTime = time;
 		return this.currentTime;
-		/*bar = document.getElementById('bar');
-		if(currentDuration==0){ //prevents division by zero
-			bar.style.width = "0px";
-		}else{
-			bar.style.width = parseInt(((currentTime / currentDuration) * document.getElementById('progress').clientWidth), 10) + "px";
-		}
-		pos = document.getElementById('currentPos');
-		pos.innerText = fancyTimeFormat(currentTime);
-		*/
 	}
 	
 	/**
@@ -802,7 +770,6 @@ class musicManager {
 function _globalYTEvent(event){
 	for(var key in window) {
 		  if (window[key] instanceof musicManager) {
-			  //console.log(window[key]);
 			  window[key]._YTEvent(event);
 		  }
 	}
@@ -817,7 +784,6 @@ function _globalYTReady(event){
 	console.log('Youtube is ready');
 	for(var key in window) {
 		  if (window[key] instanceof musicManager) {
-			  //console.log(window[key]);
 			  window[key]._setTrack();
 		  }
 	}
