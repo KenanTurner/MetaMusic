@@ -591,6 +591,26 @@ class musicManager {
 	}
 	
 	/**
+	 * Sets a tracks type. Setting it again removes the type, unless force == true.
+	 *     Setting the type to skipped automatically finds the next track.
+	 * @param	{string} type type to be set. Must be one of two: 'skipped','liked'
+	 * @param	{boolean=} force whether to force set the type
+	 * @param	{string} src src for track. Defaults to current track
+	 * @returns {Dict<string:string>}    this.trackType
+	 */
+	setTrackType(type,force=false,src=this.currentlyPlaying['src']){
+		if(this.trackType[src]==type && !force){
+			delete this.trackType[src];
+		}else{
+			this.trackType[src] = type;
+			if(src==this.currentlyPlaying['src'] && type=='skipped'){
+				this.findNextTrack(1);
+			}
+		}
+		return this.trackType;
+	}
+	
+	/**
 	 * https://stackoverflow.com/a/41245574. Finds html audio duration and executes callback.
 	 */
 	_getHTMLAudioDuration(url, next) {
@@ -667,6 +687,7 @@ class musicManager {
 		var trackIndex = Math.floor(Math.random() * Object.keys(this.data[Object.keys(this.data)[folderIndex]]).length);
 		return {'folder':Object.keys(this.data)[folderIndex],'track':Object.keys(this.data[Object.keys(this.data)[folderIndex]])[trackIndex]};
 	}
+	
 	
 	/**
 	 * Returns the filetype of the given source.
