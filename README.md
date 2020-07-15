@@ -31,7 +31,7 @@ TODO
 
 ## Help
 
-[github pages](https://coolspykee.github.io/music-manager/)
+[github pages](https://coolspykee.github.io/music-manager/index.html)
 
 ## License
 [MIT](/LICENSE)
