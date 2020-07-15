@@ -404,7 +404,8 @@ class musicManager {
 	}
 	
 	/**
-	 * Controls skipping forwards and backwards
+	 * Controls skipping forwards and backwards. Note: will not work unless the metadata
+	 *     has been loaded.
 	 * @param {number} timeStep The amount in seconds to skip forwards or backwards.
 	 * @returns {number}    this.currentTime
 	 */
