@@ -59,9 +59,9 @@ Next, add the HTML, Youtube, and Soundcloud embeds. Then create the music manage
 
 For advanced functionality, see the examples section.  
 
-##Live Playground
+## Live Demo
 
-[Simple Player](https://coolspykee.github.io/music-manager/simple_player/index.html)
+[Simple Player](https://coolspykee.github.io/music-manager/simple_player/)
 
 ## Help
 
