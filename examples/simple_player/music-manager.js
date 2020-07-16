@@ -158,13 +158,14 @@ class musicManager {
 	 * Enables the user to subscribe to certain events
 	 * @param {object} event Which event to subscribe to.
 	 * @param {object} callback Function to be called.
+	 * @param {object=} rest Arguments to be used with callback function.
 	 * @returns {Dict<object:object>}    this.subscribers
 	 */
-	subscribe(event, callback) {
+	subscribe(event, callback, ...rest) {
 		if (!this.subscribers[event]) {
 			this.subscribers[event] = [];
 		}
-		this.subscribers[event].push(callback);
+		this.subscribers[event].push([callback,rest]);
 		return this.subscribers;
 	}
 	
@@ -189,7 +190,7 @@ class musicManager {
 	 */
 	_publish(event, data) {
 		if (!this.subscribers[event]) return;
-		this.subscribers[event].forEach(subscriberCallback => subscriberCallback(data));
+		this.subscribers[event].forEach(subscriberCallback => subscriberCallback[0](data,...subscriberCallback[1]));
 		return this.subscribers[event];
 	}
 	

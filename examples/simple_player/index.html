@@ -7,7 +7,12 @@
 		<script>
 			function outputToPage(tmp){
 				var fakeConsole = document.getElementById('console');
-				tmp = JSON.stringify(tmp)+'<br>'+fakeConsole.innerHTML;
+				if(arguments[1]){
+					tmp = arguments[1] + JSON.stringify(tmp)+'<br>'+fakeConsole.innerHTML;
+				}else{
+					tmp = JSON.stringify(tmp)+'<br>'+fakeConsole.innerHTML;
+				}
+				
 				//Limit the length to 100 lines
 				tmpArr = tmp.split('<br>');
 				if(tmpArr.length>=100){
@@ -51,14 +56,14 @@
 					'Soundcloud Folder':{'SCV 2018':'https://soundcloud.com/dneeltd/santa-clara-vanguard-2018-babylon-finals','Mercure Rétrograde':'https://soundcloud.com/agnes-aves/mercure-retrograde-w-agnes-aves-200520-lyl-radio'},
 					'HTML Folder':{'Mars':'https://upload.wikimedia.org/wikipedia/commons/8/85/Holst-_mars.ogg','Mercury':'https://upload.wikimedia.org/wikipedia/commons/8/89/Holst_The_Planets_Mercury.ogg'}}
 				);
-				mm.subscribe(mm.togglePlay,outputToPage);
-				mm.subscribe(mm._setTrack,outputToPage);
-				mm.subscribe(mm._updateTime,outputToPage);
-				mm.subscribe(mm.toggleLoop,outputToPage);
-				mm.subscribe(mm.toggleShuffle,outputToPage);
-				mm.subscribe(mm.toggleShuffleAll,outputToPage);
-				mm.subscribe(mm.changeVolume,outputToPage);
-				mm.subscribe(mm._setDuration,outputToPage);
+				mm.subscribe(mm.togglePlay,outputToPage,'_isPlaying: ');
+				mm.subscribe(mm._setTrack,outputToPage,'Currently Playing: ');
+				mm.subscribe(mm._updateTime,outputToPage,'currentTime: ');
+				mm.subscribe(mm.toggleLoop,outputToPage,'_isLooping: ');
+				mm.subscribe(mm.toggleShuffle,outputToPage,'_isShuffling: ');
+				mm.subscribe(mm.toggleShuffleAll,outputToPage,'_isShufflingAll: ');
+				mm.subscribe(mm.changeVolume,outputToPage,'currentVol: ');
+				mm.subscribe(mm._setDuration,outputToPage,'currentDuration: ');
 			</script>
 		</div>
 		
