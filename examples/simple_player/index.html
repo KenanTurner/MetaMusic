@@ -6,32 +6,35 @@
 		<script type="text/javascript" src="music-manager.js"></script>
 		<script>
 			function outputToPage(tmp){
-				var console = document.getElementById('console');
-				console.innerHTML += JSON.stringify(tmp)+'<br>';
+				var fakeConsole = document.getElementById('console');
+				tmp = JSON.stringify(tmp)+'<br>'+fakeConsole.innerHTML;
+				//Limit the length to 100 lines
+				tmpArr = tmp.split('<br>');
+				if(tmpArr.length>=100){
+					tmpArr.pop();
+				}
+				tmp = tmpArr.join('<br>');
+				fakeConsole.innerHTML = tmp;
 			}
 		</script>
 	</head>
 	<body>
 		<div>
 			
-			<button onclick="outputToPage(mm.setTrackType('skipped',true))" class="" id="skipTrackBtn">Skip Track</button>
-			<button onclick="outputToPage(mm.changeVolume(-0.1))">Volume Down</button>
-			<button onclick="outputToPage(mm.findNextFolder(-1))">last Folder</button>
-			<button onclick="outputToPage(mm.findNextTrack(-1))">|<</button>
-			<button onclick="outputToPage(mm.fastForward(-10))"><<</button>
-			<button onclick="outputToPage(mm.togglePlay())" id="playBtn">Play</button>
-			<button onclick="outputToPage(mm.fastForward(10))">>></button>
-			<button onclick="outputToPage(mm.findNextTrack(1))">>|</button>
-			<button onclick="outputToPage(mm.findNextFolder(1))">Next Folder</button>
-			<button onclick="outputToPage(mm.changeVolume(0.1))">Volume Up</button>
-			<button onclick="outputToPage(mm.setTrackType('liked'))" class="" id="likeTrackBtn">Like Track</button>
+			<button onclick="mm.changeVolume(-0.1)">Volume Down</button>
+			<button onclick="mm.findNextFolder(-1)">last Folder</button>
+			<button onclick="mm.findNextTrack(-1)">|<</button>
+			<button onclick="mm.fastForward(-10)"><<</button>
+			<button onclick="mm.togglePlay()" id="playBtn">Play</button>
+			<button onclick="mm.fastForward(10)">>></button>
+			<button onclick="mm.findNextTrack(1)">>|</button>
+			<button onclick="mm.findNextFolder(1)">Next Folder</button>
+			<button onclick="mm.changeVolume(0.1)">Volume Up</button>
 			<br><br>
 			
-			<button onclick="outputToPage(mm.trackType = {})" class="">Reset Track Types</button>
-			<button onclick="outputToPage(mm.toggleLoop())" class="" id="loopBtn">Loop</button>
-			<button onclick="outputToPage(mm.toggleShuffleAll())" class="" id="shuffleAllBtn">Shuffle All</button>
-			<button onclick="outputToPage(mm.toggleShuffle())" class="" id="shuffleBtn">Shuffle</button>
-			<button onclick="outputToPage(mm.toggleLikedTracks())" class="" id="likeBtn">Liked Tracks</button>
+			<button onclick="mm.toggleLoop()" class="" id="loopBtn">Loop</button>
+			<button onclick="mm.toggleShuffleAll()" class="" id="shuffleAllBtn">Shuffle All</button>
+			<button onclick="mm.toggleShuffle()" class="" id="shuffleBtn">Shuffle</button>
 			
 		</div>
 		
@@ -48,6 +51,14 @@
 					'Soundcloud Folder':{'SCV 2018':'https://soundcloud.com/dneeltd/santa-clara-vanguard-2018-babylon-finals','Mercure Rétrograde':'https://soundcloud.com/agnes-aves/mercure-retrograde-w-agnes-aves-200520-lyl-radio'},
 					'HTML Folder':{'Mars':'https://upload.wikimedia.org/wikipedia/commons/8/85/Holst-_mars.ogg','Mercury':'https://upload.wikimedia.org/wikipedia/commons/8/89/Holst_The_Planets_Mercury.ogg'}}
 				);
+				mm.subscribe(mm.togglePlay,outputToPage);
+				mm.subscribe(mm._setTrack,outputToPage);
+				mm.subscribe(mm._updateTime,outputToPage);
+				mm.subscribe(mm.toggleLoop,outputToPage);
+				mm.subscribe(mm.toggleShuffle,outputToPage);
+				mm.subscribe(mm.toggleShuffleAll,outputToPage);
+				mm.subscribe(mm.changeVolume,outputToPage);
+				mm.subscribe(mm._setDuration,outputToPage);
 			</script>
 		</div>
 		
