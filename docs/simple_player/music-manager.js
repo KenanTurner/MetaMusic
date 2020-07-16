@@ -1,0 +1,1 @@
+/home/pi/music-manager/src/music-manager.js
