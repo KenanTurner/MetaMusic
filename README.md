@@ -21,6 +21,15 @@ music-manager is a javascript library enabling the user to control playback of h
 - skipping tracks
 - liked tracks playlist
 
+## Browser Compatibility
+
+- IE 1.1+
+- Edge 8.3+
+- Firefox 7.8+
+- Chrome 8.3+
+- Safari 13.1+
+- Mobile Safari 13.5+
+- Opera 12.0+
 
 ## Installation
 
