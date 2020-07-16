@@ -27,6 +27,8 @@ music-manager is a javascript library enabling the user to control playback of h
 - Edge 8.3+
 - Firefox 7.8+
 - Chrome 8.3+
+- Mobile Chrome 8.1+
+- Android Browser 8.1+
 - Safari 13.1+
 - Mobile Safari 13.5+
 - Opera 12.0+
