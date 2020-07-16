@@ -101,6 +101,12 @@ class musicManager {
 		}
 		
 		/**
+		 * A Dictionary of subscribers
+		 * @type {Dict<object:Dict<number:object>>}
+		 */
+		this.subscribers = {};
+		
+		/**
 		 * html audio object. https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
 		 * @type {object}
 		 */
@@ -146,6 +152,45 @@ class musicManager {
 			console.log("Soundcloud Api has been loaded");
 			self._loadSC(self,scAudioId); //create the SC obj when script has loaded
 		});
+	}
+	
+	/**
+	 * Enables the user to subscribe to certain events
+	 * @param {object} event Which event to subscribe to.
+	 * @param {object} callback Function to be called.
+	 * @returns {Dict<object:object>}    this.subscribers
+	 */
+	subscribe(event, callback) {
+		if (!this.subscribers[event]) {
+			this.subscribers[event] = [];
+		}
+		this.subscribers[event].push(callback);
+		return this.subscribers;
+	}
+	
+	/**
+	 * Enables the user to unsubscribe to certain events
+	 * @param {object} event Which event to unsubscribe from.
+	 * @param {object} callback Function to be removed.
+	 * @returns {Dict<object:object>}    this.subscribers
+	 */
+	unsubscribe(event, callback){
+		if(this.subscribers[event]){
+			this.subscribers[event].splice(this.subscribers[event].indexOf(callback),1);
+		}
+		return this.subscribers[event];
+	}
+	
+	/**
+	 * Publishes the event to subscribed objects
+	 * @param {object} event Event to be published.
+	 * @param {object} data Arguments to be passed to subscriber.
+	 * @returns {object}    this.subscribers[event]
+	 */
+	_publish(event, data) {
+		if (!this.subscribers[event]) return;
+		this.subscribers[event].forEach(subscriberCallback => subscriberCallback(data));
+		return this.subscribers[event];
 	}
 	
 	/**

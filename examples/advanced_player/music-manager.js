@@ -1,45 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>music-manager.js - Documentation</title>
-
-    <script src="scripts/prettify/prettify.js"></script>
-    <script src="scripts/prettify/lang-css.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
-</head>
-<body>
-
-<input type="checkbox" id="nav-trigger" class="nav-trigger" />
-<label for="nav-trigger" class="navicon-button x">
-  <div class="navicon"></div>
-</label>
-
-<label for="nav-trigger" class="overlay"></label>
-
-<nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="musicManager.html">musicManager</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#.getFiletype">getFiletype</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#.getKeyByValue">getKeyByValue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#.loadScript">loadScript</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#.shuffle2dArray">shuffle2dArray</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#.shuffleArray">shuffleArray</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#.shuffleDict">shuffleDict</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#_checkFolder">_checkFolder</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#_getHTMLAudioDuration">_getHTMLAudioDuration</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#_getRandomTrack">_getRandomTrack</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#_loadSC">_loadSC</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#_loadYT">_loadYT</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#_publish">_publish</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#_setDuration">_setDuration</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#_setTrack">_setTrack</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#_stopPlaying">_stopPlaying</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#_updateTime">_updateTime</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#_YTEvent">_YTEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#changeVolume">changeVolume</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#fastForward">fastForward</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#findNextFolder">findNextFolder</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#findNextTrack">findNextTrack</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#pause">pause</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#play">play</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#setTrackType">setTrackType</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#subscribe">subscribe</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#toggleLikedTracks">toggleLikedTracks</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#toggleLoop">toggleLoop</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#togglePlay">togglePlay</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#toggleShuffle">toggleShuffle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#toggleShuffleAll">toggleShuffleAll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="musicManager.html#unsubscribe">unsubscribe</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#_globalYTEvent">_globalYTEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#_globalYTReady">_globalYTReady</a></span></li>
-</nav>
-
-<div id="main">
-    
-    <h1 class="page-title">music-manager.js</h1>
-    
-
-    
-
-
-
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
+/**
  * @fileoverview music-manager is a javascript library enabling the user
  *    to control playback of html audio files along with youtube and
  *    soundcloud links.
@@ -50,9 +9,9 @@ class musicManager {
 	/**
 	 * initializes the musicManager object
 	 * @constructor
-	 * @param {Dict&lt;string:Dict&lt;string:string>>} data Dictionary that contains all folders, tracks and sources.
+	 * @param {Dict<string:Dict<string:string>>} data Dictionary that contains all folders, tracks and sources.
 	 *     ex: {'folder1':{'track1':'src1'}}
-	 * @param {Dict&lt;string:string>=} trackType Dictionary that contains the sources and their respective types.
+	 * @param {Dict<string:string>=} trackType Dictionary that contains the sources and their respective types.
 	 *     Allowed types: 'skipped', 'liked'. Ex: {'src1':'liked','src2':'skipped'}
 	 * @param {string=} htmlAudioId id of the html audio element
 	 * @param {string=} scAudioId id of the soundcloud iframe element
@@ -70,7 +29,7 @@ class musicManager {
 		/**
 		 * A dict containing the folder, track, source, and filetype.
 		 *     Ex: {'folder':'tmpFolder','track':'track1','src':'music/track1.mp3','filetype':'HTML'}
-		 * @type {Dict&lt;string:string>}
+		 * @type {Dict<string:string>}
 		 */
 		this.currentlyPlaying = {}; //1d Dict: folder,trackName,src,filetype
 		/**
@@ -113,20 +72,20 @@ class musicManager {
 		/**
 		 * Contains all folders, tracks and sources.
 		 *     Ex: {'folder1':{'track1':'src1','track2':'src2'}}
-		 * @type {Dict&lt;string:Dict&lt;string:string>>}
+		 * @type {Dict<string:Dict<string:string>>}
 		 */
 		this.data = data;
 		/**
 		 * Dictionary containing the src and its respective type.
 		 *     Allowed types: 'skipped','liked'
 		 *     Ex: {'src1':'liked','src2':'skipped'}
-		 * @type {Dict&lt;string:string>}
+		 * @type {Dict<string:string>}
 		 */
 		this.trackType = trackType;
 		/**
 		 * A shuffled version of this.data. Folders are in the same order.
 		 *     Ex: {'folder1':{'track2':'src2','track1':'src1'}}
-		 * @type {Dict&lt;string:Dict&lt;string:string>>}
+		 * @type {Dict<string:Dict<string:string>>}
 		 */
 		this.shuffled = {};
 		for(var folder in this.data){
@@ -135,17 +94,11 @@ class musicManager {
 			let copyKey = Object.keys(copy);
 			let copyVal = Object.values(copy);
 			copyVal = musicManager.shuffleArray(copyVal);
-			for(let i = 0; i &lt; copyKey.length; i++) {
+			for(let i = 0; i < copyKey.length; i++) {
 				tmp[musicManager.getKeyByValue(copy,copyVal[i])] = copyVal[i];
 			}
 			this.shuffled[folder] = tmp;
 		}
-		
-		/**
-		 * A Dictionary of subscribers
-		 * @type {Dict&lt;object:Dict&lt;number:object>>}
-		 */
-		this.subscribers = {};
 		
 		/**
 		 * html audio object. https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
@@ -193,45 +146,6 @@ class musicManager {
 			console.log("Soundcloud Api has been loaded");
 			self._loadSC(self,scAudioId); //create the SC obj when script has loaded
 		});
-	}
-	
-	/**
-	 * Enables the user to subscribe to certain events
-	 * @param {object} event Which event to subscribe to.
-	 * @param {object} callback Function to be called.
-	 * @returns {Dict&lt;object:object>}    this.subscribers
-	 */
-	subscribe(event, callback) {
-		if (!this.subscribers[event]) {
-			this.subscribers[event] = [];
-		}
-		this.subscribers[event].push(callback);
-		return this.subscribers;
-	}
-	
-	/**
-	 * Enables the user to unsubscribe to certain events
-	 * @param {object} event Which event to unsubscribe from.
-	 * @param {object} callback Function to be removed.
-	 * @returns {Dict&lt;object:object>}    this.subscribers
-	 */
-	unsubscribe(event, callback){
-		if(this.subscribers[event]){
-			this.subscribers[event].splice(this.subscribers[event].indexOf(callback),1);
-		}
-		return this.subscribers[event];
-	}
-	
-	/**
-	 * Publishes the event to subscribed objects
-	 * @param {object} event Event to be published.
-	 * @param {object} data Arguments to be passed to subscriber.
-	 * @returns {object}    this.subscribers[event]
-	 */
-	_publish(event, data) {
-		if (!this.subscribers[event]) return;
-		this.subscribers[event].forEach(subscriberCallback => subscriberCallback(data));
-		return this.subscribers[event];
 	}
 	
 	/**
@@ -384,7 +298,7 @@ class musicManager {
 				this._htmlAudio.src = src;
 				break;
 			case "SC": //the long string appended makes soundcloud load the absolute minimum
-				this._SCAudio.load(src+"&amp;auto_play=false&amp;buying=false&amp;liking=false&amp;download=false&amp;sharing=false&amp;show_artwork=false&amp;show_comments=false&amp;show_playcount=false&amp;show_user=false&amp;hide_related=false&amp;visual=false&amp;start_track=0&amp;callback=true");
+				this._SCAudio.load(src+"&auto_play=false&buying=false&liking=false&download=false&sharing=false&show_artwork=false&show_comments=false&show_playcount=false&show_user=false&hide_related=false&visual=false&start_track=0&callback=true");
 				break;
 			case "YT":
 				this._YTAudio.cueVideoById(src, 0);
@@ -419,13 +333,13 @@ class musicManager {
 				songIndex = 0;
 				this.pause();
 			}
-			if(songIndex &lt; 0){
+			if(songIndex < 0){
 				songIndex = Object.keys(this._likedTracks).length-1;
 			}
 			this.currentlyPlaying['folder'] = Object.values(this._likedTracks)[songIndex]['folder'];
 			this.currentlyPlaying['track'] = Object.values(this._likedTracks)[songIndex]['track'];
 			return this._setTrack();
-		}else if(!hasCheckedFolder &amp;&amp; !this._isShufflingAll){ //check folder first unless shuffling all
+		}else if(!hasCheckedFolder && !this._isShufflingAll){ //check folder first unless shuffling all
 			if(this._checkFolder(this.currentlyPlaying['folder'])){
 				//skip to next folder
 				return this.findNextFolder(1);
@@ -450,7 +364,7 @@ class musicManager {
 					this.pause();
 				}
 			}
-			if(songIndex &lt; 0){
+			if(songIndex < 0){
 				songIndex = trackNames.length-1;
 			}
 			let src = this.data[this.currentlyPlaying['folder']][trackNames[songIndex]];
@@ -481,7 +395,7 @@ class musicManager {
 		if(folderIndex >= folderNames.length){
 			folderIndex=0;
 		}
-		if(folderIndex &lt; 0){
+		if(folderIndex < 0){
 			folderIndex = folderNames.length-1;
 		}
 		if(this._checkFolder(folderNames[folderIndex])){
@@ -540,7 +454,7 @@ class musicManager {
 		if(this.currentVol>1){
 			this.currentVol=1;
 		}
-		if(this.currentVol&lt;0){
+		if(this.currentVol<0){
 			this.currentVol=0;
 		}
 		
@@ -682,14 +596,14 @@ class musicManager {
 	 * @param	{string} type type to be set. Must be one of two: 'skipped','liked'
 	 * @param	{boolean=} force whether to force set the type
 	 * @param	{string} src src for track. Defaults to current track
-	 * @returns {Dict&lt;string:string>}    this.trackType
+	 * @returns {Dict<string:string>}    this.trackType
 	 */
 	setTrackType(type,force=false,src=this.currentlyPlaying['src']){
-		if(this.trackType[src]==type &amp;&amp; !force){
+		if(this.trackType[src]==type && !force){
 			delete this.trackType[src];
 		}else{
 			this.trackType[src] = type;
-			if(src==this.currentlyPlaying['src'] &amp;&amp; type=='skipped'){
+			if(src==this.currentlyPlaying['src'] && type=='skipped'){
 				this.findNextTrack(1);
 			}
 		}
@@ -766,7 +680,7 @@ class musicManager {
 	
 	/**
 	 * Gets a random track from all available tracks.
-	 * @returns {Dict&lt;string:string>}    Dictionary of {'folder':'exFolder','track':'exTrack'}
+	 * @returns {Dict<string:string>}    Dictionary of {'folder':'exFolder','track':'exTrack'}
 	 */
 	_getRandomTrack(){
 		var folderIndex = Math.floor(Math.random() * Object.keys(this.data).length);
@@ -811,19 +725,19 @@ class musicManager {
 	
 	/**
 	 * Shuffles 1d arrays.
-	 * @param {Array&lt;number>} array
+	 * @param {Array<number>} array
 	 * @param {number=} times Number of times to shuffle
 	 * @param {number=} count Keeps track of number of shuffles
-	 * @returns {Array&lt;number>}    The shuffled array
+	 * @returns {Array<number>}    The shuffled array
 	 */
 	static shuffleArray(array,times=1,count=1){
-		for (var i = 0; i &lt; array.length; i++){
+		for (var i = 0; i < array.length; i++){
 			const j = Math.floor(Math.random() * i);
 			const temp = array[i];
 			array[i] = array[j];
 			array[j] = temp;
 		}
-		if(count&lt;times){ //do it two times
+		if(count<times){ //do it two times
 			return musicManager.shuffleArray(array,times,count+=1);
 		}
 		return array;
@@ -831,11 +745,11 @@ class musicManager {
 	
 	/**
 	 * Shuffles 2d arrays
-	 * @param {Array&lt;number>} array
-	 * @returns {Array&lt;number>}    The shuffled array
+	 * @param {Array<number>} array
+	 * @returns {Array<number>}    The shuffled array
 	 */
 	static shuffle2dArray(array){
-		for (var i = 0; i &lt; array.length; i++){
+		for (var i = 0; i < array.length; i++){
 			array[i] = musicManager.shuffleArray(array[i]);
 		}
 		return array;
@@ -843,15 +757,15 @@ class musicManager {
 	
 	/**
 	 * Shuffles Dictionarys while keeping key:value pairs
-	 * @param {Dict&lt;object:object>} object
-	 * @returns {Dict&lt;object:object>}    The shuffled Dict
+	 * @param {Dict<object:object>} object
+	 * @returns {Dict<object:object>}    The shuffled Dict
 	 */
 	static shuffleDict(object){
 		let tmp = {};
 		let copyKey = Object.keys(object);
 		let copyVal = Object.values(object);
 		copyVal = musicManager.shuffleArray(copyVal);
-		for(let i = 0; i &lt; copyKey.length; i++) {
+		for(let i = 0; i < copyKey.length; i++) {
 			tmp[musicManager.getKeyByValue(object,copyVal[i])] = copyVal[i];
 		}
 		return tmp;
@@ -908,22 +822,3 @@ function _globalYTReady(event){
 		  }
 	}
 }
-</code></pre>
-        </article>
-    </section>
-
-
-
-
-</div>
-
-<br class="clear">
-
-<footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Thu Jul 16 2020 11:37:20 GMT-0600 (Mountain Daylight Time) using the Minami theme.
-</footer>
-
-<script>prettyPrint();</script>
-<script src="scripts/linenumber.js"></script>
-</body>
-</html>
