@@ -56,7 +56,12 @@ Next, add the HTML, Youtube, and Soundcloud embeds. Then create the music manage
 - To move to the previous folder use `.findNextFolder(-1)`  
 - To fast Forward ten seconds use `.fastForward(10)`  
 - To decrease the volume by 50% use `.changeVolume(-0.5)`  
+
 For advanced functionality, see the examples section.  
+
+##Live Playground
+
+[Simple Player](https://coolspykee.github.io/music-manager/simple_player/index.html)
 
 ## Help
 
