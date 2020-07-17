@@ -101,6 +101,12 @@ class musicManager {
 		}
 		
 		/**
+		 * A Dictionary of subscribers
+		 * @type {Dict<object:Dict<number:object>>}
+		 */
+		this.subscribers = {};
+		
+		/**
 		 * html audio object. https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement
 		 * @type {object}
 		 */
@@ -146,6 +152,46 @@ class musicManager {
 			console.log("Soundcloud Api has been loaded");
 			self._loadSC(self,scAudioId); //create the SC obj when script has loaded
 		});
+	}
+	
+	/**
+	 * Enables the user to subscribe to certain events
+	 * @param {object} event Which event to subscribe to.
+	 * @param {object} callback Function to be called.
+	 * @param {object=} rest Arguments to be used with callback function.
+	 * @returns {Dict<object:object>}    this.subscribers
+	 */
+	subscribe(event, callback, ...rest) {
+		if (!this.subscribers[event]) {
+			this.subscribers[event] = [];
+		}
+		this.subscribers[event].push([callback,rest]);
+		return this.subscribers;
+	}
+	
+	/**
+	 * Enables the user to unsubscribe to certain events
+	 * @param {object} event Which event to unsubscribe from.
+	 * @param {object} callback Function to be removed.
+	 * @returns {Dict<object:object>}    this.subscribers
+	 */
+	unsubscribe(event, callback){
+		if(this.subscribers[event]){
+			this.subscribers[event].splice(this.subscribers[event].indexOf(callback),1);
+		}
+		return this.subscribers[event];
+	}
+	
+	/**
+	 * Publishes the event to subscribed objects
+	 * @param {object} event Event to be published.
+	 * @param {object} data Arguments to be passed to subscriber.
+	 * @returns {object}    data
+	 */
+	_publish(event, data) {
+		if (!this.subscribers[event]) return;
+		this.subscribers[event].forEach(subscriberCallback => subscriberCallback[0](data,...subscriberCallback[1]));
+		return data;
 	}
 	
 	/**
@@ -238,6 +284,7 @@ class musicManager {
 						self._setDuration(duration/1000);
 					});
 					self._SCAudio.play();
+					self._SCAudio.setVolume(self.currentVol*100);
 				});
 				break;
 			case "YT":
@@ -245,9 +292,7 @@ class musicManager {
 				break;
 		}
 		this._isPlaying=true;
-		//playBtn.textContent = "Pause";
-		//document.title = currentlyPlaying[0] + " // " + currentlyPlaying[1];
-		return this.currentlyPlaying;
+		return this._publish(this.play,this.currentlyPlaying);
 	}
 	
 	/**
@@ -259,9 +304,7 @@ class musicManager {
 		this._YTAudio.pauseVideo();
 		this._SCAudio.pause();
 		this._isPlaying=false;
-		//playBtn.textContent = "Play";
-		//document.title = title;
-		return this.currentlyPlaying;
+		return this._publish(this.pause,this.currentlyPlaying);
 	}
 	
 	/**
@@ -274,7 +317,7 @@ class musicManager {
 		}else{
 			this.play();
 		}
-		return this._isPlaying;
+		return this._publish(this.togglePlay,this._isPlaying);
 	}
 	
 	/**
@@ -304,13 +347,10 @@ class musicManager {
 				this._YTAudio.cueVideoById(src, 0);
 				break;
 		}
-		//displayTrack();
 		if(this._isPlaying){
 			this.play();
 		}
-		//console.log(this.currentlyPlaying);
-		return this.currentlyPlaying;
-		
+		return this._publish(this._setTrack,this.currentlyPlaying);
 	}
 	
 	/**
@@ -437,7 +477,6 @@ class musicManager {
 				}
 				break;
 		}
-		
 	}
 	
 	/**
@@ -461,7 +500,7 @@ class musicManager {
 		this._htmlAudio.volume=this.currentVol;
 		this._YTAudio.setVolume(this.currentVol*100);
 		this._SCAudio.setVolume(this.currentVol*100);
-		return this.currentVol;
+		return this._publish(this.changeVolume,this.currentVol);
 	}
 	
 	/**
@@ -483,14 +522,10 @@ class musicManager {
 	toggleLoop(){
 		if(this._isLooping){
 			this._isLooping = false;
-			//document.getElementById("loopBtn").textContent = "Loop";
-			//document.getElementById("loopBtn").className = "";
 		}else{
 			this._isLooping = true;
-			//document.getElementById("loopBtn").textContent = "Stop Looping";
-			//document.getElementById("loopBtn").className = "pressed";
 		}
-		return this._isLooping;
+		return this._publish(this.toggleLoop,this._isLooping);
 	}
 	
 	/**
@@ -500,8 +535,6 @@ class musicManager {
 	toggleShuffle(){
 		if(this._isShuffling){
 			this._isShuffling = false;
-			//document.getElementById("shuffleBtn").textContent = "Shuffle";
-			//document.getElementById("shuffleBtn").className = "";
 			this.currentlyPlaying['track'] = Object.keys(this.data[this.currentlyPlaying['folder']])[0];
 			this.findNextTrack(0);
 		}else{
@@ -512,12 +545,10 @@ class musicManager {
 			if(this._isPlayingLiked){
 				this.toggleLikedTracks();
 			}
-			//document.getElementById("shuffleBtn").textContent = "Stop Shuffling";
-			//document.getElementById("shuffleBtn").className = "pressed";
 			this.currentlyPlaying['track'] = Object.keys(this.shuffled[this.currentlyPlaying['folder']])[0];
 			this.findNextTrack(0);
 		}
-		return this._isShuffling;
+		return this._publish(this.toggleShuffle,this._isShuffling);
 	}
 	
 	/**
@@ -527,8 +558,6 @@ class musicManager {
 	toggleShuffleAll(){
 		if(this._isShufflingAll){
 			this._isShufflingAll = false;
-			//document.getElementById("shuffleAllBtn").textContent = "Shuffle All";
-			//document.getElementById("shuffleAllBtn").className = "";
 		}else{
 			this._isShufflingAll = true;
 			if(this._isShuffling){
@@ -537,11 +566,9 @@ class musicManager {
 			if(this._isPlayingLiked){
 				this._toggleLikedTracks();
 			}
-			//document.getElementById("shuffleAllBtn").textContent = "Stop Shuffling";
-			//document.getElementById("shuffleAllBtn").className = "pressed";
 			this.findNextTrack(0);
 		}
-		return this._isShufflingAll;
+		return this._publish(this.toggleShuffleAll,this._isShufflingAll);
 	}
 	
 	/**
@@ -551,8 +578,6 @@ class musicManager {
 	toggleLikedTracks(){
 		if(this._isPlayingLiked){
 			this._isPlayingLiked = false;
-			//document.getElementById("likeBtn").textContent = "Liked Tracks";
-			//document.getElementById("likeBtn").className = "";
 			this.currentlyPlaying['track'] = Object.keys(this.data[this.currentlyPlaying['folder']])[0];
 			this.findNextTrack(0);
 		}else{
@@ -580,15 +605,13 @@ class musicManager {
 			if(!nothingToSee){
 				this._isPlayingLiked = true;
 				this._likedTracks = musicManager.shuffleDict(this._likedTracks);
-				//document.getElementById("likeBtn").textContent = "Stop Playing";
-				//document.getElementById("likeBtn").className = "pressed";
 				this.currentlyPlaying['src'] = Object.keys(this._likedTracks)[0];
 				this.findNextTrack(0,true);
 			}else{
 				alert("Zero tracks have been liked. Like a track to get started!")
 			}
 		}
-		return this._isPlayingLiked;
+		return this._publish(this.toggleLikedTracks,this._isPlayingLiked);
 	}
 	
 	/**
@@ -607,7 +630,25 @@ class musicManager {
 				this.findNextTrack(1);
 			}
 		}
-		return this.trackType;
+		return this._publish(this.setTrackType,this.trackType);
+	}
+	
+	/**
+	 * Deletes any elements matching the specified type from trackType
+	 * @param {string=} type Type to be deleted. Leave empty to remove all types.
+	 * @returns {Dict<string:string>}    this.trackType
+	 */
+	resetTracksByType(type){
+		if(!type){
+			this.trackType = {};
+		}else{
+			for (var src in this.trackType){
+				if(this.trackType[src] == type){
+					delete this.trackType[src];
+				}
+			}
+		}
+		return this._publish(this.resetTracksByType,this.trackType);
 	}
 	
 	/**
@@ -637,9 +678,7 @@ class musicManager {
 	 */
 	_setDuration(duration){
 		this.currentDuration = duration;
-		return this.currentDuration;
-		//dur = document.getElementById('currentDur');
-		//dur.innerText = fancyTimeFormat(duration);
+		return this._publish(this._setDuration,this.currentDuration);
 	}
 	
 	/**
@@ -649,16 +688,7 @@ class musicManager {
 	 */
 	_updateTime(time){
 		this.currentTime = time;
-		return this.currentTime;
-		/*bar = document.getElementById('bar');
-		if(currentDuration==0){ //prevents division by zero
-			bar.style.width = "0px";
-		}else{
-			bar.style.width = parseInt(((currentTime / currentDuration) * document.getElementById('progress').clientWidth), 10) + "px";
-		}
-		pos = document.getElementById('currentPos');
-		pos.innerText = fancyTimeFormat(currentTime);
-		*/
+		return this._publish(this._updateTime,this.currentTime);
 	}
 	
 	/**

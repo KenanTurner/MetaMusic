@@ -4,3 +4,4 @@ This directory contains several examples of possible use-cases for music-manager
 
 ## Live Demos
 * [Simple Player](https://coolspykee.github.io/music-manager/simple_player/)
+* [Advanced Player](https://coolspykee.github.io/music-manager/advanced_player/)

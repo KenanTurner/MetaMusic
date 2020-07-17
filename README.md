@@ -73,6 +73,7 @@ For advanced functionality, see the examples section.
 ## Live Demo
 
 [Simple Player](https://coolspykee.github.io/music-manager/simple_player/)
+[Advanced Player](https://coolspykee.github.io/music-manager/advanced_player/)
 
 ## Help
 
