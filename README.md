@@ -59,7 +59,6 @@ Next, add the HTML, Youtube, and Soundcloud embeds. Then create the music manage
 </div>
 ```
 
-
 ## Usage
 
 - To start and stop playing use `.togglePlay()`  

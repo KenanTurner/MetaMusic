@@ -74,7 +74,7 @@
 					trackType = {};
 					setLocalStorage('trackType',trackType,true);
 				}
-				window.mm = new musicManager(data,trackType);
+				window.mm = new musicManager(data,trackType,'html-player','sc-player','yt-player','SoundcloudApi.js','YoutubeApi.js');
 				generateHTML(data);
 				
 				mm.subscribe(mm._setTrack,updateTrackDisplay);

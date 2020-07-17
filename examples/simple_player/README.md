@@ -1,6 +1,13 @@
-# Examples
+# Simple Player
 
-This directory contains several examples of possible use-cases for music-manager.js and to serve as a reference of how to apply it in various scenarios. Full source code and instructions on how to run them are included in each sub-directory.  
+This is the most basic implementation of music-manager.  
+All it does is create the music-manager object, and subscribes to a few events.  
+What it can do:  
+- Play/Pause
+- Fast Forward/Rewind
+- Next/Last Track
+- Next/Last Folder
+- Volume Up/Volume Down
 
 ## Live Demos
 * [Simple Player](https://coolspykee.github.io/music-manager/simple_player/index.html)
