@@ -67,6 +67,7 @@ Next, add the HTML, Youtube, and Soundcloud embeds. Then create the music manage
 - To fast Forward ten seconds use `.fastForward(10)`  
 - To decrease the volume by 50% use `.changeVolume(-0.5)`  
 - To add a track use `.data['folderName']['trackName'] = 'SRC'`  
+*Note: All Youtube links must be the video ID. Ex: rY-FJvRqK0E. A standard link will not work.*  
 
 For advanced functionality, see the examples section.  
 
