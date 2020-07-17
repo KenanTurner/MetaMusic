@@ -38,11 +38,6 @@
 			<button onclick="mm.findNextFolder(1)">Next Folder</button>
 			<button onclick="mm.changeVolume(0.1)">Volume Up</button>
 			<br><br>
-			
-			<button onclick="mm.toggleLoop()" class="" id="loopBtn">Loop</button>
-			<button onclick="mm.toggleShuffleAll()" class="" id="shuffleAllBtn">Shuffle All</button>
-			<button onclick="mm.toggleShuffle()" class="" id="shuffleBtn">Shuffle</button>
-			
 		</div>
 		
 		<div style="display: block;"> <!-- to hide, change display to none -->
@@ -61,9 +56,6 @@
 				mm.subscribe(mm.togglePlay,outputToPage,'_isPlaying: ');
 				mm.subscribe(mm._setTrack,outputToPage,'Currently Playing: ');
 				mm.subscribe(mm._updateTime,outputToPage,'currentTime: ');
-				mm.subscribe(mm.toggleLoop,outputToPage,'_isLooping: ');
-				mm.subscribe(mm.toggleShuffle,outputToPage,'_isShuffling: ');
-				mm.subscribe(mm.toggleShuffleAll,outputToPage,'_isShufflingAll: ');
 				mm.subscribe(mm.changeVolume,outputToPage,'currentVol: ');
 				mm.subscribe(mm._setDuration,outputToPage,'currentDuration: ');
 			</script>
