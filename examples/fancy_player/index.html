@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Music Manager</title>
+		<link rel="stylesheet" type="text/css" href="fancy.css">
+		<script type="text/javascript" src="jquery-3.5.1.min.js"></script>
+		<script type="text/javascript" src="display.js"></script>
+		<script type="text/javascript" src="music-manager.js"></script>
+	</head>
+	<body>
+		<div id="header">
+			<div id="controls">
+				<div id="currentTrack">Loading. . .</div>
+				<div id="currentFolder">Loading. . .</div>
+				<div id="progressText">
+					<div id="currentPos" style="float:left">0:00</div>
+					<div id="" style="float:left; width: 10%">/</div>
+					<div id="currentDur" style="float:right">0:00</div>
+				</div>
+				
+				<button onclick="mm.setTrackType('skipped',true)" class="" id="skipTrackBtn">Skip Track</button>
+				<button onclick="mm.changeVolume(-0.1)">Volume Down</button>
+				<button onclick="mm.findNextFolder(-1)">last Folder</button>
+				<button onclick="mm.findNextTrack(-1)">|<</button>
+				<button onclick="mm.fastForward(-10)"><<</button>
+				<button onclick="mm.togglePlay()" id="playBtn">Play</button>
+				<button onclick="mm.fastForward(10)">>></button>
+				<button onclick="mm.findNextTrack(1)">>|</button>
+				<button onclick="mm.findNextFolder(1)">Next Folder</button>
+				<button onclick="mm.changeVolume(0.1)">Volume Up</button>
+				<button onclick="mm.setTrackType('liked')" class="" id="likeTrackBtn">Like Track</button>
+				<br><br>
+				
+				<button onclick="mm.resetTracksByType('skipped')" class="">Reset Skipped Tracks</button>
+				<button onclick="mm.resetTracksByType('liked')" class="">Reset Liked Tracks</button>
+				<button onclick="mm.resetTracksByType()" class="">Reset All Tracks</button>
+				<button onclick="mm.toggleLoop()" class="" id="loopBtn">Loop</button>
+				<button onclick="mm.toggleShuffleAll()" class="" id="shuffleAllBtn">Shuffle All</button>
+				<button onclick="mm.toggleShuffle()" class="" id="shuffleBtn">Shuffle</button>
+				<button onclick="mm.toggleLikedTracks()" class="" id="likeBtn">Liked Tracks</button>
+				
+			</div>
+			<div id="progress">
+				<div id="bar"></div>
+			</div>
+		</div>
+		<?php echo $_SERVER;?>
+		<div style="display: none;"> <!-- to unhide, change display to block -->
+			<audio id="html-player" src="" preload="none" controls="true" preload="metadata"></audio> <!--html audio-->
+			<div id="yt-player"></div> <!--Youtube embed-->
+			<iframe id="sc-player" width="100%" height="144" scrolling="no" frameborder="no" allow="autoplay"
+			  src="https://w.soundcloud.com/player/?url=;"> <!--Soundcloud embed-->
+			</iframe>
+			<script>
+				<!--music manager object must be created after embeds have been loaded -->
+				window.mm = new musicManager(
+					{'Youtube Folder':{'Kero Kero Bonito - Flamingo':'rY-FJvRqK0E','You Reposted in the Wrong Dimmadome':'SBxpeuxUiOA'},
+					'Soundcloud Folder':{'SCV 2018':'https://soundcloud.com/dneeltd/santa-clara-vanguard-2018-babylon-finals','Mercure Rétrograde':'https://soundcloud.com/agnes-aves/mercure-retrograde-w-agnes-aves-200520-lyl-radio'},
+					'HTML Folder':{'Mars':'https://upload.wikimedia.org/wikipedia/commons/8/85/Holst-_mars.ogg','Mercury':'https://upload.wikimedia.org/wikipedia/commons/8/89/Holst_The_Planets_Mercury.ogg'}}
+				);
+				
+				mm.subscribe(mm._setTrack,updateTrackDisplay);
+				mm.subscribe(mm._updateTime,updateTrackTime);
+				mm.subscribe(mm._setDuration,updateTrackDuration);
+				
+				//progress bar
+				var progress = document.getElementById('progress');
+				progress.addEventListener('click', userClick);
+			</script>
+		</div>
+	</body>
+</html>
