@@ -107,11 +107,17 @@ function updateTrackDisplay(){
 	setLocalStorage('trackType',mm.trackType,true)
 }
 
-function keyUp(event){
+function hasFocus(){
 	var folder = document.getElementById("folder");
 	var track = document.getElementById("track");
 	var src = document.getElementById("src");
 	if(document.activeElement === src || document.activeElement === track || document.activeElement === folder){
+		return true;
+	}
+}
+
+function keyUp(event){
+	if(hasFocus()){
 		return;
 	}
 	if(event.which == 32) { //play pause: space
