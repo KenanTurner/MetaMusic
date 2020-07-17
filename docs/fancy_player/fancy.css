@@ -23,15 +23,13 @@
 }
 
 #currentPos {
-	/*float: left;
-	pointer-events: none;*/
+	float:left;
 	margin: 0px;
 	width:45%;
 }
 
 #currentDur {
-	/*float: right;
-	pointer-events: none;*/
+	float:right;
 	margin: 0px;
 	width:45%;
 }
@@ -95,9 +93,6 @@
 }
 
 .liked {
-	/*text-decoration: underline;
-	text-decoration-color: #248f24;
-	text-decoration-style: double;*/
 	font-weight: bold;
 	color: #248f24;
 }
@@ -106,6 +101,16 @@
 	width: 780px;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+#footer {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	background-color: white;
+	text-align: center;
+	height: 35px;
 }
 
 #controls {

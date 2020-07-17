@@ -283,7 +283,9 @@ class musicManager {
 					self._SCAudio.getDuration(function(duration){
 						self._setDuration(duration/1000);
 					});
-					self._SCAudio.play();
+					if(self.currentlyPlaying['filetype']=='SC'){
+						self._SCAudio.play();
+					}
 					self._SCAudio.setVolume(self.currentVol*100);
 				});
 				break;
@@ -886,7 +888,7 @@ function _globalYTReady(event){
 	for(var key in window) {
 		  if (window[key] instanceof musicManager) {
 			  //console.log(window[key]);
-			  window[key]._setTrack();
+			  window[key].findNextTrack(0);
 		  }
 	}
 }

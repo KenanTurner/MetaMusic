@@ -267,7 +267,7 @@ class musicManager {
 	
 	/**
 	 * Plays the currently selected track
-	 * @returns {Dict}    this.currentlyPlaying
+	 * @returns {boolean}    this._isPlaying
 	 */
 	play(){
 		let self = this;
@@ -283,7 +283,9 @@ class musicManager {
 					self._SCAudio.getDuration(function(duration){
 						self._setDuration(duration/1000);
 					});
-					self._SCAudio.play();
+					if(self.currentlyPlaying['filetype']=='SC'){
+						self._SCAudio.play();
+					}
 					self._SCAudio.setVolume(self.currentVol*100);
 				});
 				break;
@@ -292,19 +294,19 @@ class musicManager {
 				break;
 		}
 		this._isPlaying=true;
-		return this._publish(this.play,this.currentlyPlaying);
+		return this._publish(this.play,this._isPlaying);
 	}
 	
 	/**
 	 * Pauses the currently selected track
-	 * @returns {Dict}    this.currentlyPlaying
+	 * @returns {boolean}    this._isPlaying
 	 */
 	pause(){
 		this._htmlAudio.pause();
 		this._YTAudio.pauseVideo();
 		this._SCAudio.pause();
 		this._isPlaying=false;
-		return this._publish(this.pause,this.currentlyPlaying);
+		return this._publish(this.pause,this._isPlaying);
 	}
 	
 	/**
@@ -426,9 +428,10 @@ class musicManager {
 	/**
 	 * Recursively finds the folder to play. If entire folder is skipped, move onto the next folder.
 	 * @param {number=} step Direction for search for next folder.
+	 * @param {boolean=} hasCheckedAllFolders Whether all folder are skipped or not.
 	 * @returns {Dict}    this.currentlyPlaying
 	 */
-	findNextFolder(step=1){
+	findNextFolder(step=1,hasCheckedAllFolders=false){
 		let folderNames = Object.keys(this.data);
 		let folderIndex = folderNames.indexOf(this.currentlyPlaying['folder']);
 		folderIndex += step;
@@ -439,7 +442,16 @@ class musicManager {
 			folderIndex = folderNames.length-1;
 		}
 		if(this._checkFolder(folderNames[folderIndex])){
-			console.log("Entire Folder Is Skipped");
+			//console.log("Entire Folder Is Skipped");
+			if(!hasCheckedAllFolders){
+				if(this._checkAllFolders()){
+					//Every folder is skipped
+					this.currentlyPlaying['folder'] = Object.keys(this.data)[0];
+					this.currentlyPlaying['track'] = Object.keys(this.data[this.currentlyPlaying['folder']])[0];
+					return this._setTrack();
+				}
+				hasCheckedAllFolders = true;
+			}
 			this.currentlyPlaying['folder'] = folderNames[folderIndex];
 			this.findNextFolder(step);
 		}else{
@@ -447,6 +459,18 @@ class musicManager {
 			this.currentlyPlaying['track'] = Object.keys(this.data[folderNames[folderIndex]])[0];
 			return this.findNextTrack(0,true);
 		}
+	}
+	
+	/**
+	 * Attempts to play the specified track.
+	 * @param {string} folder
+	 * @param {string} track
+	 * @returns {Dict}    this.currentlyPlaying
+	 */
+	findTrack(folder,track){
+		this.currentlyPlaying['folder'] = folder;
+		this.currentlyPlaying['track'] = track;
+		return this.findNextTrack(0);
 	}
 	
 	/**
@@ -702,7 +726,23 @@ class musicManager {
 		Object.keys(this.data[folder]).forEach(function(track){
 			if(self.trackType[self.data[folder][track]] != 'skipped'){
 				allSkipped = false;
-				//break;
+				return allSkipped;
+			}
+		});
+		return allSkipped;
+	}
+	
+	/**
+	 * Checks to see if all folders have been skipped.
+	 * @returns {boolean}    Whether all folders are skipped or not.
+	 */
+	_checkAllFolders(){
+		var allSkipped = true;
+		var self = this;
+		Object.keys(this.data).forEach(function(folder){
+			if(!self._checkFolder(folder)){
+				allSkipped = false;
+				return allSkipped;
 			}
 		});
 		return allSkipped;
@@ -848,7 +888,7 @@ function _globalYTReady(event){
 	for(var key in window) {
 		  if (window[key] instanceof musicManager) {
 			  //console.log(window[key]);
-			  window[key]._setTrack();
+			  window[key].findNextTrack(0);
 		  }
 	}
 }
