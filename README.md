@@ -66,6 +66,7 @@ Next, add the HTML, Youtube, and Soundcloud embeds. Then create the music manage
 - To move to the previous folder use `.findNextFolder(-1)`  
 - To fast Forward ten seconds use `.fastForward(10)`  
 - To decrease the volume by 50% use `.changeVolume(-0.5)`  
+- To add a track use `.data['folderName']['trackName'] = 'SRC'`  
 
 For advanced functionality, see the examples section.  
 
