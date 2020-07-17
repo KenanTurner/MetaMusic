@@ -186,12 +186,12 @@ class musicManager {
 	 * Publishes the event to subscribed objects
 	 * @param {object} event Event to be published.
 	 * @param {object} data Arguments to be passed to subscriber.
-	 * @returns {object}    this.subscribers[event]
+	 * @returns {object}    data
 	 */
 	_publish(event, data) {
 		if (!this.subscribers[event]) return;
 		this.subscribers[event].forEach(subscriberCallback => subscriberCallback[0](data,...subscriberCallback[1]));
-		return this.subscribers[event];
+		return data;
 	}
 	
 	/**
@@ -284,6 +284,7 @@ class musicManager {
 						self._setDuration(duration/1000);
 					});
 					self._SCAudio.play();
+					self._SCAudio.setVolume(self.currentVol*100);
 				});
 				break;
 			case "YT":
@@ -291,8 +292,7 @@ class musicManager {
 				break;
 		}
 		this._isPlaying=true;
-		this._publish(this.play,this.currentlyPlaying);
-		return this.currentlyPlaying;
+		return this._publish(this.play,this.currentlyPlaying);
 	}
 	
 	/**
@@ -304,8 +304,7 @@ class musicManager {
 		this._YTAudio.pauseVideo();
 		this._SCAudio.pause();
 		this._isPlaying=false;
-		this._publish(this.pause,this.currentlyPlaying);
-		return this.currentlyPlaying;
+		return this._publish(this.pause,this.currentlyPlaying);
 	}
 	
 	/**
@@ -318,8 +317,7 @@ class musicManager {
 		}else{
 			this.play();
 		}
-		this._publish(this.togglePlay,this._isPlaying);
-		return this._isPlaying;
+		return this._publish(this.togglePlay,this._isPlaying);
 	}
 	
 	/**
@@ -352,9 +350,7 @@ class musicManager {
 		if(this._isPlaying){
 			this.play();
 		}
-		this._publish(this._setTrack,this.currentlyPlaying);
-		return this.currentlyPlaying;
-		
+		return this._publish(this._setTrack,this.currentlyPlaying);
 	}
 	
 	/**
@@ -504,8 +500,7 @@ class musicManager {
 		this._htmlAudio.volume=this.currentVol;
 		this._YTAudio.setVolume(this.currentVol*100);
 		this._SCAudio.setVolume(this.currentVol*100);
-		this._publish(this.changeVolume,this.currentVol);
-		return this.currentVol;
+		return this._publish(this.changeVolume,this.currentVol);
 	}
 	
 	/**
@@ -530,8 +525,7 @@ class musicManager {
 		}else{
 			this._isLooping = true;
 		}
-		this._publish(this.toggleLoop,this._isLooping);
-		return this._isLooping;
+		return this._publish(this.toggleLoop,this._isLooping);
 	}
 	
 	/**
@@ -554,8 +548,7 @@ class musicManager {
 			this.currentlyPlaying['track'] = Object.keys(this.shuffled[this.currentlyPlaying['folder']])[0];
 			this.findNextTrack(0);
 		}
-		this._publish(this.toggleShuffle,this._isShuffling);
-		return this._isShuffling;
+		return this._publish(this.toggleShuffle,this._isShuffling);
 	}
 	
 	/**
@@ -575,8 +568,7 @@ class musicManager {
 			}
 			this.findNextTrack(0);
 		}
-		this._publish(this.toggleShuffleAll,this._isShufflingAll);
-		return this._isShufflingAll;
+		return this._publish(this.toggleShuffleAll,this._isShufflingAll);
 	}
 	
 	/**
@@ -619,8 +611,7 @@ class musicManager {
 				alert("Zero tracks have been liked. Like a track to get started!")
 			}
 		}
-		this._publish(this.toggleLikedTracks,this._isPlayingLiked);
-		return this._isPlayingLiked;
+		return this._publish(this.toggleLikedTracks,this._isPlayingLiked);
 	}
 	
 	/**
@@ -639,8 +630,25 @@ class musicManager {
 				this.findNextTrack(1);
 			}
 		}
-		this._publish(this.setTrackType,this.trackType);
-		return this.trackType;
+		return this._publish(this.setTrackType,this.trackType);
+	}
+	
+	/**
+	 * Deletes any elements matching the specified type from trackType
+	 * @param {string=} type Type to be deleted. Leave empty to remove all types.
+	 * @returns {Dict<string:string>}    this.trackType
+	 */
+	resetTracksByType(type){
+		if(!type){
+			this.trackType = {};
+		}else{
+			for (var src in this.trackType){
+				if(this.trackType[src] == type){
+					delete this.trackType[src];
+				}
+			}
+		}
+		return this._publish(this.resetTracksByType,this.trackType);
 	}
 	
 	/**
@@ -670,8 +678,7 @@ class musicManager {
 	 */
 	_setDuration(duration){
 		this.currentDuration = duration;
-		this._publish(this._setDuration,this.currentDuration);
-		return this.currentDuration;
+		return this._publish(this._setDuration,this.currentDuration);
 	}
 	
 	/**
@@ -681,8 +688,7 @@ class musicManager {
 	 */
 	_updateTime(time){
 		this.currentTime = time;
-		this._publish(this._updateTime,this.currentTime);
-		return this.currentTime;
+		return this._publish(this._updateTime,this.currentTime);
 	}
 	
 	/**
