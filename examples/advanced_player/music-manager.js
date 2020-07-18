@@ -765,22 +765,13 @@ class musicManager {
 	 * @returns {string}    One of three: 'HTML','SC','YT'
 	 */
 	static getFiletype(src){
-		let filetype = src.split('.').pop().split('/')[0];
-		switch(filetype){
-			case "flac":
-			case "mp3":
-			case "mp4":
-			case "adts":
-			case "ogg":
-			case "wav":
-				return "HTML";
-				break;
-			case "com":
-				return "SC";
-				break;
-			default:
-				return "YT";
+		if(src.search('soundcloud')>-1){
+			return "SC";
 		}
+		if(src.length == 11 && src.indexOf(".") == -1){
+			return "YT"
+		}
+		return "HTML";
 	}
 	
 	/**
