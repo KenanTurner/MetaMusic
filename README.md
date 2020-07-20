@@ -23,16 +23,14 @@ music-manager is a javascript library enabling the user to control playback of h
 
 ## Browser Compatibility
 
-- IE 1.1+
 - Edge 8.3+
 - Firefox 7.8+
 - Chrome 8.3+
 - Mobile Chrome 8.1+
 - Android Browser 8.1+
-- Safari 13.1+*
+- Safari 13.1+
 - Mobile Safari 13.5+
 - Opera 12.0+  
-**Note: for mobile safari to work with soundcloud, the desktop version of the site must be requested.*  
 
 ## Installation
 
@@ -68,7 +66,6 @@ Next, add the HTML, Youtube, and Soundcloud embeds. Then create the music manage
 - To fast Forward ten seconds use `.fastForward(10)`  
 - To decrease the volume by 50% use `.changeVolume(-0.5)`  
 - To add a track use `.data['folderName']['trackName'] = 'SRC'`  
-*Note: All Youtube links must be the video ID. Ex: rY-FJvRqK0E. A standard link will not work.*  
 
 For advanced functionality, see the examples section.  
 

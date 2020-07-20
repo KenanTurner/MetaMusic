@@ -58,6 +58,11 @@
 				mm.subscribe(mm._updateTime,outputToPage,'currentTime: ');
 				mm.subscribe(mm.changeVolume,outputToPage,'currentVol: ');
 				mm.subscribe(mm._setDuration,outputToPage,'currentDuration: ');
+				
+				//Alert the user if using mobile version
+				if(musicManager.mobileAndTabletCheck()){
+					alert('You are using the mobile version of this site. For full functionality, switch to the desktop version');
+				}
 			</script>
 		</div>
 		

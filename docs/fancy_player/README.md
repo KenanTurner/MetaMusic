@@ -1,4 +1,4 @@
-# Advanced Player
+# Fancy Player
 
 This is a fancy and complex implementation of music-manager.  
 All it does is create the music-manager object, and subscribes to a few events.  
@@ -25,14 +25,31 @@ What it can do:
 - Additional controls for liking/skipping
 - Adding tracks/folders in real time
 - Saves the user's preferences
-- Saves the uploaded tracks
+- Saves the uploaded tracks  
+Also has support for keyboard controls:  
+- next track: >
+- previous track: <
+- next folder: ]
+- previous folder: \[
+- play/pause: space
+- mute/unmute: m
+- fast forward: right
+- rewind: left
+- Volume up: up
+- Volume down: down
+- loop: l
+- shuffle: s
+- shuffle all: a
+- like track: u
+- skip tack: x
+- play liked tracks: p
+- collapse all: c
+- expand all: e
 
 The formatting is from fancy.css.  
 All user interaction is controlled display.js.  
 Any user data is stored with HTML local storage, courtesy of localStorage.js.  
 Both the Youtube and Soundcloud APIs are included.  
-
-*Note: All Youtube links must be the video ID. Ex: rY-FJvRqK0E. A standard link will not work.*  
 
 ## Live Demos
 * [Simple Player](https://coolspykee.github.io/music-manager/simple_player/index.html)
