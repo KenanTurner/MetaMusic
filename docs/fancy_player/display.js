@@ -19,6 +19,7 @@ function resetUploadedTracks(){
 	mm.data = {'Youtube Folder':{'Kero Kero Bonito - Flamingo':'rY-FJvRqK0E','You Reposted in the Wrong Dimmadome':'SBxpeuxUiOA'},
 			'Soundcloud Folder':{'SCV 2018':'https://soundcloud.com/dneeltd/santa-clara-vanguard-2018-babylon-finals','Mercure Rétrograde':'https://soundcloud.com/agnes-aves/mercure-retrograde-w-agnes-aves-200520-lyl-radio'},
 			'HTML Folder':{'Mars':'https://upload.wikimedia.org/wikipedia/commons/8/85/Holst-_mars.ogg','Mercury':'https://upload.wikimedia.org/wikipedia/commons/8/89/Holst_The_Planets_Mercury.ogg'}};
+	mm.trackType = {};
 	generateHTML(mm.data);
 	updateTrackDisplay();
 	setLocalStorage('data',mm.data,true)
