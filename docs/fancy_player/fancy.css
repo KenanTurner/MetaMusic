@@ -62,7 +62,7 @@
 .trackButton {
 	border: 16px;
 	background-color: inherit;
-	width: 90%;
+	width: 80%;
 	font-size: 16px;
 	cursor: pointer;
 	display: inline-block;
@@ -78,9 +78,22 @@
 	cursor: pointer;
 }
 
+.trackLI:hover .removeBtn {
+	display: inline;
+	cursor: pointer;
+}
+
 .skipLikeBtn {
 	display: none;
 	width: 5%;
+	border: 1px;
+	border-width: 1px;
+	border-style: solid;
+	background-color: #FFFFFF;
+}
+.removeBtn {
+	display: none;
+	width: 10%;
 	border: 1px;
 	border-width: 1px;
 	border-style: solid;

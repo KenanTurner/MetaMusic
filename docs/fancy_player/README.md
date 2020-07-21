@@ -24,6 +24,7 @@ What it can do:
 - Tracks can be clicked on
 - Additional controls for liking/skipping
 - Adding tracks/folders in real time
+- Removing tracks/folders in real time
 - Saves the user's preferences
 - Saves the uploaded tracks  
 Also has support for keyboard controls:  

@@ -6,20 +6,25 @@ function uploadTrack(){
 		alert('All fields need to be filled out');
 		return;
 	}
-	if(!mm.data[folder]){
-		mm.data[folder] = {};
-	}
-	mm.data[folder][track] = src;
+	mm.addTrack(folder,track,src);
 	generateHTML(mm.data);
 	updateTrackDisplay();
-	setLocalStorage('data',mm.data,true)
+	setLocalStorage('data',mm.data,true);
+}
+
+function removeTrack(){
+	if(Object.keys(mm.data).length === 0){
+		mm.addTrack('Rick Astley','Never Gonna Hit Those Notes','https://www.youtube.com/watch?v=lXMskKTw3Bc');
+	}
+	generateHTML(mm.data);
+	updateTrackDisplay();
+	setLocalStorage('data',mm.data,true);
 }
 
 function resetUploadedTracks(){
 	mm.data = {'Youtube Folder':{'Kero Kero Bonito - Flamingo':'rY-FJvRqK0E','You Reposted in the Wrong Dimmadome':'SBxpeuxUiOA'},
 			'Soundcloud Folder':{'SCV 2018':'https://soundcloud.com/dneeltd/santa-clara-vanguard-2018-babylon-finals','Mercure Rétrograde':'https://soundcloud.com/agnes-aves/mercure-retrograde-w-agnes-aves-200520-lyl-radio'},
 			'HTML Folder':{'Mars':'https://upload.wikimedia.org/wikipedia/commons/8/85/Holst-_mars.ogg','Mercury':'https://upload.wikimedia.org/wikipedia/commons/8/89/Holst_The_Planets_Mercury.ogg'}};
-	mm.trackType = {};
 	generateHTML(mm.data);
 	updateTrackDisplay();
 	setLocalStorage('data',mm.data,true)
@@ -95,13 +100,13 @@ function updateTrackDisplay(){
 	Object.keys(mm.trackType).forEach(function(src){
 		switch(mm.trackType[src]){
 			case "liked":
-				document.getElementById(src).classList.add("liked");
+				try{document.getElementById(src).classList.add("liked");}catch{}
 				break;
 			case "skipped":
-				document.getElementById(src).classList.add("skipped");
+				try{document.getElementById(src).classList.add("skipped");}catch{}
 				break;
 			default:
-				document.getElementById(src).className = "";
+				try{document.getElementById(src).className = "";}catch{}
 				break;
 		}
 	});
@@ -275,6 +280,16 @@ function generateHTML(data){
 			trackBtn.setAttributeNode(id);
 			trackBtn.innerHTML += item2;
 			
+			//remove btn
+			let removeBtn = document.createElement('button');
+			removeBtn.innerHTML += "remove";
+			style = document.createAttribute("class");
+			style.value = "removeBtn";
+			removeBtn.setAttributeNode(style);
+			onClick = document.createAttribute("onclick");
+			onClick.value = 'mm.removeTrack("'+escapeQuotes(item1)+'","'+escapeQuotes(item2)+'");';
+			removeBtn.setAttributeNode(onClick);
+			
 			//skip btn
 			let skipBtn = document.createElement('button');
 			skipBtn.innerHTML += "skip";
@@ -296,6 +311,7 @@ function generateHTML(data){
 			likeBtn.setAttributeNode(onClick);
 			
 			track.appendChild(trackBtn);
+			track.appendChild(removeBtn);
 			track.appendChild(skipBtn);
 			track.appendChild(likeBtn);
 		});

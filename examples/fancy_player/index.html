@@ -61,7 +61,7 @@
 			<script>
 				<!--music manager object must be created after embeds have been loaded -->
 				var data = getLocalStorage('data',true);
-				if(data==null){
+				if(data==null || Object.keys(data).length == 0){
 					console.log('initializing');
 					data = {'Youtube Folder':{'Kero Kero Bonito - Flamingo':'rY-FJvRqK0E','You Reposted in the Wrong Dimmadome':'SBxpeuxUiOA'},
 						'Soundcloud Folder':{'SCV 2018':'https://soundcloud.com/dneeltd/santa-clara-vanguard-2018-babylon-finals','Mercure Rétrograde':'https://soundcloud.com/agnes-aves/mercure-retrograde-w-agnes-aves-200520-lyl-radio'},
@@ -91,6 +91,7 @@
 				mm.subscribe(mm.toggleLikedTracks,updateBtn,likeBtn,'Stop Playing','Liked Tracks');
 				mm.subscribe(mm.play,updateTitle);
 				mm.subscribe(mm.pause,updateTitle);
+				mm.subscribe(mm.removeTrack,removeTrack);
 				
 				//progress bar
 				var progress = document.getElementById('progress');
