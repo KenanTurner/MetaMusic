@@ -72,13 +72,13 @@ For advanced functionality, see the examples section.
 
 ## Live Demo
 
-* [Simple Player](https://coolspykee.github.io/music-manager/simple_player/index.html)
-* [Advanced Player](https://coolspykee.github.io/music-manager/advanced_player/index.html)
-* [Fancy Player](https://coolspykee.github.io/music-manager/fancy_player/index.html)
+* [Simple Player](https://kenanturner.github.io/music-manager/simple_player/index.html)
+* [Advanced Player](https://kenanturner.github.io/music-manager/advanced_player/index.html)
+* [Fancy Player](https://kenanturner.github.io/music-manager/fancy_player/index.html)
 
 ## Help
 
-[github pages](https://coolspykee.github.io/music-manager/index.html)
+[github pages](https://kenanturner.github.io/music-manager/index.html)
 
 ## License
 [MIT](/LICENSE)

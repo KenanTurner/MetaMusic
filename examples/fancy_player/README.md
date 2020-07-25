@@ -52,7 +52,8 @@ All user interaction is controlled display.js.
 Any user data is stored with HTML local storage, courtesy of localStorage.js.  
 Both the Youtube and Soundcloud APIs are included.  
 
-## Live Demos
-* [Simple Player](https://coolspykee.github.io/music-manager/simple_player/index.html)
-* [Advanced Player](https://coolspykee.github.io/music-manager/advanced_player/index.html)
-* [Fancy Player](https://coolspykee.github.io/music-manager/fancy_player/index.html)
+## Live Demo
+
+* [Simple Player](https://kenanturner.github.io/music-manager/simple_player/index.html)
+* [Advanced Player](https://kenanturner.github.io/music-manager/advanced_player/index.html)
+* [Fancy Player](https://kenanturner.github.io/music-manager/fancy_player/index.html)
