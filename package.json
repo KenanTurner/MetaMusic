@@ -1,0 +1,26 @@
+{
+  "name": "@KenanTurner/music-manager",
+  "version": "1.2.0",
+  "description": "A simple javascript library for playing music",
+  "main": "src/music-manager.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "publishConfig": {
+    "registry":"https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KenanTurner/music-manager.git"
+  },
+  "author": "Kenan Turner <coolspykee@satx.rr.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KenanTurner/music-manager/issues"
+  },
+  "homepage": "https://github.com/KenanTurner/music-manager#readme"
+}
