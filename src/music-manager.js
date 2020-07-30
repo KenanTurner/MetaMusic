@@ -464,12 +464,21 @@ class musicManager {
 	}
 	
 	/**
-	 * Attempts to play the specified track.
+	 * Attempts to play the specified track. Disables all shuffling.
 	 * @param {string} folder
 	 * @param {string} track
 	 * @returns {Dict}    this.currentlyPlaying
 	 */
 	findTrack(folder,track){
+		if(this._isShuffling){
+			this.toggleShuffle();
+		}
+		if(this._isShufflingAll){
+			this.toggleShuffleAll();
+		}
+		if(this._isPlayingLiked){
+			this.toggleLikedTracks();
+		}
 		this.currentlyPlaying['folder'] = folder;
 		this.currentlyPlaying['track'] = track;
 		return this.findNextTrack(0);
