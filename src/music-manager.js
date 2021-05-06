@@ -3,7 +3,7 @@
  *    to control playback of html audio files along with youtube and
  *    soundcloud links.
  */
- //Test
+ 
 /*** musicManager class */
 class musicManager {
 	/**
