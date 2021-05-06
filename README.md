@@ -1,5 +1,7 @@
 # Music Manager
 
+## *Warning: This entire project is currently getting overhauled. The current version may not be compatible with a future version. See the develop branch for the most recent changes. Use at your own risk.*
+
 A simple javascript library for playing music
 
 ## Description
