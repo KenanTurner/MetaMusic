@@ -22,8 +22,9 @@ class TestCases{
 		console.log("Failed Cases: ",this.test_obj.fail_cases);
 	}
 	static testTracks(){
-		var t1 = new Track("src","title");
-		var t2 = new Track("src","title","HTML",0,-1,"artist","artwork",["FAV"],100,10);
+		var t1 = new HTML.Track({src:"src",title:"title"});
+		var t2 = new HTML.Track({src:"src",title:"title",filetype:"HTML",track_num:0,duration:-1,
+			artist:"artist",artwork:"artwork",flags:["FAV"],total_views:100,total_likes:10});
 		var t3 = t1.clone();
 		t1.toJSON();
 		t1.toString();
@@ -31,17 +32,18 @@ class TestCases{
 		t2.toString();
 		if(!t1.equals(t3))throw new Error("Bad comparison");
 		t1 = t1.clone();
-		t3 = Track.fromJSON(JSON.stringify(t3));
+		t3 = HTML.Track.fromJSON(JSON.stringify(t3));
 		if(!t3.equals(t1))throw new Error("Bad comparison");
 		if(t1.equals(t2))throw new Error("Bad comparison");
-		t3 = Track.fromJSON(t1.toString());
-		var t4 = Track.fromJSON(t2.toString());
+		t3 = HTML.Track.fromJSON(t1.toString());
+		var t4 = HTML.Track.fromJSON(t2.toString());
 		if(!t4.equals(t2))throw new Error("Bad comparison");
 		t1 += "E";
 	}
 	static testAlbums(){
-		window.t1 = new Track("src","t1");
-		var t2 = new Track("src","t2","HTML",0,-1,"artist","artwork",["FAV"],100,10);
+		var t1 = new HTML.Track({src:"src",title:"t1"});
+		var t2 = new HTML.Track({src:"src",title:"t2",filetype:"HTML",track_num:0,duration:-1,
+			artist:"artist",artwork:"artwork",flags:["FAV"],total_views:100,total_likes:10});
 		var t3 = t1.clone();
 		t3.title = "t3";
 		window.a1 = new Album("title",[t1,t2,t3]); //t2,t1,t3
@@ -93,4 +95,20 @@ class TestObj{
 var test_cases = new TestCases();
 test_cases.runAll(true);
 
-var tmp = new Album("title",[],"desc","genre","artwork","src",["FAV"])
+//TODO cleanup
+//var tmp = new bc_Track("bc_url","SRC","Title");
+//var tmp = new Album("title",[],"desc","genre","artwork","src",["FAV"])
+var dict = {};
+dict["HTML"] = new HTML();
+dict["BC"] = new BC();
+//override getUserId()
+HTML.getUserId = function(){
+	return "Override";
+}
+
+var base = {src:"http://crusader.company/old/music/Unsorted/Santa%20Clara%20Vanguard%202018%20Finals.flac",title:"title",bc_url:"bc_url"};
+var tr = new HTML.Track(base);
+base.src = "https://austinwintory.bandcamp.com/track/then-were-created-the-gods-in-the-midst-of-heaven";
+var bc = new BC.Track(base);
+var list = [bc,tr];
+var jlist = [JSON.stringify(bc),JSON.stringify(tr)];
