@@ -41,3 +41,14 @@ body {
 	display: grid;
 	grid-template-columns: auto min-content;
 }
+/*@media screen and (orientation: portrait) {
+	body {
+		font-size: 150%;
+		margin-top: 163px;
+		margin-bottom: 118px;
+	}
+	.footer{
+		padding: 24px;
+		padding-bottom: 72px;
+	}
+}*/
