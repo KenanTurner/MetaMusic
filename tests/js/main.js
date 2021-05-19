@@ -27,7 +27,9 @@ function update_text_area(...data){
 		}
 	});
 	document.getElementById('console').append(div);
-	div.scrollIntoView();
+	if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        div.scrollIntoView();
+    }
 }
 
 
