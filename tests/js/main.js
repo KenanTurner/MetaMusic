@@ -67,8 +67,26 @@ code.addEventListener("keyup", function(event) {
   if (event.keyCode === 13) {
     event.preventDefault();
     go_btn.click();
+  }else if(event.keyCode === 38) { //up
+	  event.preventDefault();
+	  if(cindex == chistory.length) ctmp = code.value;
+	  if(cindex>0){
+		  cindex--;
+		  code.value = chistory[cindex];
+	  }
+  }else if(event.keyCode === 40) { //down
+	  event.preventDefault();
+	  if(cindex == -1)cindex++;
+	  if(cindex<chistory.length){
+		  cindex++;
+		  code.value = chistory[cindex];
+		  if(cindex==chistory.length) code.value = ctmp;
+	  }
   }
 });
+window.chistory = [];
+window.cindex = 0;
+window.ctmp = "";
 go_btn.addEventListener("click",function(){
 	try{
 		let t = eval.call(window,code.value); //super terrible but I don't care
@@ -76,6 +94,8 @@ go_btn.addEventListener("click",function(){
 	}catch(e){
 		console.log(e.stack);
 	}
+	chistory.push(code.value);
+	cindex = chistory.length;
 	code.value = "";
 });
 
