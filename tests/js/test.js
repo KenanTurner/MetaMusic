@@ -1,31 +1,110 @@
-import HTML from '../../tmp/html.js';
 class TestCases{
 	constructor(){
 		this.test_obj = new TestObj();
 	}
-	runAll(verbose = false){
+	testPlayers(show_console_output = false,...test_players){
+		this.test_obj.reset();
+		console.log("Running Tests...");
+		let c = console.log;
+		if(!show_console_output) console.log = function(){};
+		let self = this;
+		return this._testPlayer(test_players,c)
+		.then(function(){
+			console.log = c;
+			console.log("Successful Cases: ",self.test_obj.success_cases);
+			console.log("Failed Cases: ",self.test_obj.fail_cases);
+			return Promise.resolve(self.test_obj);
+		});
+	}
+	//TODO add Promise.race for timeouts
+	_testPlayer(Players,c){
+		if(Players.length == 0) return Promise.resolve();
+		let obj = Players.shift();
+		let self = this;
+		let pass = function(f){
+			return function(){
+				c("\tPassed");
+				self.test_obj.success_cases++;
+				if(f){
+					c("Testing "+f.name);
+					//return f(obj.player,obj.args,obj.track,obj.track_err);
+					let p = f(obj.player,obj.args,obj.track,obj.track_err);
+					let t = new Promise(function(resolve, reject) {
+						setTimeout(function(){reject("Timed out")}, 15000);
+					});
+					return Promise.race([p, t])
+				}
+				return Promise.resolve(self);
+			}
+		}
+		let fail = function(f){
+			return function(result){
+				c("\tFailed",result);
+				self.test_obj.fail_cases++;
+				if(f){
+					c("Testing "+f.name);
+					//return f(obj.player,obj.args,obj.track,obj.track_err);
+					let p = f(obj.player,obj.args,obj.track,obj.track_err);
+					let t = new Promise(function(resolve, reject) {
+						setTimeout(function(){reject("Timed out")}, 15000);
+					});
+					return Promise.race([p, t])
+				}
+				return Promise.resolve(self);
+			}
+		}
+		c("Testing "+obj.player.name+":");
+		c("Testing test_tracks");
+		return this.test_tracks(obj.player,obj.args,obj.track,obj.track_err)
+		.then(pass(self.test_basic),fail(self.test_basic))
+		.then(pass(self.test_events),fail(self.test_events))
+		.then(pass(self.test_subs),fail(self.test_subs))
+		.then(pass(),fail())
+		.finally(function(){
+			return self._testPlayer(Players,c);
+		});
+	}
+	runAll(show_console_output = false){
 		this.test_obj.reset();
 		let cases = Object.getOwnPropertyNames(TestCases).filter(function (p) {
 			return typeof TestCases[p] === 'function';
 		});
 		let self = this;
+		console.log("Running Tests...");
 		let c = console.log;
-		//console.log = function(){} //disable logging to console
-		cases.forEach(function(func){
-			let result = self.test_obj.test(TestCases[func]);
-			if(result && verbose){
-				c("\tERROR: ",result.stack);
-			}
+		if(!show_console_output) console.log = function(){};
+		return this._runAll(cases,c).then(function(){
+			console.log = c;
+			console.log("Successful Cases: ",self.test_obj.success_cases);
+			console.log("Failed Cases: ",self.test_obj.fail_cases);
+			return Promise.resolve(self.test_obj);
 		});
-		console.log = c;
-		console.log("Total Cases: ",cases.length);
-		console.log("Successful Cases: ",this.test_obj.success_cases);
-		console.log("Failed Cases: ",this.test_obj.fail_cases);
 	}
-	static testTracks(){
-		var t1 = new HTML.Track({src:"src",title:"title"});
-		var t2 = new HTML.Track({src:"src",title:"title",filetype:"HTML",track_num:0,duration:-1,
-			artist:"artist",artwork:"artwork",flags:["FAV"],total_views:100,total_likes:10});
+	run(f){
+		this.test_obj.reset();
+		let self = this;
+		return this._runAll([f.name]).then(function(){
+			console.log("Successful Cases: ",self.test_obj.success_cases);
+			console.log("Failed Cases: ",self.test_obj.fail_cases);
+			return Promise.resolve(self.test_obj);
+		});
+	}
+	_runAll(cases,c){ //recursively iterate over all tests
+		if(cases.length == 0) return Promise.resolve();
+		let f = TestCases[cases.shift()];
+		let self = this;
+		c("Testing "+f.name);
+		return this.test_obj.testPromise(f).then(function(result){
+			c("Passed");
+			return self._runAll(cases,c);
+		}).catch(function(result){
+			c("Failed: ",result);
+			return self._runAll(cases,c);
+		});
+	}
+	test_tracks(Player,args,obj,obj_err){
+		var t1 = new Player.Track(obj);
+		var t2 = new Player.Track(obj_err);
 		var t3 = t1.clone();
 		t1.toJSON();
 		t1.toString();
@@ -33,78 +112,100 @@ class TestCases{
 		t2.toString();
 		if(!t1.equals(t3))throw new Error("Bad comparison");
 		t1 = t1.clone();
-		t3 = HTML.Track.fromJSON(JSON.stringify(t3));
+		t3 = Player.Track.fromJSON(JSON.stringify(t3));
 		if(!t3.equals(t1))throw new Error("Bad comparison");
 		if(t1.equals(t2))throw new Error("Bad comparison");
-		t3 = HTML.Track.fromJSON(t1.toString());
-		var t4 = HTML.Track.fromJSON(t2.toString());
+		t3 = Player.Track.fromJSON(t1.toString());
+		var t4 = Player.Track.fromJSON(t2.toString());
 		if(!t4.equals(t2))throw new Error("Bad comparison");
 		t1 += "E";
+		return Promise.resolve("Finished");
 	}
-	static testSubs(){
-		var html = new HTML();
-		var t1 = new HTML.Track({src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4",title:"Scott's Factory"});
-		var t2 = new HTML.Track({src:"https://throw_error",title:"throw_error"});
-		var f = function(event){
-			console.log(event);
-			switch(event.type){
-				case 'canplay':
-					html.play();
-					break;
-				case 'play':
-					html.pause();
-					break;
-				case 'pause':
-					html.load(t2);
-					break;
-				case 'error':
-					//do something with the error
-					un_sub();
-					break;
-				default:
-					throw new Error("Invalid Event");
-			}
-		}
-		var un_sub = function(){
-			html.unsubscribe('canplay',f);
-			html.unsubscribe('play',f);
-			html.unsubscribe('pause',f);
-			html.unsubscribe('error',f);
-		}
-		html.subscribe('canplay',f);
-		html.subscribe('play',f);
-		html.subscribe('pause',f);
-		html.subscribe('error',f);
-		html.load(t1);
+	test_basic(Player,args,obj,obj_err){
+		var html = new Player(...args);
+		var t1 = new Player.Track(obj);
+		return html.waitForEvent('ready')
+		.then(html.chain('load',t1)) //loaded
+		.then(html.chain('play')) //play
+		.then(html.chain('pause'))
+		.then(html.chain('pause'))
+		.then(html.chain('play'))
+		.then(html.chain('play'))
+		.then(html.chain('pause'))
+		.finally(html.chain('destroy'));
 	}
-	/*static testAlbums(){
-		var t1 = new HTML.Track({src:"src",title:"t1"});
-		var t2 = new HTML.Track({src:"src",title:"t2",filetype:"HTML",track_num:0,duration:-1,
-			artist:"artist",artwork:"artwork",flags:["FAV"],total_views:100,total_likes:10});
-		var t3 = t1.clone();
-		t3.title = "t3";
-		window.a1 = new Album("title",[t1,t2,t3]); //t2,t1,t3
-		window.a2 = new Album("title",[t3,t1,t2]); //t2,t3,t1
-		window.a3 = a1.clone(); //t2,t1,t3
-		a1.toJSON();
-		a1.toString();
-		a2.toJSON();
-		a2.toString();
-		if(a1.equals(a2))throw new Error("Bad comparison");
-		if(!a1.equals(a3))throw new Error("Bad comparison");
-		a1 = a1.clone();
-		a3 = Album.fromJSON(JSON.stringify(a3));
-		if(!a3.equals(a1))throw new Error("Bad comparison");
-		a2 = Album.fromJSON(a2.toString());
-		a1 + a2; //string concatenation
+	test_subs(Player,args,obj,obj_err){
+		var html = new Player(...args);
+		var t1 = new Player.Track(obj);
+		var t2 = new Player.Track(obj_err);
+		var num_events = 0;
+		var f = function(evt){
+			console.log(evt);
+			num_events++;
+		}
+		html.subscribe('loaded',{callback:f});
+		html.subscribe('play',{callback:f});
+		html.subscribe('pause',{callback:f});
+		html.subscribe('ended',{callback:f});
+		html.subscribe('error',{callback:f});
+		html.subscribe('timeupdate',{callback:f});
+		html.subscribe('volumechange',{callback:f});
 		
-		a1.sort("title");
-		if(a1.track_list[0].title != "t1")throw new Error("Bad sort");
-		a1.sort("title",true);
-		if(a1.track_list[0].title != "t3")throw new Error("Bad sort");
-		a1.sort("track_num");
-		if(a1.track_list[0].title != "t2")throw new Error("Bad sort");
-	}*/
+		return html.waitForEvent('ready')
+		.then(html.chain('load',t1)) //loaded
+		.then(html.chain('play')) //play
+		.then(html.chain('pause')) //pause
+		.then(html.chain('setVolume',0)) //volumechange
+		.then(html.chain('seek',10)) //timeupdate
+		.then(html.chain('seek',999)) //ended
+		.then(html.chain('load',t2)) //error
+		.then(function(){
+			throw new Error("This Error should not be thrown");
+		})
+		.catch(function(evt){
+			if(evt.message) throw evt;
+			return Promise.resolve("Finished")
+		})
+		.then(function(){
+			return new Promise(function(res,rej){
+				console.log(num_events);
+				if(num_events>=7) return res("Finished");
+				return rej("Not enough events");
+			});
+		})
+		.finally(html.chain('destroy'));
+	}
+	test_events(Player,args,obj,obj_err){
+		var html = new Player(...args);
+		var t1 = new Player.Track(obj);
+		var t2 = new Player.Track(obj_err);
+		return html.waitForEvent('ready')
+		.then(html.chain('load',t1))
+		.then(html.chain('play'))
+		.then(html.chain('seek',10))
+		.then(html.chain('pause'))
+		.then(html.chain('pause'))
+		.then(html.chain('fastForward',10))
+		.then(html.chain('play'))
+		.then(html.chain('setVolume',0))
+		.then(html.chain('stop'))
+		.then(html.chain('play'))
+		.then(function(){
+			return new Promise(function(resolve,reject){
+				setTimeout(resolve,1000);
+			});
+		})
+		.then(html.chain('load',t2))
+		.then(function(){
+			throw new Error("This Error should not be thrown");
+		})
+		.catch(function(evt){
+			if(evt.message) throw evt;
+			return Promise.resolve("Finished")
+		})
+		.finally(html.chain('destroy'));
+	}
+	
 }
 
 class TestObj{
@@ -120,6 +221,23 @@ class TestObj{
 			this.fail_cases++;
 			return e;
 		}
+	}
+	testPromise(func){
+		let self = this;
+		return new Promise(function(res,rej){
+			try{
+				func().then(function(){
+					self.success_cases++;
+					res();
+				}).catch(function(error){
+					self.fail_cases++;
+					rej(error);
+				});
+			}catch(error){
+				self.fail_cases++;
+				rej(error);
+			}
+		});
 	}
 	reset(){
 		this.success_cases = 0;

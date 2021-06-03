@@ -1,120 +1,180 @@
-import HTML from '../../tmp/html.js';
-import MusicManager from '../../tmp/MusicManager.js';
-import {TestCases, TestObj} from './test.js';
-
-//output console to screen
-let c = console.log;
-console.log = function(...data){
-    update_text_area(...data);
-    c(...data);
-}
-function update_text_area(...data){
-	var div = document.createElement('pre');
-	div.className = "console";
-	data.forEach(function(item){
-		switch(typeof item){
-			case "string":
-				div.textContent += item + " ";
-				break;
-			case "function":
-				div.textContent += item.toString() + " ";
-				break;
-			case "object":
-				div.textContent += item.constructor.name + " " + JSON.stringify(item,null,'\t') + " ";
-				break;
-			default:
-				div.textContent += JSON.stringify(item,null,'\t') + " ";
-		}
+chainImports('../../tmp/html.js','../../tmp/_ios_html.js',"HTML")()
+.then(chainImports('../../tmp/plugins/YT.js','../../tmp/plugins/_ios_YT.js',"YT"))
+.then(chainImports('../../tmp/plugins/BC.js','../../tmp/plugins/BC.js',"BC"))
+.then(chainImports('../../tmp/plugins/SC.js','../../tmp/plugins/SC.js',"SC"))
+.then(chainImports('./test.js','./_ios_test.js',null,{TestCases:"TC",TestObj:"TO"}))
+.finally(function(){
+	console.log("Loaded");
+	/*console.log(HTML);
+	console.log(YT);
+	console.log(TC);
+	console.log(TO);
+	*/
+	HTML.getUserId = function(){return "Overridden in main.js"}
+	let test_html = {
+		player:HTML,
+		args:[],
+		track:{src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4",title:"Scott's Factory"},
+		track_err:{src:"https://throw-error",title:"Throw Error"}
+	}
+	let test_yt = {
+		player:YT,
+		args:["../tmp/plugins/YoutubeApi.js"],
+		track:{src:"https://www.youtube.com/watch?v=zhG7aorm0RI",title:"Maynard & Waynard"},
+		track_err:{src:"https://throw-error",title:"Throw Error"},
+	}
+	let test_bc = {
+		player:BC,
+		args:[],
+		track:{src:"https://austinwintory.bandcamp.com/track/then-were-created-the-gods-in-the-midst-of-heaven",title:"Abzu"},
+		track_err:{src:"https://throw-error",title:"Throw Error"}
+	}
+	let test_sc = {
+		player:SC,
+		args:["../tmp/plugins/SoundcloudApi.js"],
+		track:{src:"https://soundcloud.com/i-winxd/kirby-speedrun",title:"Trance Music for Kirby Speedrunning Game"},
+		track_err:{src:"https://throw-error",title:"Throw Error"}
+	}
+	let test_cases = new TC();
+	
+	let start_btn = document.getElementById("start_btn");
+	let log_box = document.getElementById("show_log");
+	start_btn.addEventListener("click",function(){ //need to wait for user interaction
+		test_cases.testPlayers(log_box.checked,test_html,test_yt,test_bc,test_sc);
 	});
-	document.getElementById('console').append(div);
-	if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-        div.scrollIntoView();
-    }
+	
+	/*let test_btn = document.getElementById("test_btn");
+	test_btn.addEventListener("click",function(e){ //need to wait for user interaction
+		let f = function(evt){console.log(evt)};
+		var html = new SC();
+		html.subscribe('all',{callback:f});
+		var t1 = new SC.Track(t4);
+		var t2 = new SC.Track({src:"e",title:"t"});
+		return html.waitForEvent('ready')
+		.then(html.chain('load',t1)) //loaded
+		.then(html.chain('play')) //play
+		.then(html.chain('pause')) //pause
+		.then(html.chain('setVolume',0)) //volumechange
+		.then(html.chain('seek',10)) //timeupdate
+		.then(html.chain('seek',999)) //ended
+		.then(html.chain('load',t2)) //error
+		.then(function(){
+			throw new Error("This Error should not be thrown");
+		})
+		.catch(function(evt){
+			if(evt.message) throw evt;
+			return Promise.resolve("Finished")
+		})
+		.then(function(){
+			return new Promise(function(res,rej){
+				console.log(num_events);
+				if(num_events>=7) return res("Finished");
+				return rej("Not enough events");
+			});
+		})
+		.finally(html.chain('destroy'));
+		.finally(function(){console.log("D")});
+	});*/
+	/*
+	let play_btn = document.getElementById("play_btn");
+	play_btn.addEventListener("click",function(e){ //need to wait for user interaction
+
+	});
+	
+	let load_btn = document.getElementById("load_btn");
+	load_btn.addEventListener("click",function(e){ //need to wait for user interaction
+
+	});*/
+	
+	
+	//window.html = new HTML();
+	//window.yt = new YT();
+	window.t1 = new HTML.Track({src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4",title:"Scott's Factory"});
+	window.t2 = new YT.Track({src:"https://www.youtube.com/watch?v=zhG7aorm0RI",title:"Maynard & Waynard"});
+	window.t3 = new BC.Track({src:"https://austinwintory.bandcamp.com/track/then-were-created-the-gods-in-the-midst-of-heaven",title:"Then were created the gods in the midst of Heaven"});
+	window.t4 = new SC.Track({src:"https://soundcloud.com/i-winxd/kirby-speedrun",title:"Trance Music for Kirby Speedrunning Game"});
+	window.f = function(evt){
+		console.log("Hmm",evt.type);
+	}
+	window.g = function(evt){
+		console.log(evt);
+	}
+	//html.subscribe('all',{callback:g});
+	//yt.subscribe('all',{callback:g});
+})
+
+
+function chainImports(file,error,name,extras){
+	return function(){
+		return import(file)
+		.then(function(module){
+			window[name] = module["default"];
+			for(let item in extras){
+				window[extras[item]] = module[item];
+			}
+		}).catch(function(err){
+			console.log("Error loading default file.");
+			return import(error).then(function(module){
+				window[name] = module["default"];
+				for(let item in extras){
+					window[extras[item]] = module[item];
+				}
+			}).catch(function(err){
+				console.log("Failed to load any files.");
+				window[name] = undefined;
+			});
+		})
+	}
 }
 
+/*
 
 //run test cases
 var test_cases = new TestCases();
-test_cases.runAll(true);
+let start_btn = document.getElementById("start_btn");
+let test_html = {
+	player:HTML,
+	args:[],
+	track:{src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4",title:"Scott's Factory"},
+	track_err:{src:"https://throw-error",title:"Throw Error"}
+}
+let test_yt = {
+	player:YT,
+	args:["test_yt","../tmp/plugins/YoutubeApi.js"],
+	track:{src:"https://www.youtube.com/watch?v=zhG7aorm0RI",title:"Maynard & Waynard"},
+	track_err:{src:"https://throw-error",title:"Throw Error"},
+}
+let test_bc = {
+	player:BC,
+	args:[],
+	track:{src:"https://austinwintory.bandcamp.com/track/then-were-created-the-gods-in-the-midst-of-heaven",title:"Abzu"},
+	track_err:{src:"https://throw-error",title:"Throw Error"}
+}
+start_btn.addEventListener("click",function(){ //need to wait for user interaction
+	test_cases.testPlayers(true,test_html,test_yt);
+});
 
+window.BC = BC;
+window.t3 = new BC.Track({src:"https://austinwintory.bandcamp.com/track/then-were-created-the-gods-in-the-midst-of-heaven",title:"Abzu"});
+
+//put in global scope for easier debugging
+//window.TestCases = TestCases;
+//window.TestObj = TestObj;
 window.HTML = HTML;
+window.YT = YT;
 window.MusicManager = MusicManager;
-window.mm = new MusicManager(HTML);
-window.t1 = new HTML.Track({src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4",title:"Scott's Factory"});
-mm.players.HTML.load(t1);
+window.mm = new MusicManager(HTML,YT);
+window.t1 = new HTML.Track({src:"https://vgmsite.com/soundtracks/nausicaa-of-the-valley-of-the-wind-original-soundtrack/hzdwehcn/209%20-%20tani%20heno%20michi%20%28the%20road%20to%20the%20valley%29.mp3",title:"tani heno michi (the road to the valley)"});
+window.t2 = new YT.Track({src:"https://www.youtube.com/watch?v=zhG7aorm0RI",title:"Maynard & Waynard"});
 
-let src = document.getElementById("src");
-let load_btn = document.getElementById("load");
-let play_btn = document.getElementById("play");
-let pause_btn = document.getElementById("pause");
-let slider = document.getElementById("slider");
-let code = document.getElementById("code");
-let go_btn = document.getElementById("go");
-
-
-load_btn.addEventListener("click",function(){
-	t1.src = src.value;
-	mm.players.HTML.load(t1);
-});
-play_btn.addEventListener("click",function(){
-	mm.players.HTML.play();
-});
-pause_btn.addEventListener("click",function(){
-	mm.players.HTML.pause();
-});
-slider.addEventListener('change',function(){
-	mm.players.HTML.setVolume(slider.value);
-});
-code.addEventListener("keyup", function(event) {
-  if (event.keyCode === 13) {
-    event.preventDefault();
-    go_btn.click();
-  }else if(event.keyCode === 38) { //up
-	  event.preventDefault();
-	  if(cindex == chistory.length) ctmp = code.value;
-	  if(cindex>0){
-		  cindex--;
-		  code.value = chistory[cindex];
-	  }
-  }else if(event.keyCode === 40) { //down
-	  event.preventDefault();
-	  if(cindex == -1)cindex++;
-	  if(cindex<chistory.length){
-		  cindex++;
-		  code.value = chistory[cindex];
-		  if(cindex==chistory.length) code.value = ctmp;
-	  }
-  }
-});
-window.chistory = [];
-window.cindex = 0;
-window.ctmp = "";
-go_btn.addEventListener("click",function(){
-	try{
-		let t = eval.call(window,code.value); //super terrible but I don't care
-		console.log(t);
-	}catch(e){
-		console.log(e.stack);
-	}
-	chistory.push(code.value);
-	cindex = chistory.length;
-	code.value = "";
-});
-
-
+//show all events
 var f = function(event){
 	console.log(event);
 }
-mm.players.HTML.subscribe('play',f);
-mm.players.HTML.subscribe('pause',f);
-mm.players.HTML.subscribe('ended',f);
-mm.players.HTML.subscribe('canplay',f);
-mm.players.HTML.subscribe('error',f);
-mm.players.HTML.subscribe('abort',f);
-mm.players.HTML.subscribe('timeupdate',f);
-mm.players.HTML.subscribe('volumechange',f);
+mm.players.HTML.subscribe('all',{callback:f});
 
-
+mm.players.YT.subscribe('all',{callback:f});
+*/
 
 //{"title":"Preludes Book II: Nos. 1-12","artist":"Claude Debussy","date":"2021-05-12T23:16:56.000+00:00"}
 //{"title":"Premiere Rhapsodie","artist":"Claude Debussy","date":"2021-05-18T16:50:50.000+00:00"}
