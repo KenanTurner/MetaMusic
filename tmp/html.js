@@ -1,63 +1,21 @@
+import _Track from './default.js';
 export default class HTML{
-	static _id = "HTML";
-	static Track = class Track{
-		_parent = HTML;
+	static Track = class Track extends _Track{
 		constructor(obj){
-			if(!obj.src || !obj.title) {
-				throw new Error('Invalid Constructor');
-			}
-			this.filetype = "HTML";
-			this.src = obj.src;
-			this.title = obj.title;
-			this.track_num = obj.track_num; //????? track_num not required
-			this.duration = obj.duration;
-			this.artist = obj.artist;
-			this.artwork_url = obj.artwork_url;
-			this.flags = obj.flags;
-			this._total_views = obj._total_views;
-			this._total_likes = obj._total_likes;
-			this._upload_date = obj._upload_date;
-			if(!obj._upload_date) this._upload_date = (new Date()).toJSON();
-			this._user_id = obj._user_id;
-			if(!obj._user_id) this._user_id = HTML.getUserId();
+			super(obj);
+			this.filetype = "HTML"; //overriding
 		}
-		toJSON(){ //serialization
-			let obj = {};
-			obj.filetype = this.filetype;
-			obj.src = this.src;
-			obj.title = this.title;
-			obj.track_num = this.track_num;
-			obj.duration = this.duration;
-			obj.artist = this.artist;
-			obj.artwork_url = this.artwork_url;
-			obj.flags = this.flags;
-			obj._total_views = this._total_views;
-			obj._total_likes = this._total_likes;
-			obj._upload_date = this._upload_date;
-			obj._user_id = this._user_id;
-			return obj;
-		}
-		clone(){
-			return this._parent.Track.fromJSON(JSON.stringify(this));
-		}
-		equals(t){
-			return JSON.stringify(this) === JSON.stringify(t);
-		}
-		toString(){
-			return JSON.stringify(this);
-		}
-		valueOf(){
-			return this.src;
-		}
-		static fromJSON(json){ //deserialization
+		static fromJSON(json){
 			return new HTML.Track(JSON.parse(json));
 		}
 	}
 	constructor(){
 		this._player = new Audio();
-		this._subscribers = {};
-		//this._player.onerror = HTML.error;
+		this._ready = true;
+		this._subscribers = {all:[]};
+		
 		let self = this;
+		//this._player.addEventListener('canplay',function(){self._publish('canplay')});
 		this._player.addEventListener('play',function(){self._publish('play')});
 		this._player.addEventListener('pause',function(){self._publish('pause')});
 		this._player.addEventListener('ended',function(){self._publish('ended')});
@@ -65,66 +23,97 @@ export default class HTML{
 		this._player.addEventListener('abort',function(){self._publish('abort')});
 		this._player.addEventListener('timeupdate',function(){self._publish('timeupdate')});
 		this._player.addEventListener('volumechange',function(){self._publish('volumechange')});
-		
-		//TODO clean eventlisteners
-		/*this._player.addEventListener('loadstart',function(){self._publish('loadstart')});
-		this._player.addEventListener('durationchange',function(){self._publish('durationchange')});
-		this._player.addEventListener('loadedmetadata',function(){self._publish('loadedmetadata')});
-		this._player.addEventListener('loadeddata',function(){self._publish('loadeddata')});
-		this._player.addEventListener('progress',function(){self._publish('progress')});*/
-		this._player.addEventListener('canplay',function(){self._publish('canplay')});
-		
-		//TODO automatically handle errors?
-		//this._player.addEventListener('error',HTML.error);
-		//this._player.addEventListener('abort',HTML.error);
 	}
-	
-	subscribe(event, callback, ...rest) {
-		if (!this._subscribers[event]) {
-			this._subscribers[event] = []; //creates the event 
+	destroy(){
+		//console.log("DESTROY!!!");
+		this._ready = false;
+		delete this._player;
+		delete this._subscribers;
+		return Promise.resolve();
+	}
+	subscribe(type,obj) {
+		if(typeof obj.callback != "function") throw new Error("Callback must be a function");
+		if (!this._subscribers[type]) {
+			this._subscribers[type] = []; //creates the event list
 		}
-		this._subscribers[event].push({callback:callback,rest:rest});
+		this._subscribers[type].push(obj);
+		if(type == 'ready' && this._ready) this._publish('ready');
 	}
 	
-	unsubscribe(event, callback){
-		if(this._subscribers[event]){
-			/*var callbacks = this._subscribers[event].filter(function(obj){
-				return obj.callback === callback;
-			});*/
-			var subs = this._subscribers[event].filter(function(obj){
-				return obj.callback !== callback;
+	unsubscribe(type, obj){
+		if(this._subscribers[type]){
+			var subs = this._subscribers[type].filter(function(obj){
+				return obj !== obj;
 			});
-			this._subscribers[event] = subs;
+			this._subscribers[type] = subs;
 		}
 	}
-	_publish(event){
-		if (!this._subscribers[event]){return;}
-		let data = this.status;
-		this._subscribers[event].forEach(function(obj){
-			obj.callback(new HTML.Event(event,data),...obj.rest);
+	_publish(type){
+		if(!this._ready) return;
+		let self = this;
+		let data = this.getStatus();
+		this._subscribers.all.forEach(function(obj,index,array){
+			obj.callback(new HTML.Event(type,data));
+			if(obj.once) array.splice(index,1);
 		});
+		switch(type){
+			case "error": //reject promises
+				for (var _type in self._subscribers){
+					self._subscribers[_type].forEach(function(obj,index,array){
+						if(obj.error){
+							obj.error(new HTML.Event(type,data));
+							if(obj.once) array.splice(index,1);
+						}
+					});
+				};
+			default:
+				if (!this._subscribers[type]){return;}
+				this._subscribers[type].forEach(function(obj,index,array){
+					obj.callback(new HTML.Event(type,data));
+					if(obj.once) array.splice(index,1);
+				});
+				break;
+		}
 	}
 	load(track){
+		if(!this._validFiletype(track)) throw new Error("Invalid Filetype");
+		let f = function(){
+			this._publish('loaded');
+		}.bind(this);
+		this._player.addEventListener('canplay',f,{once:true});
 		this._player.src = track.src;
-	}
-	pause(){
-		this._player.pause();
+		return this.waitForEvent('loaded');
 	}
 	play(){
-		this._player.play();
+		return this._player.play();
+		//return this.waitForEvent('play');
+	}
+	pause(){
+		return this._player.pause();
+		return this.waitForEvent('pause');
 	}
 	seek(time){
 		this._player.currentTime = time;
+		return this.waitForEvent('timeupdate');
+		//TODO check for ended here?
+		/*if(time >= this.getStatus().duration){
+			return this.waitForEvent('ended');
+		}*/
+	}
+	fastForward(time){
+		return this.seek(this._player.currentTime + time);
 	}
 	setVolume(vol){
 		this._player.volume = vol;
+		return this.waitForEvent('volumechange');
 	}
 	stop(){
-		this._player.pause();
-		this._player.currentTime = 0;
+		this._player.load();
+		return this.waitForEvent('abort');
+		
 		//this._player.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAVFYAAFRWAAABAAgAZGF0YQAAAAA=';
 	}
-	get status(){
+	getStatus(){
 		let data = {
 			src:this._player.currentSrc,
 			time:this._player.currentTime,
@@ -134,11 +123,24 @@ export default class HTML{
 		}
 		return data;
 	}
+	wait(f,g,callback,step=50){
+		if(f() != g) return callback();
+		let self = this;
+		setTimeout(function(){ self.wait(f,g,callback,step)}, step);
+	}
+	waitForEvent(event) {
+		let self = this;
+		return new Promise(function(resolve, reject) {
+			self.subscribe(event,{callback:resolve,once:true,error:reject});
+		});
+	}
+	chain(f,...args){ //easy promise chaining
+		return function(evt){
+			return this[f](...args);
+		}.bind(this)
+	}
 	static error(event){
 		console.log("Error playing the specified file",event);
-	}
-	static getUserId(){ //override later
-		return "TODO Override getUserId";
 	}
 	//TODO _getHTMLAudioDuration
 	//TODO upload class?
@@ -162,5 +164,22 @@ export default class HTML{
 			this.type = type;
 			this.data = data;
 		}
+	}
+	static load_script(url){ //promise variant
+		var head = document.head;
+		var script = document.createElement('script');
+		script.type = 'text/javascript';
+		script.src = url;
+		return new Promise(function(resolve,reject){
+			script.onreadystatechange = resolve;
+			script.onload = resolve;
+			script.onerror = reject;
+			head.appendChild(script);
+		});		
+	}
+	_validFiletype(track){
+		let p = this.constructor.Track.prototype.isPrototypeOf(track);
+		let f = this.constructor.name == track.filetype;
+		return (p && f);
 	}
 }

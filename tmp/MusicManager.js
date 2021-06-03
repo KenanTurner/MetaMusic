@@ -6,13 +6,7 @@ export default class MusicManager{
 		classes.forEach(function(clas){
 			self.players[clas._id] = new clas();
 		});
-	}
-	load(track){
-		if(this.players[track.filetype]){
-			this.players[track.filetype].load(track);
-		}else{
-			console.log("Unkown filetype"); //TODO
-		}
+		this.currently_playing;
 	}
 	enqueue(track){
 		this.players.enqueue(track);
