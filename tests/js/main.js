@@ -1,7 +1,7 @@
-chainImports('../../tmp/html.js','../../tmp/_ios_html.js',"HTML")()
-.then(chainImports('../../tmp/plugins/YT.js','../../tmp/plugins/_ios_YT.js',"YT"))
-.then(chainImports('../../tmp/plugins/BC.js','../../tmp/plugins/BC.js',"BC"))
-.then(chainImports('../../tmp/plugins/SC.js','../../tmp/plugins/SC.js',"SC"))
+chainImports('../../src/html.js','../../src/_ios_html.js',"HTML")()
+.then(chainImports('../../src/plugins/YT.js','../../src/plugins/_ios_YT.js',"YT"))
+.then(chainImports('../../src/plugins/BC.js','../../src/plugins/BC.js',"BC"))
+.then(chainImports('../../src/plugins/SC.js','../../src/plugins/SC.js',"SC"))
 .then(chainImports('./test.js','./_ios_test.js',null,{TestCases:"TC",TestObj:"TO"}))
 .finally(function(){
 	console.log("Loaded");
@@ -19,7 +19,7 @@ chainImports('../../tmp/html.js','../../tmp/_ios_html.js',"HTML")()
 	}
 	let test_yt = {
 		player:YT,
-		args:["../tmp/plugins/YoutubeApi.js"],
+		args:[],
 		track:{src:"https://www.youtube.com/watch?v=zhG7aorm0RI",title:"Maynard & Waynard"},
 		track_err:{src:"https://throw-error",title:"Throw Error"},
 	}
@@ -31,7 +31,7 @@ chainImports('../../tmp/html.js','../../tmp/_ios_html.js',"HTML")()
 	}
 	let test_sc = {
 		player:SC,
-		args:["../tmp/plugins/SoundcloudApi.js"],
+		args:[],
 		track:{src:"https://soundcloud.com/i-winxd/kirby-speedrun",title:"Trance Music for Kirby Speedrunning Game"},
 		track_err:{src:"https://throw-error",title:"Throw Error"}
 	}
