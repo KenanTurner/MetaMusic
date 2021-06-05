@@ -3,8 +3,8 @@ body {
 	margin: 0px;
 	color: #E6E6E6;
 	font-size: 100%;
-	margin-top: 72px;
-	margin-bottom: 45px;
+	/*margin-top: 72px;
+	margin-bottom: 45px;*/
 }
 .sticky {
 	position: fixed;
@@ -15,6 +15,7 @@ body {
 	border-style: solid;
 	border-width: 0px;
 	border-bottom-width: 1px;
+	border-color: #999999;
 }
 .controls {
 	padding: 25px;
@@ -27,6 +28,13 @@ body {
 	border-style: solid;
 	border-width: 0px;
 	border-bottom-width: 1px;
+	border-color: #999999;
+}
+.fail {
+	color: #FF0000;
+}
+.pass {
+	color: #00FF2D;
 }
 pre {
 	white-space: pre-wrap;
@@ -44,6 +52,15 @@ pre {
 	padding: 12px;
 	display: grid;
 	grid-template-columns: auto min-content;
+}
+#options input{
+	margin-right: 12px;
+}
+#options label{
+	padding-left: 12px;
+	border-style: solid;
+	border-width: 0px;
+	border-left-width: 1px;
 }
 #hidden_div{
 	display: block;

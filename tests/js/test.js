@@ -16,21 +16,20 @@ class TestCases{
 			return Promise.resolve(self.test_obj);
 		});
 	}
-	//TODO add Promise.race for timeouts
 	_testPlayer(Players,c){
 		if(Players.length == 0) return Promise.resolve();
 		let obj = Players.shift();
 		let self = this;
 		let pass = function(f){
 			return function(){
-				c("\tPassed");
+				c("%c      Passed","color: #00FF2D;");
 				self.test_obj.success_cases++;
 				if(f){
-					c("Testing "+f.name);
+					c("    Testing "+f.name+"...");
 					//return f(obj.player,obj.args,obj.track,obj.track_err);
 					let p = f(obj.player,obj.args,obj.track,obj.track_err);
 					let t = new Promise(function(resolve, reject) {
-						setTimeout(function(){reject("Timed out")}, 15000);
+						setTimeout(function(){reject("Timed out")}, 10000);
 					});
 					return Promise.race([p, t])
 				}
@@ -39,14 +38,14 @@ class TestCases{
 		}
 		let fail = function(f){
 			return function(result){
-				c("\tFailed",result);
+				c("%c      Failed: ","color: #FF0000;",result);
 				self.test_obj.fail_cases++;
 				if(f){
-					c("Testing "+f.name);
+					c("    Testing "+f.name+"...");
 					//return f(obj.player,obj.args,obj.track,obj.track_err);
 					let p = f(obj.player,obj.args,obj.track,obj.track_err);
 					let t = new Promise(function(resolve, reject) {
-						setTimeout(function(){reject("Timed out")}, 15000);
+						setTimeout(function(){reject("Timed out")}, 10000);
 					});
 					return Promise.race([p, t])
 				}
@@ -54,55 +53,18 @@ class TestCases{
 			}
 		}
 		c("Testing "+obj.player.name+":");
-		c("Testing test_tracks");
-		return this.test_tracks(obj.player,obj.args,obj.track,obj.track_err)
-		.then(pass(self.test_basic),fail(self.test_basic))
-		.then(pass(self.test_events),fail(self.test_events))
-		.then(pass(self.test_subs),fail(self.test_subs))
+		c("    Testing _tracks...");
+		return this._tracks(obj.player,obj.args,obj.track,obj.track_err)
+		.then(pass(self._playPause),fail(self._playPause))
+		.then(pass(self._seek),fail(self._seek))
+		.then(pass(self._events),fail(self._events))
+		.then(pass(self._subs),fail(self._subs))
 		.then(pass(),fail())
 		.finally(function(){
-			return self._testPlayer(Players,c);
-		});
+			return this._testPlayer(Players,c);
+		}.bind(this))
 	}
-	runAll(show_console_output = false){
-		this.test_obj.reset();
-		let cases = Object.getOwnPropertyNames(TestCases).filter(function (p) {
-			return typeof TestCases[p] === 'function';
-		});
-		let self = this;
-		console.log("Running Tests...");
-		let c = console.log;
-		if(!show_console_output) console.log = function(){};
-		return this._runAll(cases,c).then(function(){
-			console.log = c;
-			console.log("Successful Cases: ",self.test_obj.success_cases);
-			console.log("Failed Cases: ",self.test_obj.fail_cases);
-			return Promise.resolve(self.test_obj);
-		});
-	}
-	run(f){
-		this.test_obj.reset();
-		let self = this;
-		return this._runAll([f.name]).then(function(){
-			console.log("Successful Cases: ",self.test_obj.success_cases);
-			console.log("Failed Cases: ",self.test_obj.fail_cases);
-			return Promise.resolve(self.test_obj);
-		});
-	}
-	_runAll(cases,c){ //recursively iterate over all tests
-		if(cases.length == 0) return Promise.resolve();
-		let f = TestCases[cases.shift()];
-		let self = this;
-		c("Testing "+f.name);
-		return this.test_obj.testPromise(f).then(function(result){
-			c("Passed");
-			return self._runAll(cases,c);
-		}).catch(function(result){
-			c("Failed: ",result);
-			return self._runAll(cases,c);
-		});
-	}
-	test_tracks(Player,args,obj,obj_err){
+	_tracks(Player,args,obj,obj_err){
 		var t1 = new Player.Track(obj);
 		var t2 = new Player.Track(obj_err);
 		var t3 = t1.clone();
@@ -121,7 +83,7 @@ class TestCases{
 		t1 += "E";
 		return Promise.resolve("Finished");
 	}
-	test_basic(Player,args,obj,obj_err){
+	_playPause(Player,args,obj,obj_err){
 		var html = new Player(...args);
 		var t1 = new Player.Track(obj);
 		return html.waitForEvent('ready')
@@ -134,22 +96,30 @@ class TestCases{
 		.then(html.chain('pause'))
 		.finally(html.chain('destroy'));
 	}
-	test_subs(Player,args,obj,obj_err){
+	_subs(Player,args,obj,obj_err){
 		var html = new Player(...args);
 		var t1 = new Player.Track(obj);
 		var t2 = new Player.Track(obj_err);
-		var num_events = 0;
+		var check = {
+			loaded:false,
+			play:false,
+			pause:false,
+			ended:false,
+			error:false,
+			timeupdate:false,
+			volumechange:false
+		}
 		var f = function(evt){
 			console.log(evt);
-			num_events++;
+			check[evt.type] = true;
 		}
-		html.subscribe('loaded',{callback:f});
-		html.subscribe('play',{callback:f});
-		html.subscribe('pause',{callback:f});
-		html.subscribe('ended',{callback:f});
-		html.subscribe('error',{callback:f});
-		html.subscribe('timeupdate',{callback:f});
-		html.subscribe('volumechange',{callback:f});
+		html.subscribe('loaded',f);
+		html.subscribe('play',f);
+		html.subscribe('pause',f);
+		html.subscribe('ended',f);
+		html.subscribe('error',f);
+		html.subscribe('timeupdate',f);
+		html.subscribe('volumechange',f);
 		
 		return html.waitForEvent('ready')
 		.then(html.chain('load',t1)) //loaded
@@ -157,25 +127,31 @@ class TestCases{
 		.then(html.chain('pause')) //pause
 		.then(html.chain('setVolume',0)) //volumechange
 		.then(html.chain('seek',10)) //timeupdate
-		.then(html.chain('seek',999)) //ended
+		.then(html.chain('seek',9999)) //ended
+		.then(function(){
+			return new Promise(function(resolve,reject){
+				setTimeout(resolve,100); //wait so ended is called
+			});
+		})
 		.then(html.chain('load',t2)) //error
 		.then(function(){
 			throw new Error("This Error should not be thrown");
 		})
 		.catch(function(evt){
 			if(evt.message) throw evt;
-			return Promise.resolve("Finished")
+			return Promise.resolve()
 		})
 		.then(function(){
 			return new Promise(function(res,rej){
-				console.log(num_events);
-				if(num_events>=7) return res("Finished");
-				return rej("Not enough events");
+				for(let evt in check){
+					if(!check[evt]) return rej(check);
+				}
+				return res("Finished");
 			});
 		})
 		.finally(html.chain('destroy'));
 	}
-	test_events(Player,args,obj,obj_err){
+	_events(Player,args,obj,obj_err){
 		var html = new Player(...args);
 		var t1 = new Player.Track(obj);
 		var t2 = new Player.Track(obj_err);
@@ -205,7 +181,55 @@ class TestCases{
 		})
 		.finally(html.chain('destroy'));
 	}
-	
+	_seek(Player,args,obj,obj_err){
+		var html = new Player(...args);
+		var t1 = new Player.Track(obj);
+		var g = function(evt){console.log(evt)}
+		var f = function(time){
+			return function(obj){
+				let diff = Math.abs(obj.time - time);
+				if(diff > 0.1) return Promise.reject(obj);
+				return Promise.resolve(obj);
+			}
+		}
+		html.subscribe('all',g);
+		return html.waitForEvent('ready')
+		.then(html.chain('load',t1))
+		.then(html.chain('fastForward',10))
+		.then(html.chain('getStatus'))
+		.then(f(10))
+		.then(html.chain('fastForward',13))
+		.then(html.chain('getStatus'))
+		.then(f(23))
+		.then(html.chain('seek',3.1415))
+		.then(html.chain('getStatus'))
+		.then(f(3.1415))
+		.then(html.chain('seek',15))
+		.then(html.chain('getStatus'))
+		.then(f(15))
+		.then(html.chain('seek',0))
+		.then(html.chain('setVolume',0))
+		.then(html.chain('play'))
+		.then(html.chain('fastForward',10))
+		.then(html.chain('getStatus'))
+		.then(f(10))
+		.then(html.chain('fastForward',13.3))
+		.then(html.chain('getStatus'))
+		.then(f(23.3))
+		.then(html.chain('seek',3.1415))
+		.then(html.chain('getStatus'))
+		.then(f(3.1415))
+		.then(html.chain('seek',15))
+		.then(html.chain('getStatus'))
+		.then(f(15))
+		.then(function(obj){ //play for 1 second
+			return html.seek(obj.duration - 1);
+		})
+		.then(function(){
+			return html.waitForEvent('ended');
+		})
+		.finally(html.chain('destroy'));
+	}
 }
 
 class TestObj{

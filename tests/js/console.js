@@ -5,8 +5,16 @@ console.log = function(...data){
     c(...data);
 }
 function update_text_area(...data){
+	if(!data) return;
 	var div = document.createElement('pre');
 	div.className = "console";
+	let styles = [];
+	if(typeof data[0] == "string") styles = data[0].split("%c");
+	if(styles.length > 1){
+		div.style = data[1];
+		data[0] = styles[1];
+		data.splice(1,1);
+	}
 	data.forEach(function(item){
 		switch(typeof item){
 			case "string":
@@ -78,3 +86,9 @@ go_btn.addEventListener("click",function(){
 window.onerror = function(error, url, line) {
     console.log(error);
 };
+
+//fix header
+let header = document.getElementById("header");
+let _c = document.getElementById("console");
+_c.style.marginTop = header.offsetHeight+"px";
+

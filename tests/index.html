@@ -4,33 +4,19 @@
 		<script type="text/javascript" src="./js/jquery-3.5.1.min.js"></script>
 		<script type="module" src="./js/console.js"></script>
 		<script type="module" src="./js/main.js"></script>
-		<!--<script type="module" src="./js/main.js"></script>-->
 		<link rel="stylesheet" href="./css/style.css">
-		
-		<script type="module" src="./js/tmp.js"></script>
 	</head>
 	<body>
-		<div class="controls sticky">
-			<!--<input type="url" id="src" value="https://vgmsite.com/soundtracks/nausicaa-of-the-valley-of-the-wind-original-soundtrack/hzdwehcn/209%20-%20tani%20heno%20michi%20%28the%20road%20to%20the%20valley%29.mp3"><br>
-			<button id="load">load src</button><br>
-			<button id="play">play HTML</button><button id="pause">pause HTML</button><br>
-			<input type="range" min="0" max="1" step="0.1" value="1" class="slider" id="slider">-->
-			<button id="start_btn">Start Test</button>
-			<input type="checkbox" id="show_log">
+		<div class="controls sticky" id="header">
+			<button id="start_btn">Start Tests</button>
 			<input type="text" id="code" value="">
 			<button id="go">></button>
-			<!--<button id="test_btn">Test</button>
-			<button id="pain_btn">Pain</button>
-			<button id="load_btn">Load</button>
-			<button id="play_btn">Play</button>-->
 			<br>
+			<div id="options">
+				<label for="show_log">Show Output:</label>
+				<input type="checkbox" id="show_log" name="show_log">
+			</div>
 		</div>
 		<div id="console"></div>
-		<div class="footer">
-			
-		</div>
-		<div id="hidden_div">
-			
-		</div>
 	</body>
 </html>
