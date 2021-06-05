@@ -25,9 +25,9 @@ export default class BC extends HTML{
 		}
 	}
 	load(track){
-		if(!this._validFiletype(track)) throw new Error("Invalid Filetype");
+		if(!this.constructor._validTrack(track)) throw new Error("Invalid Filetype");
 		if(track.bc_url == track.src){
-			this._player.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAVFYAAFRWAAABAAgAZGF0YQAAAAA='; //stop playing silently
+			//this._player.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAVFYAAFRWAAABAAgAZGF0YQAAAAA='; //stop playing silently
 			//console.log("Loading bc_url...");
 			let self = this;
 			return new Promise(function(resolve,reject){			
@@ -46,8 +46,33 @@ export default class BC extends HTML{
 						reject(error);
 					}
 				});
+			}).catch(function(){
+				let data = self._publish('error');
+				return Promise.reject("E");
 			});
 		}
 		return super.load(track);
+	}
+	seek(time){
+		let status = this._status();
+		if(status.paused && time>=status.duration){
+			return super.seek(time)
+			.then(function(){
+				this._publish('ended');
+			}.bind(this));
+		}
+		return super.seek(time);
+	}
+	static _validURL(url){
+		try{
+			let tmp = new URL(url);
+			let arr = tmp.hostname.split('.');
+			arr.shift();
+			arr = arr.join('.');
+			if(arr == "bandcamp.com") return true;
+			return false;
+		}catch(e){
+			return false;
+		}
 	}
 }

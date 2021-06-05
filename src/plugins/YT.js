@@ -107,7 +107,7 @@ export default class YT extends HTML{
 		this._publish('ready');
 	}
 	load(track){
-		if(!this._validFiletype(track)) throw new Error("Invalid Filetype");
+		if(!this.constructor._validTrack(track)) throw new Error("Invalid Filetype");
 		this._player.ready = false;
 		try{
 			let id = YT.getYoutubeId(track.src);
@@ -131,13 +131,13 @@ export default class YT extends HTML{
 	seek(time){
 		this._player.seekTo(time,true);
 		let self = this;
-		if(time >= this.getStatus().duration){
+		if(time >= this._status().duration){ //?????
 			return this.waitForEvent('ended');
 		}
 		let f = function(){
-			return self.getStatus().time;
+			return self._status().time;
 		}
-		let g = this.getStatus().time;
+		let g = this._status().time;
 		let c = function(){
 			self._publish('timeupdate');
 		};
@@ -155,9 +155,9 @@ export default class YT extends HTML{
 		this._player.setVolume(vol*100);
 		let self = this;
 		let f = function(){
-			return self.getStatus().volume;
+			return self._status().volume;
 		}
-		let g = this.getStatus().volume;
+		let g = this._status().volume;
 		let c = function(){
 			self._publish('volumechange');
 		};
@@ -169,7 +169,7 @@ export default class YT extends HTML{
 		return this.pause()
 		.then(this.chain('seek',0));
 	}
-	getStatus(){
+	_status(){
 		let data = {
 			src:this._player.getVideoUrl(),
 			time:this._player.getCurrentTime(),
@@ -202,5 +202,13 @@ export default class YT extends HTML{
 			throw new Error("Invalid url");
 		}
 	}
-	
+	static _validURL(url){
+		try{
+			let tmp = new URL(url);
+			if(tmp.hostname == "www.youtube.com" || tmp.hostname == "youtu.be") return true;
+			return false;
+		}catch(e){
+			return false;
+		}
+	}
 }

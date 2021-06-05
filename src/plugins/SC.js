@@ -58,6 +58,7 @@ export default class SC extends HTML{
 		console.log('Soundcloud is ready');
 	}
 	load(track){
+		if(!this.constructor._validTrack(track)) throw new Error("Invalid Filetype");
 		let f = function(e){
 			this._publish('loaded');
 		}.bind(this);
@@ -97,12 +98,18 @@ export default class SC extends HTML{
 	}
 	seek(time){
 		this._player.seekTo(time*1000);
-		return this.waitForEvent('timeupdate');
+		return this.waitForEvent('timeupdate')
+		.then(this.chain('getStatus'))
+		.then(function(obj){
+			if(time >= obj.duration && obj.paused){
+				this._publish('ended');
+			}
+		}.bind(this))
 	}
 	fastForward(time){
 		return this._async('getPosition')
 		.then(function(ctime){
-			return this.seek(ctime+time);
+			return this.seek(ctime/1000+time);
 		}.bind(this))
 		//return this.seek(this._player.currentTime + time);
 	}
@@ -146,5 +153,14 @@ export default class SC extends HTML{
 		document.getElementById(this._iframe_id).remove();
 		delete this._iframe_id;
 		return super.destroy();
+	}
+	static _validURL(url){
+		try{
+			let tmp = new URL(url);
+			if(tmp.hostname == "soundcloud.com") return true;
+			return false;
+		}catch(e){
+			return false;
+		}
 	}
 }

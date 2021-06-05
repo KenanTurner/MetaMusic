@@ -1,4 +1,4 @@
-import _Track from './default.js';
+import _Track from './plugins/custom.js';
 export default class HTML{
 	static Track = class Track extends _Track{
 		constructor(obj){
@@ -16,23 +16,27 @@ export default class HTML{
 		
 		let self = this;
 		//this._player.addEventListener('canplay',function(){self._publish('canplay')});
+		//this._player.addEventListener('abort',function(){self._publish('abort')});
 		this._player.addEventListener('play',function(){self._publish('play')});
 		this._player.addEventListener('pause',function(){self._publish('pause')});
 		this._player.addEventListener('ended',function(){self._publish('ended')});
 		this._player.addEventListener('error',function(){self._publish('error')});
-		this._player.addEventListener('abort',function(){self._publish('abort')});
 		this._player.addEventListener('timeupdate',function(){self._publish('timeupdate')});
 		this._player.addEventListener('volumechange',function(){self._publish('volumechange')});
 	}
 	destroy(){
 		//console.log("DESTROY!!!");
+		if(this._player.constructor.name == "HTMLAudioElement") this._player.load();
 		this._ready = false;
 		delete this._player;
 		delete this._subscribers;
 		return Promise.resolve();
 	}
-	subscribe(type,obj) {
+	subscribe(type,f,options) {
+		let obj = {callback:f}
 		if(typeof obj.callback != "function") throw new Error("Callback must be a function");
+		if(options) obj.once = options.once;
+		if(options) obj.error = options.error;
 		if (!this._subscribers[type]) {
 			this._subscribers[type] = []; //creates the event list
 		}
@@ -51,32 +55,36 @@ export default class HTML{
 	_publish(type){
 		if(!this._ready) return;
 		let self = this;
-		let data = this.getStatus();
-		this._subscribers.all.forEach(function(obj,index,array){
-			obj.callback(new HTML.Event(type,data));
-			if(obj.once) array.splice(index,1);
-		});
-		switch(type){
-			case "error": //reject promises
-				for (var _type in self._subscribers){
-					self._subscribers[_type].forEach(function(obj,index,array){
-						if(obj.error){
-							obj.error(new HTML.Event(type,data));
-							if(obj.once) array.splice(index,1);
-						}
+		this.getStatus().then(function(data){
+			if(!this._ready) return;
+			let event = new HTML.Event(type,data);
+			this._subscribers.all.forEach(function(obj,index,array){
+				obj.callback(event);
+				if(obj.once) array.splice(index,1);
+			});
+			switch(type){
+				case "error": //reject promises
+					for (var _type in self._subscribers){
+						self._subscribers[_type].forEach(function(obj,index,array){
+							if(obj.error){
+								obj.error(event);
+								if(obj.once) array.splice(index,1);
+							}
+						});
+					};
+				default:
+					if (!this._subscribers[type]){return;}
+					this._subscribers[type].forEach(function(obj,index,array){
+						obj.callback(event);
+						if(obj.once) array.splice(index,1);
 					});
-				};
-			default:
-				if (!this._subscribers[type]){return;}
-				this._subscribers[type].forEach(function(obj,index,array){
-					obj.callback(new HTML.Event(type,data));
-					if(obj.once) array.splice(index,1);
-				});
-				break;
-		}
+					break;
+			}
+			return Promise.resolve(event);
+		}.bind(this))
 	}
 	load(track){
-		if(!this._validFiletype(track)) throw new Error("Invalid Filetype");
+		if(!this.constructor._validTrack(track)) throw new Error("Invalid Filetype");
 		let f = function(){
 			this._publish('loaded');
 		}.bind(this);
@@ -93,12 +101,12 @@ export default class HTML{
 		return this.waitForEvent('pause');
 	}
 	seek(time){
+		let f = function(){
+			this._publish('timeupdate');
+		}.bind(this);
+		this._player.addEventListener('seeked',f,{once:true});
 		this._player.currentTime = time;
 		return this.waitForEvent('timeupdate');
-		//TODO check for ended here?
-		/*if(time >= this.getStatus().duration){
-			return this.waitForEvent('ended');
-		}*/
 	}
 	fastForward(time){
 		return this.seek(this._player.currentTime + time);
@@ -108,12 +116,19 @@ export default class HTML{
 		return this.waitForEvent('volumechange');
 	}
 	stop(){
+		let f = function(){
+			this._publish('loaded');
+		}.bind(this);
+		this._player.addEventListener('canplay',f,{once:true});
 		this._player.load();
-		return this.waitForEvent('abort');
+		return this.waitForEvent('loaded');
 		
 		//this._player.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAVFYAAFRWAAABAAgAZGF0YQAAAAA=';
 	}
 	getStatus(){
+		return Promise.resolve(this._status());
+	}
+	_status(){
 		let data = {
 			src:this._player.currentSrc,
 			time:this._player.currentTime,
@@ -131,7 +146,7 @@ export default class HTML{
 	waitForEvent(event) {
 		let self = this;
 		return new Promise(function(resolve, reject) {
-			self.subscribe(event,{callback:resolve,once:true,error:reject});
+			self.subscribe(event,resolve,{once:true,error:reject});
 		});
 	}
 	chain(f,...args){ //easy promise chaining
@@ -142,21 +157,13 @@ export default class HTML{
 	static error(event){
 		console.log("Error playing the specified file",event);
 	}
-	//TODO _getHTMLAudioDuration
-	//TODO upload class?
 	static loadScript(url, callback){
-		// Adding the script tag to the head as suggested before
 		var head = document.head;
 		var script = document.createElement('script');
 		script.type = 'text/javascript';
 		script.src = url;
-
-		// Then bind the event to the callback function.
-		// There are several events for cross browser compatibility.
 		script.onreadystatechange = callback;
 		script.onload = callback;
-
-		// Fire the loading
 		head.appendChild(script);
 	}
 	static Event = class Event{
@@ -165,7 +172,7 @@ export default class HTML{
 			this.data = data;
 		}
 	}
-	static load_script(url){ //promise variant
+	static _promise_loadScript(url){ //promise variant
 		var head = document.head;
 		var script = document.createElement('script');
 		script.type = 'text/javascript';
@@ -177,9 +184,35 @@ export default class HTML{
 			head.appendChild(script);
 		});		
 	}
-	_validFiletype(track){
-		let p = this.constructor.Track.prototype.isPrototypeOf(track);
-		let f = this.constructor.name == track.filetype;
+	static _validTrack(track){
+		let p = this.Track.prototype.isPrototypeOf(track);
+		let f = this.name == track.filetype;
 		return (p && f);
 	}
+	static _validURL(url){
+		try{
+			let tmp = new URL(url);
+			let type = tmp.pathname.split('.').pop();
+			type = type.toUpperCase();
+			switch(type){
+				case "WAV":
+				case "MP3":
+				case "MP4":
+				case "M4A":
+				case "AAC":
+				case "ADTS":
+				case "OGG":
+				case "OGA":
+				case "MOGG":
+				case "FLAC":
+				case "WEBM":
+					return true;
+			}
+			return false;
+		}catch(e){
+			return false;
+		}
+	}
+	//TODO _getHTMLAudioDuration
+	//TODO upload class?
 }
