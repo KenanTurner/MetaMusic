@@ -1,70 +1,6 @@
-class TestCases{
-	constructor(){
-		this.test_obj = new TestObj();
-	}
-	testPlayers(show_console_output = false,...test_players){
-		this.test_obj.reset();
-		console.log("Running Tests...");
-		let c = console.log;
-		if(!show_console_output) console.log = function(){};
-		let self = this;
-		return this._testPlayer(test_players,c)
-		.then(function(){
-			console.log = c;
-			console.log("Successful Cases: ",self.test_obj.success_cases);
-			console.log("Failed Cases: ",self.test_obj.fail_cases);
-			return Promise.resolve(self.test_obj);
-		});
-	}
-	_testPlayer(Players,c){
-		if(Players.length == 0) return Promise.resolve();
-		let obj = Players.shift();
-		let self = this;
-		let pass = function(f){
-			return function(){
-				c("%c      Passed","color: #00FF2D;");
-				self.test_obj.success_cases++;
-				if(f){
-					c("    Testing "+f.name+"...");
-					//return f(obj.player,obj.args,obj.track,obj.track_err);
-					let p = f(obj.player,obj.args,obj.track,obj.track_err);
-					let t = new Promise(function(resolve, reject) {
-						setTimeout(function(){reject("Timed out")}, 10000);
-					});
-					return Promise.race([p, t])
-				}
-				return Promise.resolve(self);
-			}
-		}
-		let fail = function(f){
-			return function(result){
-				c("%c      Failed: ","color: #FF0000;",result);
-				self.test_obj.fail_cases++;
-				if(f){
-					c("    Testing "+f.name+"...");
-					//return f(obj.player,obj.args,obj.track,obj.track_err);
-					let p = f(obj.player,obj.args,obj.track,obj.track_err);
-					let t = new Promise(function(resolve, reject) {
-						setTimeout(function(){reject("Timed out")}, 10000);
-					});
-					return Promise.race([p, t])
-				}
-				return Promise.resolve(self);
-			}
-		}
-		c("Testing "+obj.player.name+":");
-		c("    Testing _tracks...");
-		return this._tracks(obj.player,obj.args,obj.track,obj.track_err)
-		.then(pass(self._playPause),fail(self._playPause))
-		.then(pass(self._seek),fail(self._seek))
-		.then(pass(self._events),fail(self._events))
-		.then(pass(self._subs),fail(self._subs))
-		.then(pass(),fail())
-		.finally(function(){
-			return this._testPlayer(Players,c);
-		}.bind(this))
-	}
-	_tracks(Player,args,obj,obj_err){
+import T from '../../shared/test.js';
+export default class TestCases extends T{
+	static tracks(Player,args,obj,obj_err){
 		var t1 = new Player.Track(obj);
 		var t2 = new Player.Track(obj_err);
 		var t3 = t1.clone();
@@ -83,7 +19,7 @@ class TestCases{
 		t1 += "E";
 		return Promise.resolve("Finished");
 	}
-	_playPause(Player,args,obj,obj_err){
+	static playPause(Player,args,obj,obj_err){
 		var html = new Player(...args);
 		var t1 = new Player.Track(obj);
 		return html.waitForEvent('ready')
@@ -96,7 +32,7 @@ class TestCases{
 		.then(html.chain('pause'))
 		.finally(html.chain('destroy'));
 	}
-	_subs(Player,args,obj,obj_err){
+	static subs(Player,args,obj,obj_err){
 		var html = new Player(...args);
 		var t1 = new Player.Track(obj);
 		var t2 = new Player.Track(obj_err);
@@ -151,7 +87,7 @@ class TestCases{
 		})
 		.finally(html.chain('destroy'));
 	}
-	_events(Player,args,obj,obj_err){
+	static events(Player,args,obj,obj_err){
 		var html = new Player(...args);
 		var t1 = new Player.Track(obj);
 		var t2 = new Player.Track(obj_err);
@@ -181,7 +117,7 @@ class TestCases{
 		})
 		.finally(html.chain('destroy'));
 	}
-	_seek(Player,args,obj,obj_err){
+	static seek(Player,args,obj,obj_err){
 		var html = new Player(...args);
 		var t1 = new Player.Track(obj);
 		var g = function(evt){console.log(evt)}
@@ -231,42 +167,3 @@ class TestCases{
 		.finally(html.chain('destroy'));
 	}
 }
-
-class TestObj{
-	constructor(){
-		this.success_cases = 0;
-		this.fail_cases = 0;
-	}
-	test(func){
-		try{
-			func();
-			this.success_cases++;
-		}catch(e){
-			this.fail_cases++;
-			return e;
-		}
-	}
-	testPromise(func){
-		let self = this;
-		return new Promise(function(res,rej){
-			try{
-				func().then(function(){
-					self.success_cases++;
-					res();
-				}).catch(function(error){
-					self.fail_cases++;
-					rej(error);
-				});
-			}catch(error){
-				self.fail_cases++;
-				rej(error);
-			}
-		});
-	}
-	reset(){
-		this.success_cases = 0;
-		this.fail_cases = 0;
-	}
-}
-
-export {TestObj, TestCases}

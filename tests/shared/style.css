@@ -19,6 +19,11 @@ body {
 }
 .controls {
 	padding: 25px;
+	padding-bottom: 13px;
+}
+.controls > *{
+	margin-bottom: 12px;
+	display: flex;
 }
 .console {
 	margin: 0px;
@@ -53,10 +58,10 @@ pre {
 	display: grid;
 	grid-template-columns: auto min-content;
 }
-#options input{
+.options input{
 	margin-right: 12px;
 }
-#options label{
+.options label{
 	padding-left: 12px;
 	border-style: solid;
 	border-width: 0px;
@@ -76,3 +81,31 @@ pre {
 		padding-bottom: 72px;
 	}
 }*/
+a {
+	color: white;
+	text-decoration: none;
+	padding-left: 13px;
+	margin-right: 12px;
+	border-style: solid;
+	border-width: 0px;
+	border-left-width: 1px;
+}
+a:link {
+  color: white;
+}
+a:visited {
+  color: white;
+}
+a:hover {
+	text-decoration: underline;
+}
+.qa {
+	font-size: larger;
+	padding: 12px;
+}
+.question {
+	font-size: x-large;
+}
+.answer {
+	padding-left: 24px;
+}

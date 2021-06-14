@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script type="text/javascript" src="./js/jquery-3.5.1.min.js"></script>
-		<script type="module" src="./js/console.js"></script>
-		<script type="module" src="./js/main.js"></script>
-		<link rel="stylesheet" href="./css/style.css">
+		<link rel="stylesheet" href="./shared/style.css">
+		<script type="text/javascript" src="./shared/jquery-3.5.1.min.js"></script>
+		<script type="module" src="./shared/console.js"></script>
 	</head>
 	<body>
 		<div class="controls sticky" id="header">
-			<button id="start_btn">Start Tests</button>
-			<input type="text" id="code" value="">
-			<button id="go">></button>
-			<br>
-			<div id="options">
-				<label for="show_log">Show Output:</label>
-				<input type="checkbox" id="show_log" name="show_log">
+			<div>
+				<a href="./">Home</a>
+				<a href="./players/">Players</a>
+				<a href="./albums/">Albums</a>
+				<a href="./template/">Template</a>
+				<a href="./help/">HELP</a>
+			</div>
+			<div>
+				<input type="text" id="code" value="">
+				<button id="go">></button>
 			</div>
 		</div>
 		<div id="console"></div>
