@@ -18,11 +18,7 @@ export default class BC extends HTML{
 	constructor(bc_php = "../../src/plugins/loadBC.php"){
 		super();
 		this._bc_php = bc_php;
-		try{
-			$;
-		}catch(error){
-			throw new Error("Jquery needs to be imported first!");
-		}
+		if(!window.jQuery) throw new Error("Jquery needs to be imported first!");
 	}
 	load(track){
 		if(!this.constructor._validTrack(track)) throw new Error("Invalid Filetype");
@@ -42,13 +38,12 @@ export default class BC extends HTML{
 						self.load(track).then(resolve,reject);
 					},
 					error: function(xhr,status,error){
-						//self._publish('error'); //TODO handle errors???
 						reject(error);
 					}
 				});
-			}).catch(function(){
+			}).catch(function(error){
 				let data = self._publish('error');
-				return Promise.reject("E");
+				return Promise.reject(error);
 			});
 		}
 		return super.load(track);
