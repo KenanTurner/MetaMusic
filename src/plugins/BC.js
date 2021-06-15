@@ -38,8 +38,7 @@ export default class BC extends HTML{
 						self.load(track).then(resolve,reject);
 					},
 					error: function(xhr,status,error){
-						console.log(xhr,status,error);
-						reject(error);
+						reject(xhr);
 					}
 				});
 			}).catch(function(error){
