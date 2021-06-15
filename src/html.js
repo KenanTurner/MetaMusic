@@ -44,10 +44,14 @@ export default class HTML{
 		if(type == 'ready' && this._ready) this._publish('ready');
 	}
 	
-	unsubscribe(type, obj){
+	unsubscribe(type,f,options){
+		let obj = {callback:f}
+		if(typeof obj.callback != "function") throw new Error("Callback must be a function");
+		if(options) obj.once = options.once;
+		if(options) obj.error = options.error;
 		if(this._subscribers[type]){
-			var subs = this._subscribers[type].filter(function(obj){
-				return obj !== obj;
+			var subs = this._subscribers[type].filter(function(item){
+				return item === obj;
 			});
 			this._subscribers[type] = subs;
 		}

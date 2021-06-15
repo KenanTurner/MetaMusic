@@ -15,7 +15,7 @@ export default class BC extends HTML{
 			return new BC.Track(JSON.parse(json));
 		}
 	}
-	constructor(bc_php = "../src/plugins/loadBC.php"){
+	constructor(bc_php = "../../src/plugins/loadBC.php"){
 		super();
 		this._bc_php = bc_php;
 		try{

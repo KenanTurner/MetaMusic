@@ -3,7 +3,7 @@ export default class Track extends _Track{
 	constructor(obj){
 		super(obj);
 		this.filetype = "CUSTOM";
-		this.track_num = obj.track_num; //????? track_num not required
+		//this.track_num = obj.track_num; //????? track_num not required
 		this.duration = obj.duration;
 		this.artist = obj.artist;
 		this.artwork_url = obj.artwork_url;
@@ -17,7 +17,7 @@ export default class Track extends _Track{
 	}
 	toJSON(){ //serialization
 		let obj = super.toJSON();
-		obj.track_num = this.track_num;
+		//obj.track_num = this.track_num;
 		obj.duration = this.duration;
 		obj.artist = this.artist;
 		obj.artwork_url = this.artwork_url;
@@ -29,7 +29,8 @@ export default class Track extends _Track{
 		return obj;
 	}
 	static fromJSON(json){ //deserialization
-		return new Track(JSON.parse(json));
+		let obj = {...JSON.parse(json),...super.fromJSON(json)}; //merge the two objects
+		return new Track(obj);
 	}
 	static getUserId(){ //override later
 		return "TODO Override getUserId";

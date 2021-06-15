@@ -12,7 +12,7 @@ export default class SC extends HTML{
 			return new SC.Track(JSON.parse(json));
 		}
 	}
-	constructor(sc_api = "../src/plugins/SoundcloudApi.js",iframe_id="_SC_"+Math.random().toString(36).substring(7)){
+	constructor(sc_api = "../../src/plugins/SoundcloudApi.js",iframe_id="_SC_"+Math.random().toString(36).substring(7)){
 		super();
 		this._ready = false;
 		this._iframe_id = iframe_id;

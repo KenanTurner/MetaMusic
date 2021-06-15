@@ -9,7 +9,7 @@ export default class YT extends HTML{
 			return new YT.Track(JSON.parse(json));
 		}
 	}
-	constructor(yt_api = "../src/plugins/YoutubeApi.js",iframe_id="_YT_"+Math.random().toString(36).substring(7)){
+	constructor(yt_api = "../../src/plugins/YoutubeApi.js",iframe_id="_YT_"+Math.random().toString(36).substring(7)){
 		super();
 		this._ready = false;
 		this._iframe_id = iframe_id;
