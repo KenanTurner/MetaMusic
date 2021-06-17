@@ -1,6 +1,7 @@
 export default class EventTarget{
-	constructor(){
+	constructor(is_ready=true){
 		this._subscribers = {all:[]};
+		this._ready = is_ready;
 	}
 	subscribe(type,f,options) {
 		if(typeof f != "function") throw new Error("Callback must be a function");
@@ -11,6 +12,7 @@ export default class EventTarget{
 			this._subscribers[type] = []; //creates the event list
 		}
 		this._subscribers[type].push(obj);
+		if(type == 'ready' && this._ready) this._publish('ready');
 	}
 	unsubscribe(type,f,options){
 		if(typeof f != "function") throw new Error("Callback must be a function");
@@ -24,14 +26,15 @@ export default class EventTarget{
 			this._subscribers[type] = subs;
 		}
 	}
-	_publish(type,data){
-		//TODO promises
-		let event = new this.constructor.Event(type,this.getEventStatus(),this);
+	_publish(type){
+		if(!this._ready) return;
+		let event = new this.constructor.Event(type,this.getStatus(),this);
 		if(type === 'error'){
 			for(let _type in this._subscribers){
 				let arr = this._subscribers[_type].filter(function(obj){
 					if(obj.error) obj.error(event);
 					if(obj.error) return !obj.once;
+					return true;
 				});
 				this._subscribers[_type] = arr;
 			}
@@ -47,14 +50,7 @@ export default class EventTarget{
 		this._subscribers[type] = this._subscribers[type].filter(f);
 		return event;
 	}
-	static Event = class Event{ //TODO overhaul event inheritance
-		constructor(type,data,target){
-			this.type = type;
-			this.data = data;
-			this.target = target;
-		}
-	}
-	getEventStatus(){ //TODO ????
+	getStatus(){ //TODO rename?
 		return undefined;
 	}
 	waitForEvent(type) {
@@ -66,5 +62,12 @@ export default class EventTarget{
 		return function(evt){
 			return this[f](...args);
 		}.bind(this)
+	}
+	static Event = class Event{ //TODO overhaul event inheritance
+		constructor(type,data,target){
+			this.type = type;
+			this.data = data;
+			this.target = target;
+		}
 	}
 }

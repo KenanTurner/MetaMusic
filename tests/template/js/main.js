@@ -1,9 +1,9 @@
-ModuleManager.chainImports({
+ModuleManager.importModules({
 	"TestCases":['./tests/template/js/example-test-cases.js'],
 	"HTML":['./src/html.js'],
-	"YT":['./src/plugins/YT.js'],
-	"BC":['./src/plugins/BC.js'],
-	"SC":['./src/plugins/SC.js'],
+	"YT":['./src/plugins/youtube.js'],
+	"BC":['./src/plugins/bandcamp.js'],
+	"SC":['./src/plugins/soundcloud.js'],
 }).then(function(obj){
 	//put in global scope for easier debugging
 	window.TestCases = obj.TestCases.default;

@@ -49,7 +49,7 @@ export default class BC extends HTML{
 		return super.load(track);
 	}
 	seek(time){
-		let status = this._status();
+		let status = this.getStatus();
 		if(status.paused && time>=status.duration){
 			return super.seek(time)
 			.then(function(){

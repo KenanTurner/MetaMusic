@@ -17,11 +17,11 @@ export default class SC extends HTML{
 		this._ready = false;
 		this._iframe_id = iframe_id;
 		delete this._player;
-		SC.loadScript(sc_api,function() {
-			this.createSC(iframe_id);
+		ModuleManager.importScript([sc_api]).then(function(){
+			this._createSC(iframe_id);
 		}.bind(this));
 	}
-	createSC(iframe_id){
+	_createSC(iframe_id){
 		var div = document.createElement("iframe");
 			div.id = iframe_id;
 			div.style.display = "none";

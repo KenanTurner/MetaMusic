@@ -1,16 +1,16 @@
-ModuleManager.chainImports({
+ModuleManager.importModules({
 	"HTML":['./src/html.js'],
-	"YT":['./src/plugins/YT.js'],
-	"BC":['./src/plugins/BC.js'],
-	"SC":['./src/plugins/SC.js'],
+	"YT":['./src/plugins/youtube.js'],
+	"BC":['./src/plugins/bandcamp.js'],
+	"SC":['./src/plugins/soundcloud.js'],
 	"TestCases":['./tests/players/js/cases.js'],
 }).then(function(obj){
 	//put in global scope for easier debugging
-	window.TestCases = obj.TestCases.default;
 	window.HTML = obj.HTML.default;
 	window.YT = obj.YT.default;
 	window.BC = obj.BC.default;
 	window.SC = obj.SC.default;
+	window.TestCases = obj.TestCases.default;
 	console.log("Loaded");
 	
 	let start_btn = document.getElementById("start_btn");
@@ -74,7 +74,7 @@ function createOptions(options,id){
 		input.type = "checkbox";
 		input.id = "option-"+name;
 		input.name = "option-"+name;
-		input.checked = true;
+		input.checked = options[name];
 		input.onclick = updateOptions.bind(options);
 		label.for = "option-"+name;
 		label.innerText = name+": ";

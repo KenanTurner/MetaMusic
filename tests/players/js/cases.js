@@ -166,4 +166,34 @@ export default class TestCases extends T{
 		})
 		.finally(html.chain('destroy'));
 	}
+	static _events(Player,args,obj,obj_err){
+		var html = new Player(...args);
+		var t1 = new Player.Track(obj);
+		var t2 = new Player.Track(obj_err);
+		return html.waitForEvent('ready')
+		.then(html.chain('load',t1))
+		.then(html.chain('play'))
+		.then(html.chain('seek',10))
+		.then(html.chain('pause'))
+		.then(html.chain('pause'))
+		.then(html.chain('fastForward',10))
+		.then(html.chain('play'))
+		.then(html.chain('setVolume',0))
+		.then(html.chain('stop'))
+		.then(html.chain('play'))
+		.then(function(){
+			return new Promise(function(resolve,reject){
+				setTimeout(resolve,1000);
+			});
+		})
+		.then(html.chain('load',t2))
+		.then(function(){
+			throw new Error("This Error should not be thrown");
+		})
+		.catch(function(evt){
+			if(evt.message) throw evt;
+			return Promise.resolve("Finished")
+		})
+		.finally(html.chain('destroy'));
+	}
 }

@@ -14,19 +14,16 @@ export default class YT extends HTML{
 		this._ready = false;
 		this._iframe_id = iframe_id;
 		delete this._player;
-		this._createDiv(iframe_id);
-		YT.loadScript(yt_api,function() {
+		ModuleManager.importScript([yt_api]).then(function(){
 			this._createYT(iframe_id);
 		}.bind(this));
 	}
-	_createDiv(){
+	_createYT(){
 		var div = document.createElement("div");
 			div.id = this._iframe_id;
 			div.style.display = "none";
 			div.style.pointerEvents = "none";
 			document.body.append(div);
-	}
-	_createYT(){
 		let player_vars = {
 			height: "144",
 			width: "100%",
@@ -34,19 +31,20 @@ export default class YT extends HTML{
 			videoId: ""
 		}
 		window.YT.ready(function() {
+			let f = function(g){
+				return function(evt){
+					return this[g](evt);
+				}.bind(this);
+			}.bind(this)
 			this._player = new window.YT.Player(this._iframe_id, player_vars);
-			this._player.addEventListener("onStateChange", this._eventFunc('_onLoad'));
-			this._player.addEventListener("onStateChange", this._eventFunc('_onTimeUpdate'));
-			this._player.addEventListener("onStateChange", this._eventFunc('_onStateChange'));
-			this._player.addEventListener("onError", this._eventFunc('_onError'));
-			this._player.addEventListener('onReady', this._eventFunc('_onReady'));
+			this._player.addEventListener("onStateChange", f('_onLoad'));
+			this._player.addEventListener("onStateChange", f('_onTimeUpdate'));
+			this._player.addEventListener("onStateChange", f('_onStateChange'));
+			this._player.addEventListener("onError", f('_onError'));
+			this._player.addEventListener('onReady', f('_onReady'));
 		}.bind(this));
 	}
-	_eventFunc(f){
-		return function(evt){
-			return this[f](evt);
-		}.bind(this);
-	}
+	
 	_onLoad(evt){
 		if(this._player.ready) return; //correctly loads the video
 		switch(evt.data){
@@ -131,13 +129,13 @@ export default class YT extends HTML{
 	seek(time){
 		this._player.seekTo(time,true);
 		let self = this;
-		if(time >= this._status().duration){ //?????
+		if(time >= this.getStatus().duration){ //?????
 			return this.waitForEvent('ended');
 		}
 		let f = function(){
-			return self._status().time;
+			return self.getStatus().time;
 		}
-		let g = this._status().time;
+		let g = this.getStatus().time;
 		let c = function(){
 			self._publish('timeupdate');
 		};
@@ -155,9 +153,9 @@ export default class YT extends HTML{
 		this._player.setVolume(vol*100);
 		let self = this;
 		let f = function(){
-			return self._status().volume;
+			return self.getStatus().volume;
 		}
-		let g = this._status().volume;
+		let g = this.getStatus().volume;
 		let c = function(){
 			self._publish('volumechange');
 		};
@@ -169,7 +167,7 @@ export default class YT extends HTML{
 		return this.pause()
 		.then(this.chain('seek',0));
 	}
-	_status(){
+	getStatus(){
 		let data = {
 			src:this._player.getVideoUrl(),
 			time:this._player.getCurrentTime(),
@@ -212,3 +210,4 @@ export default class YT extends HTML{
 		}
 	}
 }
+

@@ -1,8 +1,8 @@
-ModuleManager.chainImports({
+ModuleManager.importModules({
 	"HTML":['./src/html.js'],
-	"YT":['./src/plugins/YT.js'],
-	"BC":['./src/plugins/BC.js'],
-	"SC":['./src/plugins/SC.js'],
+	"YT":['./src/plugins/youtube.js'],
+	"BC":['./src/plugins/bandcamp.js'],
+	"SC":['./src/plugins/soundcloud.js'],
 	"Album":['./src/album.js'],
 	"CustomAlbum":['./src/plugins/custom-album.js'],
 	"TestCases":['./tests/albums/js/cases.js'],
