@@ -1,4 +1,4 @@
-import HTML from '../html.js';
+import HTML from '../../html.js';
 export default class YT extends HTML{
 	static Track = class Track extends HTML.Track{
 		constructor(obj){
@@ -9,13 +9,15 @@ export default class YT extends HTML{
 			return new YT.Track(JSON.parse(json));
 		}
 	}
-	constructor(yt_api = "../../src/plugins/YoutubeApi.js",iframe_id="_YT_"+Math.random().toString(36).substring(7)){
+	constructor(yt_api = "../../src/plugins/YT/YoutubeApi.js",iframe_id="_YT_"+Math.random().toString(36).substring(7)){
 		super();
 		this._ready = false;
 		this._iframe_id = iframe_id;
 		delete this._player;
 		ModuleManager.importScript([yt_api]).then(function(){
 			this._createYT(iframe_id);
+		}.bind(this),function(){
+			throw new Error("Failed to load YoutubeApi.js");
 		}.bind(this));
 	}
 	_createYT(){

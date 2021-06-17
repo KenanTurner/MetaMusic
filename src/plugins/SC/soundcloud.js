@@ -1,4 +1,4 @@
-import HTML from '../html.js';
+import HTML from '../../html.js';
 export default class SC extends HTML{
 	static Track = class Track extends HTML.Track{
 		constructor(obj){
@@ -12,13 +12,15 @@ export default class SC extends HTML{
 			return new SC.Track(JSON.parse(json));
 		}
 	}
-	constructor(sc_api = "../../src/plugins/SoundcloudApi.js",iframe_id="_SC_"+Math.random().toString(36).substring(7)){
+	constructor(sc_api = "../../src/plugins/SC/SoundcloudApi.js",iframe_id="_SC_"+Math.random().toString(36).substring(7)){
 		super();
 		this._ready = false;
 		this._iframe_id = iframe_id;
 		delete this._player;
 		ModuleManager.importScript([sc_api]).then(function(){
 			this._createSC(iframe_id);
+		}.bind(this),function(){
+			throw new Error("Failed to load SoundcloudApi.js");
 		}.bind(this));
 	}
 	_createSC(iframe_id){

@@ -1,8 +1,8 @@
 ModuleManager.importModules({
 	"HTML":['./src/html.js'],
-	"YT":['./src/plugins/youtube.js'],
-	"BC":['./src/plugins/bandcamp.js'],
-	"SC":['./src/plugins/soundcloud.js'],
+	"YT":['./src/plugins/YT/youtube.js'],
+	"BC":['./src/plugins/BC/bandcamp.js'],
+	"SC":['./src/plugins/SC/soundcloud.js'],
 	"TestCases":['./tests/players/js/cases.js'],
 }).then(function(obj){
 	//put in global scope for easier debugging

@@ -1,4 +1,4 @@
-import HTML from '../html.js';
+import HTML from '../../html.js';
 export default class BC extends HTML{
 	static Track = class Track extends HTML.Track{
 		constructor(obj){
@@ -15,7 +15,7 @@ export default class BC extends HTML{
 			return new BC.Track(JSON.parse(json));
 		}
 	}
-	constructor(bc_php = "../../src/plugins/loadBC.php"){
+	constructor(bc_php = "../../src/plugins/BC/loadBC.php"){
 		super();
 		this._bc_php = bc_php;
 		if(!window.jQuery) throw new Error("Jquery needs to be imported first!");
