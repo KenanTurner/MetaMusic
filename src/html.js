@@ -48,8 +48,9 @@ export default class HTML extends EventTarget{
 		//return this.waitForEvent('play');
 	}
 	pause(){
+		let p = this.waitForEvent('pause');
 		return this._player.pause();
-		return this.waitForEvent('pause');
+		return p;
 	}
 	seek(time){
 		let f = function(){
