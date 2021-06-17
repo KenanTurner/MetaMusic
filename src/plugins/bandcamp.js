@@ -26,7 +26,8 @@ export default class BC extends HTML{
 			//this._player.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAVFYAAFRWAAABAAgAZGF0YQAAAAA='; //stop playing silently
 			//console.log("Loading bc_url...");
 			let self = this;
-			return new Promise(function(resolve,reject){			
+			let p = this.waitForEvent('loaded');
+			new Promise(function(resolve,reject){
 				$.ajax({
 					url: self._bc_php,
 					type: 'POST',
@@ -43,8 +44,8 @@ export default class BC extends HTML{
 				});
 			}).catch(function(error){
 				let data = self._publish('error');
-				return Promise.reject(error);
 			});
+			return p;
 		}
 		return super.load(track);
 	}

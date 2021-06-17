@@ -107,14 +107,14 @@ export default class YT extends HTML{
 	load(track){
 		if(!this.constructor._validTrack(track)) throw new Error("Invalid Filetype");
 		this._player.ready = false;
+		let p = this.waitForEvent('loaded');
 		try{
 			let id = YT.getYoutubeId(track.src);
 			this._player.cueVideoById(id,0);
-			return this.waitForEvent('loaded');
 		}catch(error){
 			this._publish('error');
-			return Promise.reject('Invalid Url');
 		}
+		return p;
 	}
 	pause(){
 		if(this._player.getPlayerState() == 2) return Promise.resolve();

@@ -107,12 +107,15 @@ export default class TestCases extends T{
 				setTimeout(resolve,1000);
 			});
 		})
+		.catch(function(evt){
+			throw new Error(evt);
+		})
 		.then(html.chain('load',t2))
 		.then(function(){
 			throw new Error("This Error should not be thrown");
 		})
 		.catch(function(evt){
-			if(evt.message) throw evt;
+			if(!html.constructor.Event.prototype.isPrototypeOf(evt)) throw evt;
 			return Promise.resolve("Finished")
 		})
 		.finally(html.chain('destroy'));
