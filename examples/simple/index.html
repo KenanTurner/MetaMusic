@@ -1,22 +1,16 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script type="text/javascript" src="./js/jquery-3.5.1.min.js"></script>
-		<script type="module" src="./js/console.js"></script>
-		<script type="module" src="./js/main.js"></script>
 		<link rel="stylesheet" href="./css/style.css">
+		<script type="text/javascript" src="./js/jquery-3.5.1.min.js"></script>
+		<script type="text/javascript" src="../../src/ModuleManager.js"></script>
+		<script type="module" src="./js/main.js"></script>
 	</head>
 	<body>
-		<div class="controls sticky" id="header">
-			<input type="text" id="url_box" value="">
-			<button id="url_btn">Load URL</button>
-			<br>
-			<button id="rewind_btn"><<</button>
-			<button id="play_btn">Play</button>
-			<button id="pause_btn">Pause</button>
-			<button id="stop_btn">Stop</button>
-			<button id="fast_forward_btn">>></button>
-		</div>
-		<div id="console"></div>
+		<input type="text" id="src" value="./audio/4. Jupiter.ogg">
+		<button id="load">Load File</button>
+		<button id="play">Play</button>
+		<button id="pause">Pause</button>
+		<button id="stop">Stop</button>
 	</body>
 </html>
