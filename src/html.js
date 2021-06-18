@@ -44,12 +44,15 @@ export default class HTML extends EventTarget{
 		return this.waitForEvent('loaded');
 	}
 	play(){
-		return this._player.play();
-		//return this.waitForEvent('play');
+		if(!this._player.paused) return this._publish('play');
+		let p = this.waitForEvent('play');
+		this._player.play();
+		return p;
 	}
 	pause(){
+		if(this._player.paused) return this._publish('pause');
 		let p = this.waitForEvent('pause');
-		return this._player.pause();
+		this._player.pause();
 		return p;
 	}
 	seek(time){

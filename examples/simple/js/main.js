@@ -27,6 +27,7 @@ ModuleManager.importModules({
 	});
 	let error = function(err){
 		console.log(err);
+		alert("There was an error playing the requested file");
 	}
 	html.subscribe('error',error);
 })
