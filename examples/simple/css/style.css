@@ -11,13 +11,14 @@ body {
 }
 .controls > *{ /*selects all children*/
 	padding: 12px;
-    border-radius: 5px;
-    border-width: 1px;
-    border-color: #868686;
-    margin: 2px;
+	border-radius: 5px;
+	border-width: 1px;
+	border-color: #868686;
+	margin: 2px;
 }
 .controls > button:hover {
 	background-color: #4D4D4D;
 	color: white;
 	border-color: white;
+	border-style: solid;
 }
