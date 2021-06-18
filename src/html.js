@@ -58,6 +58,8 @@ export default class HTML extends EventTarget{
 	seek(time){
 		let f = function(){
 			this._publish('timeupdate');
+			let status = this.getStatus();
+			if(status.time == status.duration) this._publish('ended');
 		}.bind(this);
 		this._player.addEventListener('seeked',f,{once:true});
 		this._player.currentTime = time;
