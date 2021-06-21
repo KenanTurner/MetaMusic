@@ -13,7 +13,7 @@ export default class Album extends EventTarget{
 	add(...tracks){
 		tracks.forEach(function(track){
 			try{
-				track = JSON.parse(JSON.stringify(track)); //make sure tracks are preserved converted correctly
+				if(track.toJSON) track = {...{track_num:track.track_num},...track.toJSON()}; //make sure tracks are converted correctly
 				let tmp = new this.constructor.players[track.filetype].Track(track);
 				if(!this.constructor._validTrack(tmp)) throw new Error("Unsupported Track Type");
 				tmp.track_num = track.track_num;
@@ -53,17 +53,6 @@ export default class Album extends EventTarget{
 	}
 	get length(){
 		return this.tracks.length;
-	}
-	[Symbol.iterator]() { //TODO remove?
-		let i = 0;
-		let self = this;
-		return {
-			next(){
-				i++;
-				if(i >= self.tracks.length) return {done:true}
-				return {value: self.tracks[i], done:false}
-			}
-		}
 	}
 	toJSON(){
 		let obj = {};
@@ -108,47 +97,7 @@ export default class Album extends EventTarget{
 			return player._validTrack(track);
 		});
 	}
-	getEventStatus(){
+	getStatus(){
 		return "Overridden in album.js";
 	}
 }
-//required info:
-//album title
-//track_list
-//track_num (Not unique)
-//sorting_by
-
-//optional:
-//description
-//genre
-//album_artwork
-//flags
-//album_url
-//length
-
-//inhert:
-//duration
-//artists
-
-//extra questions:
-//nested albums?
-//filter out tracks?
-//empty albums?
-//unique album id?
-//to html?
-
-//every track needs a track_num
-//duplicates mean unsorted list?
-//easily editable in a file editor
-//unique id
-/*
- * {
- * 	track_list: {
- * 	
- * 	
- * 	}
- * }
- */
-//map structure
-//key:
-// src, track_num, id
