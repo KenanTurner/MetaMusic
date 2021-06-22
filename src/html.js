@@ -1,4 +1,4 @@
-import _Track from './plugins/custom.js';
+import _Track from './default.js';
 import EventTarget from './event-target.js';
 export default class HTML extends EventTarget{
 	static Track = class Track extends _Track{
