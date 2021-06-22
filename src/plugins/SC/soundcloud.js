@@ -140,7 +140,8 @@ export default class SC extends HTML{
 				time:arr[1]/1000,
 				duration:arr[2]/1000,
 				volume:arr[1]/100,
-				paused:arr[3]
+				paused:arr[3],
+				src:arr[4],
 			}
 			if(arr[4]) data['src'] = arr[4].permalink_url;
 			return Promise.resolve(data);
