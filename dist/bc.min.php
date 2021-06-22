@@ -1,0 +1,1 @@
+<?php $url=$_POST["href"];$doc=new DOMDocument();$doc->loadHTMLFile($url,LIBXML_COMPACT);$h1=$doc->getElementsByTagName("script");$hrefs=array();foreach($h1 as $h){$tmp=$h->getAttribute('data-tralbum');if($tmp==NULL){continue;}$tmpJson=json_decode($tmp,true);foreach($tmpJson["trackinfo"]as $x){$hrefs[$x["title"]]=$x["file"]["mp3-128"];}}echo json_encode($hrefs); ?>
