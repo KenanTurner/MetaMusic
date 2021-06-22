@@ -1,8 +1,8 @@
 ModuleManager.importModules({
 	"HTML":['./dist/html.min.js'],
-	"YT":['./dist/yt.min.js'],
-	"BC":['./dist/bc.min.js'],
-	"SC":['./dist/sc.min.js'],
+	"YT":['./dist/plugins/yt.min.js'],
+	"BC":['./dist/plugins/bc.min.js'],
+	"SC":['./dist/plugins/sc.min.js'],
 	"TestCases":['./tests/dist/js/cases.js'],
 }).then(function(obj){
 	//put in global scope for easier debugging
