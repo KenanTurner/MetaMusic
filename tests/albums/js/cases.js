@@ -30,7 +30,7 @@ export default class TestCases extends T{
 	static tracks(Album,obj){
 		let a1 = new Album({title:"title"})
 		obj.tracks.forEach(function(track){
-			a1.add(track);
+			a1.push(track);
 		});
 		obj.tracks.forEach(function(track){
 			if(!a1.has(track)) throw new Error("Track is missing");
@@ -62,7 +62,7 @@ export default class TestCases extends T{
 		a1.subscribe('sort',f);
 		a1.subscribe('remove',f);
 		a1.subscribe('clear',f);
-		a1.add(...obj.tracks);
+		a1.push(...obj.tracks);
 		a1.sort("title");
 		a1.remove(obj.tracks[0]);
 		a1.clear();
@@ -123,4 +123,42 @@ export default class TestCases extends T{
 		if(!a1.equals(a2)) throw new Error("Tracks are handled incorrectly");
 		return Promise.resolve();
 	}
+	static addRemove(Album,obj){
+		let a1 = new Album(obj);
+		let a2 = new Album({title:obj.title});
+		a2.push(...obj.tracks);
+		console.log(a1,a2);
+		if(!a1.equals(a2)) throw new Error("Push fails to add a track!");
+		a2.remove(...obj.tracks);
+		if(a2.length !== 0) throw new Error("Removing a track fails!");
+		a2.insert(0,...obj.tracks);
+		if(!a1.equals(a2)) throw new Error("Insert fails to add a track");
+		a1.insert(2,obj.tracks[0]);
+		a2.insert(4,obj.tracks[0]);
+		if(!a1.equals(a2)) throw new Error("Insert fails to add a track");
+		return Promise.resolve();
+	}
+	static addRemoveAlbum(Album,obj){
+		let a1 = new Album(obj);
+		let a2 = new Album(obj);
+		a1.insert(0,a1);
+		a2.push(a2);
+		if(!a1.equals(a2)) throw new Error("Adding an album fails!");
+		return Promise.resolve();
+	}
+	static shuffle(Album,obj){
+		let a1 = new Album(obj);
+		let arr = Array.from({length: 64}, function(){
+			let tmp = a1.clone();
+			tmp.shuffle();
+			return tmp;
+		});
+		let result = arr.some(function(album){
+			//return !album.equals(a1); //lol you can't use equals because it sorts it first
+			return !album.tracks[0].equals(a1.tracks[0]);
+		});
+		if(!result) throw new Error("Shuffling an album fails to generate unique permutations!");
+		return Promise.resolve();
+	}
 }
+

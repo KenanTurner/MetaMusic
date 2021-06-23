@@ -7,11 +7,28 @@ export default class Album extends EventTarget{
 		this.title = obj.title;
 		
 		this.tracks = [];
-		if(obj.tracks) this.add(...obj.tracks);
+		if(obj.tracks) this.push(...obj.tracks);
 		this.sort("track_num",false,false);
 	}
-	add(...tracks){
-		tracks.forEach(function(track){
+	insert(index,...items){
+		items.forEach(function(track){
+			if(Album.prototype.isPrototypeOf(track)) return this.insert(index,...track.tracks);
+			try{
+				if(track.toJSON) track = {...{track_num:track.track_num},...track.toJSON()}; //make sure tracks are converted correctly
+				let tmp = new this.constructor.players[track.filetype].Track(track);
+				if(!this.constructor._validTrack(tmp)) throw new Error("Unsupported Track Type");
+				tmp.track_num = track.track_num;
+				this.tracks.splice(index, 0, tmp);
+				index++;
+			}catch(error){
+				console.log(error);
+			}
+		}.bind(this));
+		if(items.length > 0) this._publish('add');
+	}
+	push(...items){
+		items.forEach(function(track){
+			if(Album.prototype.isPrototypeOf(track)) return this.push(...track.tracks);
 			try{
 				if(track.toJSON) track = {...{track_num:track.track_num},...track.toJSON()}; //make sure tracks are converted correctly
 				let tmp = new this.constructor.players[track.filetype].Track(track);
@@ -22,8 +39,27 @@ export default class Album extends EventTarget{
 				console.log(error);
 			}
 		}.bind(this));
-		this.sort(this.sort_key,this.sort_reversed,false);
-		this._publish('add');
+		if(items.length > 0) this._publish('add');
+	}
+	remove(...items){ //TODO delete just one duplicate?
+		items.forEach(function(track){
+			if(Album.prototype.isPrototypeOf(track)) return this.remove(...track.tracks);
+			this.tracks = this.tracks.filter(function(t){
+				if(!t.equals(track)) return true;
+			});
+		}.bind(this));		
+		if(items.length > 0) this._publish('remove');
+	}
+	shuffle() {
+		for (let i = this.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[this.tracks[i], this.tracks[j]] = [this.tracks[j], this.tracks[i]];
+		}
+	}
+	find(track){
+		return this.tracks.findIndex(function(t){
+			return t.equals(track);
+		});
 	}
 	has(track){
 		return this.tracks.some(function(t){
@@ -44,12 +80,6 @@ export default class Album extends EventTarget{
 	clear(){
 		this.tracks.length = 0;
 		this._publish('clear');
-	}
-	remove(track){ //TODO delete just one duplicate?
-		this.tracks = this.tracks.filter(function(t){
-			if(!t.equals(track)) return true;
-		});
-		this._publish('remove');
 	}
 	get length(){
 		return this.tracks.length;
@@ -101,3 +131,11 @@ export default class Album extends EventTarget{
 		return "Overridden in album.js";
 	}
 }
+//append or add?
+//track or album?
+//insertAt?
+//findIndex?
+//shuffling? rearrange tracks?
+//unshuffling?
+//add track inserts the track in the correct place
+//add album inserts the tracks sorted by track_num

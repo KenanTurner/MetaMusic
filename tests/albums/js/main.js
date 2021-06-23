@@ -75,6 +75,9 @@ let test_cases = {
 	"validTrack":true,
 	"sort":true,
 	"conversion":true,
+	"addRemove":true,
+	"addRemoveAlbum":true,
+	"shuffle":true,
 }
 createOptions(test_cases,"test_cases");
 
@@ -102,3 +105,4 @@ function createOptions(options,id){
 		el.appendChild(input);
 	});
 }
+
