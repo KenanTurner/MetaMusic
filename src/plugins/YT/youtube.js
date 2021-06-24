@@ -115,7 +115,7 @@ export default class YT extends HTML{
 			this._player.cueVideoById(id,0);
 			if(vol != 1) p.then(function(e){
 				return this.setVolume(vol).then(function(){
-					return e;
+					return e; //TODO return the newer event
 				});
 			}.bind(this));
 		}catch(error){
