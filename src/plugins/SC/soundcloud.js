@@ -61,7 +61,16 @@ export default class SC extends HTML{
 	}
 	load(track){
 		if(!this.constructor._validTrack(track)) throw new Error("Invalid Filetype");
-		let f = function(e){
+		let p = this.waitForEvent('loaded');
+		let vol = this._async('getVolume');
+		let f = function(){
+			p.then(function(e){ //TODO error handling?
+				return vol.then(function(v){
+					return this.setVolume(v/100).then(function(){return e});
+				}.bind(this));
+			}.bind(this)).then(function(e){
+				return e; //TODO return the newer event?
+			});
 			this._publish('loaded');
 		}.bind(this);
 		let o = {
@@ -78,9 +87,8 @@ export default class SC extends HTML{
 			start_track: 0,
 			callback: f,
 		}
-		//this._player.load(track.src+"&auto_play=false&buying=false&liking=false&download=false&sharing=false&show_artwork=false&show_comments=false&show_playcount=false&show_user=false&hide_related=false&visual=false&start_track=0&callback=true",{callback:f});
 		this._player.load(track.src,o);
-		return this.waitForEvent('loaded');
+		return p;
 	}
 	pause(){
 		this._player.pause();
@@ -118,16 +126,13 @@ export default class SC extends HTML{
 	setVolume(vol){
 		this._player.setVolume(vol*100);
 		let f = function(v){
-			//console.log(v);
 			if(v == vol*100){
-				this._publish('volumechange');
-				return Promise.resolve();
+				let e = this._publish('volumechange');
+				return e;
 			}
-			return this._async('getVolume')
-			.then(f);
-		}.bind(this)
-		return this._async('getVolume')
-		.then(f)
+			return this._async('getVolume').then(f);
+		}.bind(this);
+		return this._async('getVolume').then(f);
 	}
 	getStatus(){
 		let vol = this._async('getVolume');
@@ -137,9 +142,9 @@ export default class SC extends HTML{
 		let s = this._async('getCurrentSound');
 		return Promise.all([vol,time,dur,paused,s]).then(function(arr){
 			let data = {
+				volume:arr[0]/100,
 				time:arr[1]/1000,
 				duration:arr[2]/1000,
-				volume:arr[1]/100,
 				paused:arr[3],
 				src:arr[4],
 			}
