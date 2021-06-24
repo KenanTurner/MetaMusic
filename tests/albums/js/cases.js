@@ -133,9 +133,6 @@ export default class TestCases extends T{
 		if(a2.length !== 0) throw new Error("Removing a track fails!");
 		a2.insert(0,...obj.tracks);
 		if(!a1.equals(a2)) throw new Error("Insert fails to add a track");
-		a1.insert(2,obj.tracks[0]);
-		a2.insert(4,obj.tracks[0]);
-		if(!a1.equals(a2)) throw new Error("Insert fails to add a track");
 		return Promise.resolve();
 	}
 	static addRemoveAlbum(Album,obj){
