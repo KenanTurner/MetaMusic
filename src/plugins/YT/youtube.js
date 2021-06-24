@@ -30,7 +30,6 @@ export default class YT extends HTML{
 			height: "144",
 			width: "100%",
 			playerVars: {'controls': 0,'disablekb':1,'fs':0,'modestbranding':1,'playsinline':1},
-			videoId: ""
 		}
 		window.YT.ready(function() {
 			let f = function(g){
@@ -112,7 +111,13 @@ export default class YT extends HTML{
 		let p = this.waitForEvent('loaded');
 		try{
 			let id = YT.getYoutubeId(track.src);
+			let vol = this.getStatus().volume;
 			this._player.cueVideoById(id,0);
+			if(vol != 1) p.then(function(e){
+				return this.setVolume(vol).then(function(){
+					return e;
+				});
+			}.bind(this));
 		}catch(error){
 			this._publish('error');
 		}
@@ -161,9 +166,10 @@ export default class YT extends HTML{
 		let c = function(){
 			self._publish('volumechange');
 		};
-		if(vol == g) return c();
-		this.wait(f,g,c,5);
-		return this.waitForEvent('volumechange');
+		let p = this.waitForEvent('volumechange');
+		if(vol == g) c();
+		if(vol != g) this.wait(f,g,c,5);
+		return p;
 	}
 	stop(){
 		return this.pause()
