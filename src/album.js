@@ -8,7 +8,8 @@ export default class Album extends EventTarget{
 		
 		this.tracks = [];
 		if(obj.tracks) this.push(...obj.tracks);
-		this.sort("track_num",false,false);
+		this.sort_key = "none";
+		this.sort_reversed = false;
 	}
 	insert(index,...items){
 		items.forEach(function(track){
@@ -89,14 +90,15 @@ export default class Album extends EventTarget{
 		obj.title = this.title;
 		obj.tracks = [];
 		
+		//TODO better support for none sort
 		let old_sort_key = this.sort_key;
-		this.sort("track_num",false,false);
+		if(this.sort_key !== "none") this.sort("track_num",false,false);
 		this.tracks.forEach(function(track,index){
 			let copy = track.toJSON();
 			copy.track_num = track.track_num;
 			obj.tracks.push(copy);
 		}.bind(this));
-		this.sort(old_sort_key,false,false);
+		if(this.sort_key !== "none") this.sort(old_sort_key,false,false);
 		return obj;
 	}
 	static fromJSON(json){ //deserialization
