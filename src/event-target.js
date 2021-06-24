@@ -46,7 +46,7 @@ export default class EventTarget{
 		if(type !== 'all'){
 			this._subscribers['all'] = this._subscribers['all'].filter(f);
 		}
-		if (!this._subscribers[type]){return;}
+		if (!this._subscribers[type]){return event;}
 		this._subscribers[type] = this._subscribers[type].filter(f);
 		return event;
 	}
