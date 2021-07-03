@@ -16,8 +16,9 @@ export default class Album extends EventTarget{
 			if(Album.prototype.isPrototypeOf(track)) return this.insert(index,...track.tracks);
 			try{
 				if(track.toJSON) track = {...{track_num:track.track_num},...track.toJSON()}; //make sure tracks are converted correctly
+				if(!this.constructor.players[track.filetype]) throw new Error("Unsupported Track Type: "+track.filetype);
 				let tmp = new this.constructor.players[track.filetype].Track(track);
-				if(!this.constructor._validTrack(tmp)) throw new Error("Unsupported Track Type");
+				if(!this.constructor._validTrack(tmp)) throw new Error("Invalid Track!");
 				tmp.track_num = track.track_num;
 				this.tracks.splice(index, 0, tmp);
 				index++;
@@ -32,8 +33,9 @@ export default class Album extends EventTarget{
 			if(Album.prototype.isPrototypeOf(track)) return this.push(...track.tracks);
 			try{
 				if(track.toJSON) track = {...{track_num:track.track_num},...track.toJSON()}; //make sure tracks are converted correctly
+				if(!this.constructor.players[track.filetype]) throw new Error("Unsupported Track Type: "+track.filetype);
 				let tmp = new this.constructor.players[track.filetype].Track(track);
-				if(!this.constructor._validTrack(tmp)) throw new Error("Unsupported Track Type");
+				if(!this.constructor._validTrack(tmp)) throw new Error("Invalid Track!");
 				tmp.track_num = track.track_num;
 				this.tracks.push(tmp);
 			}catch(error){
@@ -56,6 +58,7 @@ export default class Album extends EventTarget{
 			const j = Math.floor(Math.random() * (i + 1));
 			[this.tracks[i], this.tracks[j]] = [this.tracks[j], this.tracks[i]];
 		}
+		this._publish('shuffle');
 	}
 	find(track){
 		return this.tracks.findIndex(function(t){
@@ -88,17 +91,18 @@ export default class Album extends EventTarget{
 	toJSON(){
 		let obj = {};
 		obj.title = this.title;
-		obj.tracks = [];
+		obj.tracks = [...this.tracks];
 		
-		//TODO better support for none sort
-		let old_sort_key = this.sort_key;
-		if(this.sort_key !== "none") this.sort("track_num",false,false);
-		this.tracks.forEach(function(track,index){
+		obj.tracks.sort(function(t1,t2){
+			let val = t1.compare(t2,"track_num");
+			if(val === 0) val = t1.compare(t2,"title");
+			return val;
+		})
+		obj.tracks.forEach(function(track,index){
 			let copy = track.toJSON();
 			copy.track_num = track.track_num;
-			obj.tracks.push(copy);
-		}.bind(this));
-		if(this.sort_key !== "none") this.sort(old_sort_key,false,false);
+			obj.tracks[index] = copy;
+		});
 		return obj;
 	}
 	static fromJSON(json){ //deserialization
