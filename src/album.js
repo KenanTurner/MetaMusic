@@ -88,12 +88,12 @@ export default class Album extends EventTarget{
 	get length(){
 		return this.tracks.length;
 	}
-	toJSON(){
+	toJSON(key){
 		let obj = {};
 		obj.title = this.title;
 		obj.tracks = [...this.tracks];
 		
-		obj.tracks.sort(function(t1,t2){
+		if(this.sort_key !== 'none') obj.tracks.sort(function(t1,t2){
 			let val = t1.compare(t2,"track_num");
 			if(val === 0) val = t1.compare(t2,"title");
 			return val;
