@@ -1,7 +1,7 @@
 import EventTarget from './event-target.js';
 export default class Album extends EventTarget{
 	static players = {};
-	constructor(obj){
+	constructor(obj = {}){
 		super();
 		if(!obj.title) throw new Error('Invalid Constructor');
 		this.title = obj.title;
