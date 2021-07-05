@@ -8,8 +8,7 @@ export default class Album extends EventTarget{
 		
 		this.tracks = [];
 		if(obj.tracks) this.push(...obj.tracks);
-		this.sort_key = "none";
-		this.sort_reversed = false;
+		this._unsorted = obj._unsorted;
 	}
 	insert(index,...items){
 		items.forEach(function(track){
@@ -78,8 +77,6 @@ export default class Album extends EventTarget{
 			return val;
 		})
 		if(reversed) this.tracks.reverse();
-		this.sort_key = key;
-		this.sort_reversed = reversed;
 		if(_publish) this._publish('sort');
 	}
 	clear(){
@@ -93,8 +90,9 @@ export default class Album extends EventTarget{
 		let obj = {};
 		obj.title = this.title;
 		obj.tracks = [...this.tracks];
+		obj._unsorted = this._unsorted;
 		
-		if(this.sort_key !== 'none') obj.tracks.sort(function(t1,t2){
+		if(!this._unsorted) obj.tracks.sort(function(t1,t2){
 			let val = t1.compare(t2,"track_num");
 			if(val === 0) val = t1.compare(t2,"title");
 			if(val === 0) val = t1.compare(t2,"src");
