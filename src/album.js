@@ -74,6 +74,7 @@ export default class Album extends EventTarget{
 		this.tracks.sort(function(t1,t2){
 			let val = t1.compare(t2,key);
 			if(val === 0) val = t1.compare(t2,"title");
+			if(val === 0) val = t1.compare(t2,"src");
 			return val;
 		})
 		if(reversed) this.tracks.reverse();
@@ -96,6 +97,7 @@ export default class Album extends EventTarget{
 		if(this.sort_key !== 'none') obj.tracks.sort(function(t1,t2){
 			let val = t1.compare(t2,"track_num");
 			if(val === 0) val = t1.compare(t2,"title");
+			if(val === 0) val = t1.compare(t2,"src");
 			return val;
 		})
 		obj.tracks.forEach(function(track,index){
