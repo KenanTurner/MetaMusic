@@ -121,38 +121,37 @@ export default class MusicManager extends EventTarget{
 				this._publish(type);
 				return Promise.reject(e);
 			}
-			//TODO catch e.target undefined error
-			if(this._player === e.target) this._publish(type);
+			if(e && this._player === e.target) this._publish(type);
 			if(f) this[f]();
 			return e;
 		}.bind(this);
 	}
 	play(){
-		if(this.length === 0) return Promise.reject("Empty playlist!");
+		if(!this._track) return Promise.reject("Track needs to be loaded first!");
 		return this._player.play()
 		.then(this.handleEvent('play',{paused:false}))
 		.catch(this.handleEvent('error',{paused:true}));
 	}
 	pause(){
-		if(this.length === 0) return Promise.reject("Empty playlist!");
+		if(!this._track) return Promise.reject("Track needs to be loaded first!");
 		return this._player.pause()
 		.then(this.handleEvent('pause',{paused:true}))
 		.catch(this.handleEvent('error',{paused:true}));
 	}
 	stop(){
-		if(this.length === 0) return Promise.reject("Empty playlist!");
+		if(!this._track) return Promise.reject("Track needs to be loaded first!");
 		return this._player.stop()
 		.then(this.handleEvent('stop',{paused:true}))
 		.catch(this.handleEvent('error',{paused:true}));
 	}
 	seek(time){
-		if(this.length === 0) return Promise.reject("Empty playlist!");
+		if(!this._track) return Promise.reject("Track needs to be loaded first!");
 		return this._player.seek(time)
 		.then(this.handleEvent('timeupdate'))
 		.catch(this.handleEvent('error',{paused:true}));
 	}
 	fastForward(time){
-		if(this.length === 0) return Promise.reject("Empty playlist!");
+		if(!this._track) return Promise.reject("Track needs to be loaded first!");
 		return this._player.fastForward(time)
 		.then(this.handleEvent('timeupdate'))
 		.catch(this.handleEvent('error',{paused:true}));
@@ -167,6 +166,7 @@ export default class MusicManager extends EventTarget{
 		.catch(this.handleEvent('error',{paused:true}));
 	}
 	load(t){
+		if(this._track) this.stop(); //TODO handle asynchronous stopping
 		try{
 			this._track = t.clone(); //TODO clone or shallow copy?
 			this._player = this._players[this._track.filetype];
@@ -185,7 +185,6 @@ export default class MusicManager extends EventTarget{
 	//Functions related to traversing the queue: #######################
 	next(step=1){
 		if(this.length === 0) return Promise.reject("Empty playlist!");
-		this._player.stop(); //TODO handle asynchronous stopping
 		let index = this.find(this._track);
 		let mod = function(n, m) {
 			return ((n % m) + m) % m;
