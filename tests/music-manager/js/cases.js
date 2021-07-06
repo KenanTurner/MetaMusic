@@ -18,8 +18,7 @@ export default class TestCases extends T{
 	}
 	static playPause(MusicManager,players,album){
 		MusicManager.players = players;
-		let mm = new MusicManager();
-		mm.push(album);
+		let mm = new MusicManager({queue:album});
 		return mm.waitForEvent('ready')
 		.then(mm.chain('play')) //play
 		.then(mm.chain('pause'))
@@ -31,8 +30,7 @@ export default class TestCases extends T{
 	}
 	static next(MusicManager,players,album){
 		MusicManager.players = players;
-		let mm = new MusicManager();
-		mm.push(album);
+		let mm = new MusicManager({queue:album});
 		let wait = function(time){
 			return function(){
 				return new Promise(function(res,rej){
@@ -60,21 +58,26 @@ export default class TestCases extends T{
 	//TODO fix shuffle case
 	static shuffle(MusicManager,players,album){
 		MusicManager.players = players;
-		let mm = new MusicManager();
-		mm.push(album);
-		let copy = mm.clone();
-		if(!copy.equals(mm)) throw new Error("Cloning fails to keep track order!");
-		mm.shuffle();
-		if(!copy.equals(mm)) throw new Error("Shuffling fails?");
-		return mm.waitForEvent('ready')
+		let mm = new MusicManager({queue:album});
+		let copy;
+		return mm.waitForEvent('ready').then(function(){
+			copy = mm.clone();
+			return copy.waitForEvent('ready');
+		}).then(function(){
+			if(mm.length <= 1) throw new Error("shuffle test must be completed with >1 tracks!");
+			if(mm.queue.tracks[0].equals(mm.queue.tracks[1])) throw new Error("First two tracks need to be different!");
+			if(!copy.equals(mm)) throw new Error("Cloning fails to keep track order!");
+			//swap the first two values to simulate shuffling
+			[mm.queue.tracks[0], mm.queue.tracks[1]] = [mm.queue.tracks[1], mm.queue.tracks[0]];
+			if(copy.equals(mm)) throw new Error("Shuffling fails to produce unique ordering!");
+			copy.destroy();
+		})
 		.then(mm.chain('destroy'))
-		.then(copy.chain('destroy'))
 	}
 	
 	static subs(MusicManager,players,album){
 		MusicManager.players = players;
-		let mm = new MusicManager();
-		mm.push(album);
+		let mm = new MusicManager({queue:album});
 		var check = {
 			loaded:false,
 			play:false,
@@ -103,7 +106,7 @@ export default class TestCases extends T{
 		.then(mm.chain('pause'))
 		.then(mm.chain('next'))
 		.then(mm.chain('next'))
-		.then(mm.chain('load',new players.HTML.Track({title:"Error",src:"http://e"})))
+		.then(mm.chain('load',new (Object.values(mm.constructor.players)[0].Track)({title:"Error",src:"http://e"})))
 		.then(function(){
 			throw new Error("This Error should not be thrown");
 		})

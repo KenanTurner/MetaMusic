@@ -4,9 +4,8 @@ export default class MusicManager extends EventTarget{
 	static players = {};
 	constructor(obj = {}){
 		super();
-		if(!obj.queue) obj.queue = {title:"queue"};
 		Album.players = this.constructor.players;
-		this.queue = new Album(obj.queue);
+		this.queue = new Album({title:"queue",_unsorted:true});
 		
 		//create players
 		this._players = {};
@@ -35,6 +34,8 @@ export default class MusicManager extends EventTarget{
 		//wait for ready
 		this._ready = false;
 		this.waitForAll('waitForEvent','ready').then(function(){
+			if(!obj.queue) obj.queue = {tracks:[]};
+			this.push(...obj.queue.tracks);
 			this._ready = true;
 			this._publish('ready');
 		}.bind(this));
@@ -42,9 +43,7 @@ export default class MusicManager extends EventTarget{
 	//Functions related to serialization: ##############################
 	toJSON(){ //serialization
 		let obj = {};
-		let copy = this.queue.clone();
-		//this.sort();
-		//obj.queue = this.queue.toJSON();
+		obj.queue = this.queue.toJSON();
 		return obj;
 	}
 	clone(){
