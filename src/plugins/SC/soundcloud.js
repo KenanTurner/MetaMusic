@@ -17,7 +17,7 @@ export default class SC extends HTML{
 		this._ready = false;
 		this._iframe_id = iframe_id;
 		delete this._player;
-		ModuleManager.importScript([sc_api]).then(function(){
+		ModuleManager.importScript(sc_api).then(function(){
 			this._createSC(iframe_id);
 		}.bind(this),function(){
 			throw new Error("Failed to load SoundcloudApi.js");
@@ -34,6 +34,7 @@ export default class SC extends HTML{
 			div.allow = "autoplay";
 			div.src = "https://w.soundcloud.com/player/?url=;";
 		document.body.append(div);
+		let SC = window.SC //Grab SC from global scope
 		this._player = SC.Widget(iframe_id);
 		this._player.bind(SC.Widget.Events.READY, function() {
 			this._ready = true;
