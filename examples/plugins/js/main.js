@@ -47,7 +47,7 @@ ModuleManager.importModules({
 		load_promise.then(mm.chain('stop'));
 	});
 	plugin_btn.addEventListener('change',function(e){
-		if(window.location.href.includes('.github.io/')){
+		if(this.value == "BC" && window.location.href.includes('.github.io/')){
 			return alert("Bandcamp will not work from a static site. See the README for more information.");
 		}
 		let p = this.value;
