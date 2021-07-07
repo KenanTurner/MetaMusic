@@ -59,6 +59,14 @@ export default class Album extends EventTarget{
 		}
 		this._publish('shuffle');
 	}
+	filter(f){
+		let tmp = this.clone();
+		tmp.clear();
+		this.tracks.forEach(function(t,i,arr){
+			if(f(t,i,arr)) tmp.push(t);
+		});
+		return tmp;
+	}
 	find(track){
 		return this.tracks.findIndex(function(t){
 			return t.equals(track);
