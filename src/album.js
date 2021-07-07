@@ -19,6 +19,7 @@ export default class Album extends EventTarget{
 				let tmp = new this.constructor.players[track.filetype].Track(track);
 				if(!this.constructor._validTrack(tmp)) throw new Error("Invalid Track!");
 				tmp.track_num = track.track_num;
+				if(this._unsorted) tmp.track_num = undefined;
 				this.tracks.splice(index, 0, tmp);
 				index++;
 			}catch(error){
@@ -36,6 +37,7 @@ export default class Album extends EventTarget{
 				let tmp = new this.constructor.players[track.filetype].Track(track);
 				if(!this.constructor._validTrack(tmp)) throw new Error("Invalid Track!");
 				tmp.track_num = track.track_num;
+				if(this._unsorted) tmp.track_num = undefined;
 				this.tracks.push(tmp);
 			}catch(error){
 				console.log(error);
