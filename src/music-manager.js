@@ -1,18 +1,19 @@
-import EventTarget from './event-target.js';
 import Album from './album.js';
-export default class MusicManager extends EventTarget{
-	static players = {};
+export default class MusicManager extends Album{
 	constructor(obj = {}){
-		super();
-		Album.players = this.constructor.players;
-		this.queue = new Album({title:"queue",_unsorted:true});
+		Album.players = MusicManager.players; //???
+		super({title:"queue",_unsorted:true});
+		this._ready = false;
+		
+		//add tracks
+		if(obj.tracks) this.push(...obj.tracks);
 		
 		//create players
 		this._players = {};
 		let p = Object.values(this.constructor.players);
 		if(p.length == 0) throw new Error("At least one player is required!");
 		p.forEach(function(Player){
-			this._players[Player.name] = new Player(); //TODO use for in
+			this._players[Player.name] = new Player();
 			this._players[Player.name].subscribe('timeupdate',function(e){
 				if(this._player === e.target) this._status.time = e.data.time;
 				this.handleEvent('timeupdate')(e);
@@ -34,82 +35,58 @@ export default class MusicManager extends EventTarget{
 		//wait for ready
 		this._ready = false;
 		this.waitForAll('waitForEvent','ready').then(function(){
-			if(!obj.queue) obj.queue = {tracks:[]};
-			this.push(...obj.queue.tracks);
 			this._ready = true;
 			this._publish('ready');
+			if(this.length > 0) this.load(this.tracks[0]);
 		}.bind(this));
 	}
-	//Functions related to serialization: ##############################
-	toJSON(){ //serialization
-		let obj = {};
-		obj.queue = this.queue.toJSON();
-		return obj;
-	}
-	clone(){
-		return this.constructor.fromJSON(JSON.stringify(this));
-	}
-	equals(t){
-		return JSON.stringify(this) === JSON.stringify(t);
-	}
-	toString(){
-		return JSON.stringify(this);
-	}
-	valueOf(){
-		return JSON.stringify(this.queue.tracks); //TODO?
-	}
-	static fromJSON(json){ //deserialization
-		return new MusicManager(JSON.parse(json));
+	static fromJSON(json){
+		let obj = {...JSON.parse(json),...super.fromJSON(json)}; //merge the two objects
+		return new MusicManager(obj);
 	}
 	//Functions relating to interacting with the queue #################
-	//TODO strip track_num
 	insertNext(...items){
 		let index = this.find(this._track)+1;
 		return this.insert(index,...items);
 	}
-	insert(index,...items){
-		this.queue.insert(index,...items);
-		if(!this._track && this.length > 0) this.load(this.queue.tracks[0]);
-		this._publish('add');
-	}
-	push(...items){
-		this.queue.push(...items);
-		if(!this._track && this.length > 0) this.load(this.queue.tracks[0]);
-		this._publish('add');
-	}
-	remove(...items){
-		this.queue.remove(...items);
-		this._publish('remove');
-	}
-	find(track){
-		return this.queue.find(track);
-	}
-	has(track){
-		return this.queue.has(track);
-	}
-	clear(){
-		return this.queue.clear();
-	}
 	//Functions related to shuffling: ##################################
 	updateTrackNum(){
-		this.queue.tracks.forEach(function(t,i,arr){
+		this.tracks.forEach(function(t,i,arr){
 			arr[i].track_num = i;
 		});
 	}
 	shuffle(){
-		//TODO handle unshuffling
-		this.updateTrackNum();
-		this.queue.shuffle();
-		this.load(this.queue.tracks[0]);
+		let index = this.find(this._track);
+		if(index === -1) return super.shuffle(); //shuffle normally
+		
+		if(!this._status.shuffled) this.updateTrackNum();
+		let shuffleAll = (index == 0 && this._status.time == 0);
+		this._ready = false;
+		if(shuffleAll){
+			super.shuffle();
+			this.load(this.tracks[0]);
+		}else{
+			let previous = this.filter(function(t,i,arr){
+				return i<index;
+			})
+			let remaining = this.filter(function(t,i,arr){
+				return i>index;
+			})
+			if(shuffleAll) remaining.insert(0,this._track);
+			previous.shuffle();
+			remaining.shuffle();
+			if(!shuffleAll) previous.push(this._track);
+			this.clear();
+			this.push(previous,remaining);
+		}
+		this._ready = true;
 		this._status.shuffled = true;
 		this._publish('shuffle');
 	}
 	unshuffle(){
-		if(!this._status.shuffled) this.updateTrackNum();
-		return this.sort('track_num');
-	}
-	sort(key="track_num",reversed=false,_publish=true){
-		return this.queue.sort(key,reversed,_publish);
+		if(!this._status.shuffled) return
+		this.sort('track_num');
+		this._status.shuffled = false;
 	}
 	//Functions related to interactions with a player: #################
 	handleEvent(type,status = {},f){
@@ -186,6 +163,8 @@ export default class MusicManager extends EventTarget{
 	next(step=1){
 		if(this.length === 0) return Promise.reject("Empty playlist!");
 		let index = this.find(this._track);
+		if(index === -1) return Promise.reject("Unable to find next track!");
+		
 		let mod = function(n, m) {
 			return ((n % m) + m) % m;
 		}
@@ -194,10 +173,11 @@ export default class MusicManager extends EventTarget{
 			this._publish('ended'); //End of playlist
 		}
 		index = mod(index+step,this.length);
-		let track = this.queue.tracks[index];
+		let track = this.tracks[index];
+		let paused = this._status.paused;
 		return this.load(track).then(function(e){
 			this._publish('next');
-			if(!this._status.paused) return this.play(); //TODO return load event?
+			if(!paused) return this.play(); //TODO return load event?
 			return e;
 		}.bind(this),function(e){
 			this._publish('error');
@@ -209,10 +189,6 @@ export default class MusicManager extends EventTarget{
 		return this.next(-step);
 	}
 	//Bonus: ###########################################################
-	//TODO use proxy instead???
-	get length(){
-		return this.queue.length;
-	}
 	destroy(){
 		return this.waitForAll('destroy').then(function(){
 			this._ready = false;
@@ -243,9 +219,18 @@ export default class MusicManager extends EventTarget{
 }
 /*
  * Notes:
- * 	Clicking play on an album clears the queue and adds all tracks in order
- * 	Two options for tracks and albums: append, play next
- * 	Tracks must be removed individually
- * 	Stop after track?
- * 	Handle shuffling?
+ * insertNext should always play next
+ * append should always be played last
+ * unshuffling should retain that order
+ * 
+ * Indexing:
+ * 	pro: easy inserting and ordering
+ * 	con: need to take index into account
+ * Shuffling:
+ *  pro: no need for redundant indexing
+ *  cons: inserting is difficult
+ * 
+ * Two modes of operation:
+ *  Queue based
+ *  load based
  */

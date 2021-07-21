@@ -1,3 +1,4 @@
+//ModuleManager must be imported in global scope
 import HTML from '../../html.js';
 export default class SC extends HTML{
 	static Track = class Track extends HTML.Track{
@@ -109,13 +110,13 @@ export default class SC extends HTML{
 	}
 	seek(time){
 		this._player.seekTo(time*1000);
-		return this.waitForEvent('timeupdate')
+		/*return this.waitForEvent('timeupdate')
 		.then(this.chain('getStatus'))
 		.then(function(obj){
 			if(time >= obj.duration && obj.paused){
 				this._publish('ended');
 			}
-		}.bind(this))
+		}.bind(this))*/
 	}
 	fastForward(time){
 		return this._async('getPosition')

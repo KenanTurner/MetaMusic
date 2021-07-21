@@ -3,7 +3,7 @@ export default class Album extends EventTarget{
 	static players = {};
 	constructor(obj = {}){
 		super();
-		if(!obj.title) throw new Error('Invalid Constructor');
+		if(!obj.title) throw new Error('Invalid Constructor. Title is required');
 		this.title = obj.title;
 		
 		this.tracks = [];

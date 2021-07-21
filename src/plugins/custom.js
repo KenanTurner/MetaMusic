@@ -1,9 +1,9 @@
-import _Track from '../default.js';
+import _Track from '../track.js';
 export default class Track extends _Track{
+	static MusicManager;
 	constructor(obj){
 		super(obj);
 		this.filetype = "CUSTOM";
-		//this.track_num = obj.track_num; //????? track_num not required
 		this.duration = obj.duration;
 		this.artist = obj.artist;
 		this.artwork_url = obj.artwork_url;
@@ -14,10 +14,10 @@ export default class Track extends _Track{
 		if(!obj._upload_date) this._upload_date = (new Date()).toJSON();
 		this._user_id = obj._user_id;
 		if(!obj._user_id) this._user_id = Track.getUserId();
+		this.elements = [];
 	}
 	toJSON(){ //serialization
 		let obj = super.toJSON();
-		//obj.track_num = this.track_num;
 		obj.duration = this.duration;
 		obj.artist = this.artist;
 		obj.artwork_url = this.artwork_url;
@@ -28,11 +28,38 @@ export default class Track extends _Track{
 		obj._user_id = this._user_id;
 		return obj;
 	}
+	clone(){
+		let tmp = this.constructor.fromJSON(JSON.stringify(this));
+		this.elements.forEach(function(el){
+			tmp.elements.push(el);
+		});
+		return tmp;
+	}
 	static fromJSON(json){ //deserialization
-		let obj = {...JSON.parse(json),...super.fromJSON(json)}; //merge the two objects
+		//TODO is this order correct?
+		let obj = {...super.fromJSON(json),...JSON.parse(json)}; //merge the two objects
 		return new Track(obj);
 	}
 	static getUserId(){ //override later
 		return "TODO Override getUserId";
+	}
+	toHTML(){
+		let el = document.createElement('button');
+		el.innerText = this.title;
+		el.addEventListener('click',this.onclick.bind(this));
+		this.elements.push(el);
+		return el;
+	}
+	onclick(){
+		let mm = this.constructor.MusicManager;
+		let paused = mm._status.paused;
+		mm.load(this).then(function(){
+			if(!paused) mm.play();
+		});
+	}
+	updateHTML(){
+		this.elements.forEach(function(el){
+			el.innerText = this.title;
+		}.bind(this));
 	}
 }

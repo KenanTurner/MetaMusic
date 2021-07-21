@@ -1,3 +1,4 @@
+//ModuleManager must be imported in global scope
 import HTML from '../../html.js';
 export default class YT extends HTML{
 	static Track = class Track extends HTML.Track{
