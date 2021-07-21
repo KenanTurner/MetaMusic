@@ -18,7 +18,7 @@ export default class TestCases extends T{
 	}
 	static playPause(MusicManager,players,album){
 		MusicManager.players = players;
-		let mm = new MusicManager({queue:album});
+		let mm = new MusicManager(album);
 		return mm.waitForEvent('ready')
 		.then(mm.chain('play')) //play
 		.then(mm.chain('pause'))
@@ -28,9 +28,10 @@ export default class TestCases extends T{
 		.then(mm.chain('pause'))
 		.finally(mm.chain('destroy'));
 	}
+	//Test cases may need more time to complete
 	static next(MusicManager,players,album){
 		MusicManager.players = players;
-		let mm = new MusicManager({queue:album});
+		let mm = new MusicManager(album);
 		let wait = function(time){
 			return function(){
 				return new Promise(function(res,rej){
@@ -55,29 +56,28 @@ export default class TestCases extends T{
 		.then(mm.chain('next')) //t1
 		.finally(mm.chain('destroy'));
 	}
-	//TODO fix shuffle case
+	//TODO update shuffle test
 	static shuffle(MusicManager,players,album){
 		MusicManager.players = players;
-		let mm = new MusicManager({queue:album});
-		let copy;
+		let mm = new MusicManager(album);
+		let copy = new MusicManager(album);
 		return mm.waitForEvent('ready').then(function(){
-			copy = mm.clone();
 			return copy.waitForEvent('ready');
 		}).then(function(){
 			if(mm.length <= 1) throw new Error("shuffle test must be completed with >1 tracks!");
-			if(mm.queue.tracks[0].equals(mm.queue.tracks[1])) throw new Error("First two tracks need to be different!");
+			if(mm.tracks[0].equals(mm.tracks[1])) throw new Error("First two tracks need to be different!");
 			if(!copy.equals(mm)) throw new Error("Cloning fails to keep track order!");
 			//swap the first two values to simulate shuffling
-			[mm.queue.tracks[0], mm.queue.tracks[1]] = [mm.queue.tracks[1], mm.queue.tracks[0]];
+			[mm.tracks[0], mm.tracks[1]] = [mm.tracks[1], mm.tracks[0]];
 			if(copy.equals(mm)) throw new Error("Shuffling fails to produce unique ordering!");
-			copy.destroy();
 		})
 		.then(mm.chain('destroy'))
+		.then(copy.chain('destroy'))
 	}
 	
 	static subs(MusicManager,players,album){
 		MusicManager.players = players;
-		let mm = new MusicManager({queue:album});
+		let mm = new MusicManager(album);
 		var check = {
 			loaded:false,
 			play:false,

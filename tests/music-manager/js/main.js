@@ -43,8 +43,7 @@ ModuleManager.importModules({
 	MusicManager.players = {"HTML":HTML,"YT":YT,"SC":SC,"BC":BC};
 	window.a = new Album({title:"t",tracks:[t1,t2,t3,t4]});
 	window.tc = new TestCases();
-	window.mm = new MusicManager();
-	mm.push(t1,t2,t3,t4);
+	window.mm = new MusicManager({tracks:[t1,t2,t3,t4]});
 	mm.subscribe('all',f);
 })
 let test_cases = {
