@@ -11,6 +11,7 @@ ModuleManager.importModules({
 	let Custom = obj.Custom.default;
 	Object.setPrototypeOf(HTML.Track,Custom); //This is poggers
 	Object.setPrototypeOf(HTML.Track.prototype,Custom.prototype); //Like super poggers
+	//Now it goes HTML.Track > Custom > Track
 	let YT = obj.YT.default;
 	let BC = obj.BC.default;
 	let SC = obj.SC.default;

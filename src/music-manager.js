@@ -217,20 +217,3 @@ export default class MusicManager extends Album{
 		return obj;
 	}
 }
-/*
- * Notes:
- * insertNext should always play next
- * append should always be played last
- * unshuffling should retain that order
- * 
- * Indexing:
- * 	pro: easy inserting and ordering
- * 	con: need to take index into account
- * Shuffling:
- *  pro: no need for redundant indexing
- *  cons: inserting is difficult
- * 
- * Two modes of operation:
- *  Queue based
- *  load based
- */

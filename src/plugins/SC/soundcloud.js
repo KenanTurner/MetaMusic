@@ -110,6 +110,7 @@ export default class SC extends HTML{
 	}
 	seek(time){
 		this._player.seekTo(time*1000);
+		//TODO fix seek to correctly publish ended
 		/*return this.waitForEvent('timeupdate')
 		.then(this.chain('getStatus'))
 		.then(function(obj){
