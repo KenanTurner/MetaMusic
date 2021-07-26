@@ -84,8 +84,10 @@ ModuleManager.importModules({
 		if(t.filetype == "BC" && window.location.href.includes('.github.io/')){
 			return alert("Bandcamp will not work from a static site. See the README for more information.");
 		}
-		//mm.stop();
-		mm.load(t);
+		let paused = mm._status.paused;
+		mm.load(t).then(function(e){
+			if(!paused) mm.play();
+		});
 	}
 	Custom.onLoad = function(t){
 		t.elements.forEach(function(e){
