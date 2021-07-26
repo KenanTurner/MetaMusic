@@ -1,6 +1,6 @@
 ModuleManager.importModules({
-	"Custom":['./examples/album-test/js/custom.js'],
-	"Album":['./examples/album-test/js/custom-album.js'],
+	"Custom":['./examples/album/js/custom.js'],
+	"Album":['./examples/album/js/custom-album.js'],
 	"HTML":['./src/html.js'],
 	"YT":['./src/plugins/YT/youtube.js'],
 	"BC":['./src/plugins/BC/bandcamp.js'],
