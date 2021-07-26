@@ -12,7 +12,7 @@ ModuleManager.importModules({
 	Object.setPrototypeOf(HTML.Track,Custom); //This is poggers
 	Object.setPrototypeOf(HTML.Track.prototype,Custom.prototype); //Like super poggers
 	//Now it goes HTML.Track > Custom > Track
-	window.Album = obj.Album.default;
+	let Album = obj.Album.default;
 	let YT = obj.YT.default;
 	let BC = obj.BC.default;
 	let SC = obj.SC.default;
