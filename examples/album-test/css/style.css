@@ -30,6 +30,9 @@ body {
 	border-style: solid;
 	border-width: 1px;
 }
+.hidden {
+	display: none !important;
+}
 
 /* Album related css below */
 .album-container {

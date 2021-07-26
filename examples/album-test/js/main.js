@@ -79,24 +79,35 @@ ModuleManager.importModules({
 
 	let album_container = document.getElementById('album-container');
 	let track_container = document.getElementById('track-container');
-	let files = [
+	window.files = [
 		'./data/html.json',
 		'./data/youtube.json',
 		'./data/bandcamp.json',
 		'./data/soundcloud.json',
 	]
-	let fetchJson = function(filename){
-		return fetch(filename).then(function(r){
-			return r.json();
-		})
-	}
-	files.forEach(function(item){
-		fetchJson(item).then(function(data){
+	ModuleManager.fetchJSON(files).then(function(arr){
+		arr.forEach(function(data){
 			let a = new Album(data)
-			a.tracks.forEach(function(t){
-				track_container.appendChild(t.toHTML());
-			});
+			a.onclick = function(){
+				mm.stop();
+				mm.clear();
+				mm.push(a);
+				mm.load(a.tracks[0]);
+				while(track_container.firstChild){
+					track_container.removeChild(track_container.lastChild);
+				}
+				this.tracks.forEach(function(t){
+					t.onclick = function(){
+						if(this.filetype == "BC" && window.location.href.includes('.github.io/')){
+							return alert("Bandcamp will not work from a static site. See the README for more information.");
+						}
+						mm.stop();
+						mm.load(this);
+					}
+					track_container.appendChild(t.toHTML());
+				});
 
+			}
 			album_container.appendChild(a.toHTML());
 		});
 	});
