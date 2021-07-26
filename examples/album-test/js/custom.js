@@ -41,20 +41,19 @@ export default class Track extends _Track{
 				track_subtitle.innerText = this.src;
 				track_text_div.appendChild(track_subtitle);
 			track_div.appendChild(track_text_div);
-		track_div.addEventListener('click',this.onclick.bind(this));
+		track_div.addEventListener('click',function(e){
+			this.constructor.onClick(this);
+		}.bind(this));
+		this.elements.push(track_div);
 		return track_div;
-	}
-	onclick(){
-		console.log("Track clicked: ",this);
-		/*let mm = this.constructor.MusicManager;
-		let paused = mm._status.paused;
-		mm.load(this).then(function(){
-			if(!paused) mm.play();
-		});*/
 	}
 	updateHTML(){
 		this.elements.forEach(function(el){
 			el.innerText = this.title;
 		}.bind(this));
 	}
+	//to be overloaded later
+	static onClick(){}
+	static onLoad(){}
+	static onUnload(){}
 }

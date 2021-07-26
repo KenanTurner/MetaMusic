@@ -31,13 +31,16 @@ export default class Album extends A{
 				album_title.innerText = this.title;
 				album_text_div.appendChild(album_title);
 			album_div.appendChild(album_text_div);
-		album_div.addEventListener('click',this.onclick.bind(this));
+		album_div.addEventListener('click',function(e){
+			this.constructor.onClick(this);
+		}.bind(this));
 		return album_div;
-	}
-	onclick(){
-		console.log("album clicked: ",this);
 	}
 	updateHTML(){
 		return false;
 	}
+	//to be overloaded later
+	static onClick(){}
+	static onLoad(){}
+	static onUnload(){}
 }

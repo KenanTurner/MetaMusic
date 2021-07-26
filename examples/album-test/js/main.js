@@ -65,20 +65,45 @@ ModuleManager.importModules({
 	next_btn.addEventListener('click',function(){
 		load_promise.then(mm.chain('next',1));
 	});
-	mm.subscribe('loaded',function(e){
-		mm.tracks.forEach(function(t){
-			t.elements.forEach(function(e){
-				e.classList.remove('playing');
-			});
-		});
-		let track = e.target._track;
-		track.elements.forEach(function(e){
-			e.classList.add('playing');
-		});
-	});
 
+	let previous_track = undefined;
+	mm.subscribe('loaded',function(e){
+		if(previous_track) Custom.onUnload(previous_track);
+		Custom.onLoad(mm._track);
+		previous_track = mm._track;
+	});
 	let album_container = document.getElementById('album-container');
 	let track_container = document.getElementById('track-container');
+	Album.onClick = function(a){
+		console.log(a);
+		while(track_container.firstChild) track_container.removeChild(track_container.lastChild);
+		a.tracks.forEach(function(t){
+			track_container.appendChild(t.toHTML());
+		});
+		mm.stop();
+		mm.clear();
+		mm.push(a);
+		mm.load(a.tracks[0]);
+	}
+	Custom.onClick = function(t){
+		if(t.filetype == "BC" && window.location.href.includes('.github.io/')){
+			return alert("Bandcamp will not work from a static site. See the README for more information.");
+		}
+		//mm.stop();
+		mm.load(t);
+	}
+	Custom.onLoad = function(t){
+		t.elements.forEach(function(e){
+			e.classList.add('playing');
+		});
+	}
+	Custom.onUnload = function(t){
+		t.elements.forEach(function(e){
+			e.classList.remove('playing');
+		});
+	}
+
+
 	window.files = [
 		'./data/html.json',
 		'./data/youtube.json',
@@ -87,27 +112,7 @@ ModuleManager.importModules({
 	]
 	ModuleManager.fetchJSON(files).then(function(arr){
 		arr.forEach(function(data){
-			let a = new Album(data)
-			a.onclick = function(){
-				mm.stop();
-				mm.clear();
-				mm.push(a);
-				mm.load(a.tracks[0]);
-				while(track_container.firstChild){
-					track_container.removeChild(track_container.lastChild);
-				}
-				this.tracks.forEach(function(t){
-					t.onclick = function(){
-						if(this.filetype == "BC" && window.location.href.includes('.github.io/')){
-							return alert("Bandcamp will not work from a static site. See the README for more information.");
-						}
-						mm.stop();
-						mm.load(this);
-					}
-					track_container.appendChild(t.toHTML());
-				});
-
-			}
+			let a = new Album(data);
 			album_container.appendChild(a.toHTML());
 		});
 	});
