@@ -5,25 +5,29 @@ export default class Album extends EventTarget{
 		super();
 		if(!obj.title) throw new Error('Invalid Constructor. Title is required');
 		this.title = obj.title;
-		
+
 		this.tracks = [];
 		if(obj.tracks) this.push(...obj.tracks);
 		this._unsorted = obj._unsorted;
+	}
+	_cloneTrack(track){
+		if(!this.constructor.players[track.filetype]) throw new Error("Unsupported Track Type: "+track.filetype);
+		let tmp = new this.constructor.players[track.filetype].Track(track);
+		if(track.clone) tmp = track.clone();
+		tmp.track_num = track.track_num;
+		if(this._unsorted) tmp.track_num = undefined;
+		if(!this.constructor._validTrack(tmp)) throw new Error("Invalid Track!");
+		return tmp;
 	}
 	insert(index,...items){
 		items.forEach(function(track){
 			if(Album.prototype.isPrototypeOf(track)) return this.insert(index,...track.tracks);
 			try{
-				if(track.toJSON) track = {...{track_num:track.track_num},...track.toJSON()}; //make sure tracks are converted correctly
-				if(!this.constructor.players[track.filetype]) throw new Error("Unsupported Track Type: "+track.filetype);
-				let tmp = new this.constructor.players[track.filetype].Track(track);
-				if(!this.constructor._validTrack(tmp)) throw new Error("Invalid Track!");
-				tmp.track_num = track.track_num;
-				if(this._unsorted) tmp.track_num = undefined;
+				let tmp = this._cloneTrack(track);
 				this.tracks.splice(index, 0, tmp);
 				index++;
 			}catch(error){
-				console.log(error);
+				console.error(error);
 			}
 		}.bind(this));
 		if(items.length > 0) this._publish('add');
@@ -32,15 +36,10 @@ export default class Album extends EventTarget{
 		items.forEach(function(track){
 			if(Album.prototype.isPrototypeOf(track)) return this.push(...track.tracks);
 			try{
-				if(track.toJSON) track = {...{track_num:track.track_num},...track.toJSON()}; //make sure tracks are converted correctly
-				if(!this.constructor.players[track.filetype]) throw new Error("Unsupported Track Type: "+track.filetype);
-				let tmp = new this.constructor.players[track.filetype].Track(track);
-				if(!this.constructor._validTrack(tmp)) throw new Error("Invalid Track!");
-				tmp.track_num = track.track_num;
-				if(this._unsorted) tmp.track_num = undefined;
+				let tmp = this._cloneTrack(track);
 				this.tracks.push(tmp);
 			}catch(error){
-				console.log(error);
+				console.error(error);
 			}
 		}.bind(this));
 		if(items.length > 0) this._publish('add');
@@ -51,7 +50,7 @@ export default class Album extends EventTarget{
 			this.tracks = this.tracks.filter(function(t){
 				if(!t.equals(track)) return true;
 			});
-		}.bind(this));		
+		}.bind(this));
 		if(items.length > 0) this._publish('remove');
 	}
 	shuffle() {
@@ -101,7 +100,7 @@ export default class Album extends EventTarget{
 		obj.title = this.title;
 		obj.tracks = [...this.tracks];
 		obj._unsorted = this._unsorted;
-		
+
 		if(!this._unsorted) obj.tracks.sort(function(t1,t2){
 			let val = t1.compare(t2,"track_num");
 			if(val === 0) val = t1.compare(t2,"title");
