@@ -1,5 +1,6 @@
 {
-	"title": "html. JK This is a super long and difficult to spell title. Good luck putting this on one line.",
+	"title": "Example",
+	"_comment":"There is no need to include files of the same type in an album. They can be intermixed freely.",
 	"tracks": [
 		{
 			"filetype": "SC",

@@ -6,34 +6,26 @@ ModuleManager.importModules({
 	"BC":['./src/plugins/BC/bandcamp.js'],
 	"SC":['./src/plugins/SC/soundcloud.js'],
 	"MM":['./src/music-manager.js'],
-	//"Album":['./src/album.js'],
 }).then(function(obj){
 	let HTML = obj.HTML.default;
 	let Custom = obj.Custom.default;
 	Object.setPrototypeOf(HTML.Track,Custom); //This is poggers
 	Object.setPrototypeOf(HTML.Track.prototype,Custom.prototype); //Like super poggers
 	//Now it goes HTML.Track > Custom > Track
+	window.Album = obj.Album.default;
 	let YT = obj.YT.default;
 	let BC = obj.BC.default;
 	let SC = obj.SC.default;
 	let MusicManager = obj.MM.default;
-	window.Album = obj.Album.default;
 	console.log("Loaded");
 
 	MusicManager.players = {"HTML":HTML,"YT":YT,"SC":SC,"BC":BC};
 	window.mm = new MusicManager();
 	mm.subscribe('error',function(err){
-		console.log(err);
+		console.error(err);
 		alert("There was an error playing the requested file");
 	});
-	mm.subscribe('all',function(e){console.log(e)});
-	Custom.MusicManager = mm;
-
-	let queue = document.getElementById("queue");
-	mm.tracks.forEach(function(t){
-		queue.appendChild(t.toHTML());
-	});
-
+	//mm.subscribe('all',function(e){console.log(e)});
 	let previous_btn = document.getElementById("previous");
 	let backward_btn = document.getElementById("backward");
 	let play_btn = document.getElementById("play");
@@ -72,10 +64,13 @@ ModuleManager.importModules({
 		Custom.onLoad(mm._track);
 		previous_track = mm._track;
 	});
+
 	let album_container = document.getElementById('album-container');
 	let track_container = document.getElementById('track-container');
 	Album.onClick = function(a){
-		console.log(a);
+		if(a.title == "ABZU" && window.location.href.includes('.github.io/')){
+			return alert("Bandcamp will not work from a static site. See the README for more information.");
+		}
 		while(track_container.firstChild) track_container.removeChild(track_container.lastChild);
 		a.tracks.forEach(function(t){
 			track_container.appendChild(t.toHTML());
@@ -103,7 +98,7 @@ ModuleManager.importModules({
 		});
 	}
 
-
+	//TODO future loading optimizations
 	window.files = [
 		'./data/html.json',
 		'./data/youtube.json',
@@ -117,34 +112,3 @@ ModuleManager.importModules({
 		});
 	});
 })
-function insertAfter(newNode, existingNode) {
-    existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
-}
-function swap(node1, node2) {
-    const afterNode2 = node2.nextElementSibling;
-    const parent = node2.parentNode;
-    node1.replaceWith(node2);
-    parent.insertBefore(node1, afterNode2);
-}
-let dragObj = {}
-function dragStart(e){
-	dragObj['target'] = e.target;
-	//e.target.parentNode.
-}
-function dragEnter(e){
-	e.preventDefault();
-}
-function dragOver(e){
-	e.preventDefault();
-	//console.log(e);
-	//if(el.parentNode.firstElementChild == el)
-}
-function dragLeave(e){
-	//console.log("LEAVE")
-}
-function dragDrop(e){
-	//console.log("DROP")
-	//dragObj['target'].style.opacity = 1;
-	insertAfter(dragObj['target'],e.target);
-	e.preventDefault();
-}
