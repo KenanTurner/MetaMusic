@@ -61,4 +61,23 @@ ModuleManager.importScripts = function(import_obj){
 		return Promise.resolve(import_obj);
 	});
 }
-
+ModuleManager.fetch = function(files,f=function(r){return r}){
+	let tmp = [];
+	files.forEach(function(file,index,arr){
+		let p = fetch(file).then(f)
+		.then(function(val){
+			tmp[index] = val;
+		},function(o){
+			console.error("Failed to fetch: ",file);
+		})
+		tmp.push(p);
+	});
+	return Promise.allSettled(tmp).then(function(){
+		return Promise.resolve(tmp);
+	});
+}
+ModuleManager.fetchJSON = function(files){
+	return ModuleManager.fetch(files,function(r){
+		return r.json();
+	})
+}
