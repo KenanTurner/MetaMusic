@@ -24,7 +24,6 @@ export default class SC extends HTML{
 			throw new Error("Failed to load SoundcloudApi.js");
 		}.bind(this));
 	}
-	//TODO Soundcloud fails to load if display = none in firefox
 	_createSC(iframe_id){
 		var div = document.createElement("iframe");
 			div.id = iframe_id;
@@ -110,7 +109,14 @@ export default class SC extends HTML{
 		.then(this.chain('seek',0));
 	}
 	seek(time){
-		this._player.seekTo(time*1000);
+		return this.getStatus()
+		.then(function(obj){
+			this._player.seekTo(time*1000);
+			if(time >= obj.duration && obj.paused){
+				this._publish('ended');
+			}
+		}.bind(this))
+		
 		//TODO fix seek to correctly publish ended
 		/*return this.waitForEvent('timeupdate')
 		.then(this.chain('getStatus'))
