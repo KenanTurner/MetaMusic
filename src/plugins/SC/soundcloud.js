@@ -115,16 +115,11 @@ export default class SC extends HTML{
 			if(time >= obj.duration && obj.paused){
 				this._publish('ended');
 			}
+			//TODO this solution is terrible but it works
+			return new Promise(function(res){
+				setTimeout(res,10); //just wait 10 ms
+			})
 		}.bind(this))
-		
-		//TODO fix seek to correctly publish ended
-		/*return this.waitForEvent('timeupdate')
-		.then(this.chain('getStatus'))
-		.then(function(obj){
-			if(time >= obj.duration && obj.paused){
-				this._publish('ended');
-			}
-		}.bind(this))*/
 	}
 	fastForward(time){
 		return this._async('getPosition')
