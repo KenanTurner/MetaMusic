@@ -1,6 +1,7 @@
 <?php
-	$url = $_POST["href"];
-	//echo $url;
+	$data = json_decode(file_get_contents('php://input'), true);
+	$url = $data["href"];
+
 	$doc = new DOMDocument();
 	$doc->loadHTMLFile($url,LIBXML_COMPACT);
 	$h1 = $doc->getElementsByTagName("script");
@@ -19,6 +20,4 @@
 		//echo trim($tmpJson["trackinfo"][0]["file"]["mp3-128"]);
 	}
 	echo json_encode($hrefs);
-	//echo $h1, PHP_EOL;
-	//echo file_get_contents("https://tobyfox.bandcamp.com/");
 ?>
