@@ -37,10 +37,10 @@ ModuleManager.importModules({
 		console.log(evt);
 	}
 	
-	t1.track_num = 1;
+	/*t1.track_num = 1;
 	t2.track_num = 2;
 	t3.track_num = 3;
-	t4.track_num = 4;
+	t4.track_num = 4;*/
 	Album.players = {
 		"HTML":HTML,
 		"YT":YT,

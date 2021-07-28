@@ -109,17 +109,13 @@ export default class Album extends EventTarget{
 		})
 		obj.tracks.forEach(function(track,index){
 			let copy = track.toJSON();
-			copy.track_num = track.track_num;
+			//copy.track_num = track.track_num;
 			obj.tracks[index] = copy;
 		});
 		return obj;
 	}
 	static fromJSON(json){ //deserialization
-		let obj = JSON.parse(json);
-		obj.tracks.forEach(function(track,i,arr){
-			arr[i].track_num = track.track_num;
-		}.bind(this))
-		return new Album(obj);
+		return new Album(JSON.parse(json));
 	}
 	clone(){
 		return this.constructor.fromJSON(JSON.stringify(this));
