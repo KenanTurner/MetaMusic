@@ -127,10 +127,11 @@ export default class TestCases extends T{
 		let a1 = new Album(obj);
 		let a2 = new Album({title:obj.title});
 		a2.push(...obj.tracks);
-		console.log(a1,a2);
+		//console.log(a1,a2);
 		if(!a1.equals(a2)) throw new Error("Push fails to add a track!");
 		a2.remove(...obj.tracks);
 		if(a2.length !== 0) throw new Error("Removing a track fails!");
+		console.log(a1,a2);
 		a2.insert(0,...obj.tracks);
 		if(!a1.equals(a2)) throw new Error("Insert fails to add a track");
 		return Promise.resolve();
@@ -140,6 +141,7 @@ export default class TestCases extends T{
 		let a2 = new Album(obj);
 		a1.insert(0,a1);
 		a2.push(a2);
+		console.log(a1,a2);
 		if(!a1.equals(a2)) throw new Error("Adding an album fails!");
 		return Promise.resolve();
 	}
@@ -155,6 +157,12 @@ export default class TestCases extends T{
 			return !album.tracks[0].equals(a1.tracks[0]);
 		});
 		if(!result) throw new Error("Shuffling an album fails to generate unique permutations!");
+		return Promise.resolve();
+	}
+	static trackNum(Album,obj){
+		let a1 = new Album(obj);
+		let a2 = new Album({...obj,...{_unsorted:true}});
+		
 		return Promise.resolve();
 	}
 }

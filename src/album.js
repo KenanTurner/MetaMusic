@@ -14,8 +14,6 @@ export default class Album extends EventTarget{
 		if(!this.constructor.players[track.filetype]) throw new Error("Unsupported Track Type: "+track.filetype);
 		let tmp = new this.constructor.players[track.filetype].Track(track);
 		if(track.clone) tmp = track.clone();
-		tmp.track_num = track.track_num;
-		if(this._unsorted) tmp.track_num = undefined;
 		if(!this.constructor._validTrack(tmp)) throw new Error("Invalid Track!");
 		return tmp;
 	}
@@ -23,7 +21,21 @@ export default class Album extends EventTarget{
 		items.forEach(function(track){
 			if(Album.prototype.isPrototypeOf(track)) return this.insert(index,...track.tracks);
 			try{
+				if(index >= this.length){
+					this.push(track);
+					index++;
+					return;
+				}				
 				let tmp = this._cloneTrack(track);
+				let val = 0;
+				if(this.length > 0){
+					let mod = function(n, m) {return ((n % m) + m) % m;}
+					val = this.tracks[mod(index,this.length)].track_num;
+					this.tracks.forEach(function(t,i,arr){
+						if(t.track_num >= val) arr[i].track_num++;
+					});
+				}
+				tmp.track_num = val;
 				this.tracks.splice(index, 0, tmp);
 				index++;
 			}catch(error){
@@ -37,6 +49,9 @@ export default class Album extends EventTarget{
 			if(Album.prototype.isPrototypeOf(track)) return this.push(...track.tracks);
 			try{
 				let tmp = this._cloneTrack(track);
+				let val = Math.max(...this.getInfo('track_num'))+1;
+				if(this.length == 0) val = 0;
+				tmp.track_num = val;
 				this.tracks.push(tmp);
 			}catch(error){
 				console.error(error);
@@ -108,9 +123,7 @@ export default class Album extends EventTarget{
 			return val;
 		})
 		obj.tracks.forEach(function(track,index){
-			let copy = track.toJSON();
-			//copy.track_num = track.track_num;
-			obj.tracks[index] = copy;
+			obj.tracks[index] = track.toJSON();
 		});
 		return obj;
 	}
@@ -129,7 +142,7 @@ export default class Album extends EventTarget{
 	getInfo(key){
 		let arr = [];
 		this.tracks.forEach(function(track){
-			if(track[key]) arr.push(track[key]);
+			if(track[key] !== undefined) arr.push(track[key]);
 		}.bind(this));
 		return arr;
 	}

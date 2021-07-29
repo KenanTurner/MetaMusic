@@ -37,10 +37,6 @@ ModuleManager.importModules({
 		console.log(evt);
 	}
 	
-	/*t1.track_num = 1;
-	t2.track_num = 2;
-	t3.track_num = 3;
-	t4.track_num = 4;*/
 	Album.players = {
 		"HTML":HTML,
 		"YT":YT,
@@ -78,31 +74,8 @@ let test_cases = {
 	"addRemove":true,
 	"addRemoveAlbum":true,
 	"shuffle":true,
+	"trackNum":true,
 }
+//imported from shared folder
 createOptions(test_cases,"test_cases");
-
-function updateOptions(evt){
-	let name = evt.target.id.substring(7);
-	this[name] = evt.target.checked;
-}
-
-function createOptions(options,id){
-	let el = document.getElementById(id);
-	while (el.firstChild) {
-		el.removeChild(el.firstChild);
-	}
-	Object.keys(options).forEach(function(name){
-		let input = document.createElement("INPUT");
-		let label = document.createElement("LABEL");
-		input.type = "checkbox";
-		input.id = "option-"+name;
-		input.name = "option-"+name;
-		input.checked = true;
-		input.onclick = updateOptions.bind(options);
-		label.for = "option-"+name;
-		label.innerText = name+": ";
-		el.appendChild(label);
-		el.appendChild(input);
-	});
-}
 
