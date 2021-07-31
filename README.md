@@ -1,6 +1,6 @@
 # MetaMusic
 
-TODO :/
+Play MP3s, Youtube, Soundcloud, and Bandcamp all in one place with a single javascript library!
 
 ## Description
 
@@ -8,15 +8,15 @@ TODO
 
 ## Dependencies
 
-TODO
+None :)
 
 ## Features
 
-- TODO
+- Fully modular plugins
 
 ## Browser Compatibility
 
-- TODO
+- [ES6 as a baseline](https://caniuse.com/es6)
 
 ## Installation
 
@@ -26,11 +26,14 @@ TODO
 
 - TODO
 
-For advanced functionality, see the examples section.  
+For advanced functionality, see the [examples section](https://github.com/KenanTurner/MetaMusic/tree/master/examples)
 
 ## Live Demo
 
-TODO
+- [Simple](https://kenanturner.github.io/MetaMusic/examples/simple/)
+- [Plugins](https://kenanturner.github.io/MetaMusic/examples/plugins/)
+- [Queue](https://kenanturner.github.io/MetaMusic/examples/queue/)
+- [Album](https://kenanturner.github.io/MetaMusic/examples/album/)
 
 ## Help
 
