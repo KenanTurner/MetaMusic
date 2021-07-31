@@ -1,4 +1,38 @@
-//ModuleManager must be imported in global scope
+//Taken and modified from https://www.youtube.com/iframe_api
+let _yt_api = function(){
+	var scriptUrl = 'https:\/\/www.youtube.com\/s\/player\/3c3086a1\/www-widgetapi.vflset\/www-widgetapi.js';try{var ttPolicy=window.trustedTypes.createPolicy("youtube-widget-api",{createScriptURL:function(x){return x}});scriptUrl=ttPolicy.createScriptURL(scriptUrl)}catch(e){}
+	if(!this._YT) this._YT={loading:0,loaded:0};
+	if(!this._YTConfig) this._YTConfig={"host":"https://www.youtube.com"};
+	if(!this._YT.loading){
+		this._YT.loading=1;
+		(function(){
+			var l=[];
+			this._YT.ready=function(f){
+				if(this._YT.loaded)f();
+				else l.push(f)
+			}.bind(this);
+			window.onYTReady=function(){
+				this._YT.loaded=1;
+				for(var i=0;i<l.length;i++)try{l[i]()}catch(e$0){}
+			}.bind(this);
+			this._YT.setConfig=function(c){
+				for(var k in c)if(c.hasOwnProperty(k))this._YTConfig[k]=c[k]
+			}.bind(this);
+			var a=document.createElement("script");
+			a.type="text/javascript";
+			a.id="www-widgetapi-script";
+			a.src=scriptUrl;
+			a.async=true;
+			var c=document.currentScript;
+			if(c){
+				var n=c.nonce||c.getAttribute("nonce");
+				if(n)a.setAttribute("nonce",n)
+			}
+			var b=document.getElementsByTagName("script")[0];
+			b.parentNode.insertBefore(a,b)
+		}.bind(this)).bind(this)()
+	};
+}
 import HTML from '../../html.js';
 export default class YT extends HTML{
 	static Track = class Track extends HTML.Track{
@@ -10,16 +44,13 @@ export default class YT extends HTML{
 			return new YT.Track(JSON.parse(json));
 		}
 	}
-	constructor(yt_api = "../../src/plugins/YT/YoutubeApi.js",iframe_id="_YT_"+Math.random().toString(36).substring(7)){
+	constructor(iframe_id="_YT_"+Math.random().toString(36).substring(7)){
 		super();
 		this._ready = false;
 		this._iframe_id = iframe_id;
 		delete this._player;
-		ModuleManager.importScript([yt_api]).then(function(){
-			this._createYT(iframe_id);
-		}.bind(this),function(){
-			throw new Error("Failed to load YoutubeApi.js");
-		}.bind(this));
+		_yt_api.call(this);
+		this._createYT(iframe_id);
 	}
 	_createYT(){
 		var div = document.createElement("div");
@@ -32,7 +63,7 @@ export default class YT extends HTML{
 			width: "100%",
 			playerVars: {'controls': 0,'disablekb':1,'fs':0,'modestbranding':1,'playsinline':1},
 		}
-		window.YT.ready(function() {
+		this._YT.ready(function() {
 			let f = function(g){
 				return function(evt){
 					return this[g](evt);
