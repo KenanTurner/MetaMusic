@@ -9,8 +9,8 @@ ModuleManager.importModules({
 	let YT = obj.YT.default;
 	let BC = obj.BC.default;
 	let SC = obj.SC.default;
-	let MusicManager = obj.MM.default;
-	MusicManager.players = {"HTML":HTML,"YT":YT,"SC":SC,"BC":BC};
+	let MetaMusic = obj.MM.default;
+	MetaMusic.players = {"HTML":HTML,"YT":YT,"SC":SC,"BC":BC};
 	console.log("Loaded");
 	
 	let load_btn = document.getElementById("load");
@@ -24,7 +24,7 @@ ModuleManager.importModules({
 		alert("There was an error playing the requested file");
 	}
 	
-	window.mm = new MusicManager();
+	window.mm = new MetaMusic();
 	let track = new HTML.Track(plugins['HTML']);
 	let load_promise = mm.waitForEvent('loaded');
 	
@@ -33,7 +33,7 @@ ModuleManager.importModules({
 		let p = plugin_btn.value;
 		let obj = plugins[p];
 		obj.src = src;
-		track = new MusicManager.players[plugin_btn.value].Track(obj);
+		track = new MetaMusic.players[plugin_btn.value].Track(obj);
 		load_promise = mm.waitForEvent('loaded');
 		mm.load(track);
 	});
@@ -51,7 +51,7 @@ ModuleManager.importModules({
 			return alert("Bandcamp will not work from a static site. See the README for more information.");
 		}
 		let p = this.value;
-		track = new MusicManager.players[p].Track(plugins[p]);
+		track = new MetaMusic.players[p].Track(plugins[p]);
 		load_promise = mm.waitForEvent('loaded');
 		mm.load(track);
 		src_box.value = track.src;

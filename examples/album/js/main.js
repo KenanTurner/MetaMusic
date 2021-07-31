@@ -16,11 +16,11 @@ ModuleManager.importModules({
 	let YT = obj.YT.default;
 	let BC = obj.BC.default;
 	let SC = obj.SC.default;
-	let MusicManager = obj.MM.default;
+	let MetaMusic = obj.MM.default;
 	console.log("Loaded");
 
-	MusicManager.players = {"HTML":HTML,"YT":YT,"SC":SC,"BC":BC};
-	window.mm = new MusicManager();
+	MetaMusic.players = {"HTML":HTML,"YT":YT,"SC":SC,"BC":BC};
+	window.mm = new MetaMusic();
 	mm.subscribe('error',function(err){
 		console.error(err);
 		alert("There was an error playing the requested file");

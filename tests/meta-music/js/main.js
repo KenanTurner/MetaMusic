@@ -13,7 +13,7 @@ ModuleManager.importModules({
 	window.YT = obj.YT.default;
 	window.BC = obj.BC.default;
 	window.SC = obj.SC.default;
-	window.MusicManager = obj.MM.default;
+	window.MetaMusic = obj.MM.default;
 	window.Album = obj.Album.default;
 	console.log("Loaded");
 	
@@ -33,17 +33,17 @@ ModuleManager.importModules({
 			if(players[player]) p[player] = window[player];
 		}
 		for(let c in test_cases){
-			if(test_cases[c]) tc.add(c,[MusicManager,p,a]);
+			if(test_cases[c]) tc.add(c,[MetaMusic,p,a]);
 		}
 		let disable_console = document.getElementById("option-disable-console");
 		tc.runAll(disable_console.checked);
 	});
 	
 	Album.players = {"HTML":HTML,"YT":YT,"SC":SC,"BC":BC};
-	MusicManager.players = {"HTML":HTML,"YT":YT,"SC":SC,"BC":BC};
+	MetaMusic.players = {"HTML":HTML,"YT":YT,"SC":SC,"BC":BC};
 	window.a = new Album({title:"t",tracks:[t1,t2,t3,t4]});
 	window.tc = new TestCases();
-	window.mm = new MusicManager({tracks:[t1,t2,t3,t4]});
+	window.mm = new MetaMusic({tracks:[t1,t2,t3,t4]});
 	mm.subscribe('all',f);
 })
 let test_cases = {

@@ -1,6 +1,5 @@
 import _Track from '../track.js';
 export default class Track extends _Track{
-	static MusicManager;
 	constructor(obj){
 		super(obj);
 		this.filetype = "CUSTOM";
@@ -46,20 +45,17 @@ export default class Track extends _Track{
 	toHTML(){
 		let el = document.createElement('button');
 		el.innerText = this.title;
-		el.addEventListener('click',this.onclick.bind(this));
+		el.addEventListener('click',this.constructor.onClick(this));
 		this.elements.push(el);
 		return el;
-	}
-	onclick(){
-		let mm = this.constructor.MusicManager;
-		let paused = mm._status.paused;
-		mm.load(this).then(function(){
-			if(!paused) mm.play();
-		});
 	}
 	updateHTML(){
 		this.elements.forEach(function(el){
 			el.innerText = this.title;
 		}.bind(this));
 	}
+	//to be overloaded later
+	static onClick(){}
+	static onLoad(){}
+	static onUnload(){}
 }

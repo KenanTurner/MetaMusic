@@ -1,7 +1,7 @@
 import Album from './album.js';
 export default class MetaMusic extends Album{
 	constructor(obj = {}){
-		Album.players = MusicManager.players; //???
+		Album.players = MetaMusic.players; //???
 		super({title:"queue",_unsorted:true});
 		this._ready = false;
 		
@@ -42,7 +42,7 @@ export default class MetaMusic extends Album{
 	}
 	static fromJSON(json){
 		let obj = {...JSON.parse(json),...super.fromJSON(json)}; //merge the two objects
-		return new MusicManager(obj);
+		return new MetaMusic(obj);
 	}
 	//Functions relating to interacting with the queue #################
 	insertNext(...items){

@@ -1,11 +1,11 @@
 import T from '../../shared/test.js';
 export default class TestCases extends T{
-	static constructor(MusicManager,players,album){
-		MusicManager.players = players;
-		let mm = new MusicManager(); //default constructor
-		let nn = new MusicManager(mm);
+	static constructor(MetaMusic,players,album){
+		MetaMusic.players = players;
+		let mm = new MetaMusic(); //default constructor
+		let nn = new MetaMusic(mm);
 		let oo = mm.clone();
-		let pp = MusicManager.fromJSON(JSON.stringify(mm))
+		let pp = MetaMusic.fromJSON(JSON.stringify(mm))
 		if(!mm.equals(nn)) throw new Error("Bad constructor!");
 		if(!mm.equals(oo)) throw new Error("Bad clone method!");
 		if(!mm.equals(pp)) throw new Error("Bad fromJson method!");
@@ -16,9 +16,9 @@ export default class TestCases extends T{
 		.then(pp.chain('destroy'))
 		//TODO add case for non default constructor
 	}
-	static playPause(MusicManager,players,album){
-		MusicManager.players = players;
-		let mm = new MusicManager(album);
+	static playPause(MetaMusic,players,album){
+		MetaMusic.players = players;
+		let mm = new MetaMusic(album);
 		return mm.waitForEvent('ready')
 		.then(mm.chain('play')) //play
 		.then(mm.chain('pause'))
@@ -29,9 +29,9 @@ export default class TestCases extends T{
 		.finally(mm.chain('destroy'));
 	}
 	//Test cases may need more time to complete
-	static next(MusicManager,players,album){
-		MusicManager.players = players;
-		let mm = new MusicManager(album);
+	static next(MetaMusic,players,album){
+		MetaMusic.players = players;
+		let mm = new MetaMusic(album);
 		let wait = function(time){
 			return function(){
 				return new Promise(function(res,rej){
@@ -57,10 +57,10 @@ export default class TestCases extends T{
 		.finally(mm.chain('destroy'));
 	}
 	//TODO update shuffle test
-	static shuffle(MusicManager,players,album){
-		MusicManager.players = players;
-		let mm = new MusicManager(album);
-		let copy = new MusicManager(album);
+	static shuffle(MetaMusic,players,album){
+		MetaMusic.players = players;
+		let mm = new MetaMusic(album);
+		let copy = new MetaMusic(album);
 		return mm.waitForEvent('ready').then(function(){
 			return copy.waitForEvent('ready');
 		}).then(function(){
@@ -75,9 +75,9 @@ export default class TestCases extends T{
 		.then(copy.chain('destroy'))
 	}
 	
-	static subs(MusicManager,players,album){
-		MusicManager.players = players;
-		let mm = new MusicManager(album);
+	static subs(MetaMusic,players,album){
+		MetaMusic.players = players;
+		let mm = new MetaMusic(album);
 		var check = {
 			loaded:false,
 			play:false,

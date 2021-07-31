@@ -15,12 +15,12 @@ ModuleManager.importModules({
 	let YT = obj.YT.default;
 	let BC = obj.BC.default;
 	let SC = obj.SC.default;
-	let MusicManager = obj.MM.default;
+	let MetaMusic = obj.MM.default;
 	let Album = obj.Album.default;
 	console.log("Loaded");
 	
-	MusicManager.players = {"HTML":HTML,"YT":YT,"SC":SC,"BC":BC};
-	window.mm = new MusicManager({tracks:[
+	MetaMusic.players = {"HTML":HTML,"YT":YT,"SC":SC,"BC":BC};
+	window.mm = new MetaMusic({tracks:[
 		new HTML.Track({title:"Scott's Factory",src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4"}),
 		new YT.Track({title:"Waynard & Maynard",src:"https://www.youtube.com/watch?v=zhG7aorm0RI"}),
 		new BC.Track({title:"Want you Gone - Portal 2",src:"https://the8bitbigband.bandcamp.com/track/want-you-gone-feat-benny-benack-iii-from-portal-2"}),
@@ -31,7 +31,7 @@ ModuleManager.importModules({
 		alert("There was an error playing the requested file");
 	});
 	mm.subscribe('all',function(e){console.log(e)});
-	Custom.MusicManager = mm;
+	Custom.MetaMusic = mm;
 	
 	let queue = document.getElementById("queue");
 	mm.tracks.forEach(function(t){

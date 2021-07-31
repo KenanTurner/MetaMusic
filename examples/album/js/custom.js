@@ -1,6 +1,5 @@
 import _Track from '../../../src/track.js';
 export default class Track extends _Track{
-	static MusicManager;
 	constructor(obj){
 		super(obj);
 		this.filetype = "CUSTOM";

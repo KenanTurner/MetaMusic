@@ -1,6 +1,6 @@
 import _Track from '../../../src/track.js';
 export default class Track extends _Track{
-	static MusicManager;
+	static MetaMusic;
 	constructor(obj){
 		super(obj);
 		this.filetype = "CUSTOM";
@@ -26,7 +26,7 @@ export default class Track extends _Track{
 		return el;
 	}
 	onclick(){
-		let mm = this.constructor.MusicManager;
+		let mm = this.constructor.MetaMusic;
 		let paused = mm._status.paused;
 		mm.load(this).then(function(){
 			if(!paused) mm.play();
