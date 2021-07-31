@@ -1,4 +1,4 @@
-import HTML from '../../html.js';
+import HTML from '../HTML/html.js';
 export default class BC extends HTML{
 	static Track = class Track extends HTML.Track{
 		constructor(obj){

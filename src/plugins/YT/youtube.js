@@ -32,7 +32,7 @@ let _yt_api = function(obj){
 		})()
 	};
 }
-import HTML from '../../html.js';
+import HTML from '../HTML/html.js';
 export default class YT extends HTML{
 	static Track = class Track extends HTML.Track{
 		constructor(obj){

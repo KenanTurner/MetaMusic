@@ -1,5 +1,5 @@
 ModuleManager.importModules({
-	"HTML":['./src/html.js'],
+	"HTML":['./src/plugins/HTML/html.js'],
 }).then(function(obj){
 	let HTML = obj.HTML.default;
 	console.log("Loaded");

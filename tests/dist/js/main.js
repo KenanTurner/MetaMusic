@@ -1,5 +1,5 @@
 ModuleManager.importModules({
-	"HTML":['./dist/html.min.js'],
+	"HTML":['./dist/plugins/html.min.js'],
 	"YT":['./dist/plugins/yt.min.js'],
 	"BC":['./dist/plugins/bc.min.js'],
 	"SC":['./dist/plugins/sc.min.js'],

@@ -1,6 +1,6 @@
 ModuleManager.importModules({
 	"Custom":['./examples/queue/js/custom.js'],
-	"HTML":['./src/html.js'],
+	"HTML":['./src/plugins/HTML/html.js'],
 	"YT":['./src/plugins/YT/youtube.js'],
 	"BC":['./src/plugins/BC/bandcamp.js'],
 	"SC":['./src/plugins/SC/soundcloud.js'],

@@ -1,5 +1,5 @@
-import _Track from './track.js';
-import EventTarget from './event-target.js';
+import _Track from '../../track.js';
+import EventTarget from '../../event-target.js';
 export default class HTML extends EventTarget{
 	static Track = class Track extends _Track{
 		constructor(obj){
