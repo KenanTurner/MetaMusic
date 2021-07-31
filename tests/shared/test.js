@@ -46,7 +46,7 @@ export default class TestCases extends EventTarget{
 			let p = this.constructor[obj.f](...obj.args);
 			if(!Promise.prototype.isPrototypeOf(p)) return Promise.reject("Test Case "+obj.f+" must return a promise!");
 			let t = new Promise(function(resolve, reject) {
-				setTimeout(function(){reject("Timed out!")}, 10000);
+				setTimeout(function(){reject("Timed out!")}, 15000);
 			});
 			return Promise.race([p, t]);
 		}catch(err){
