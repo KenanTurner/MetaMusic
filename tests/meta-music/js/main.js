@@ -1,10 +1,10 @@
 ModuleManager.importModules({
-	"TestCases":['./tests/music-manager/js/cases.js'],
+	"TestCases":['./tests/meta-music/js/cases.js'],
 	"HTML":['./src/html.js'],
 	"YT":['./src/plugins/YT/youtube.js'],
 	"BC":['./src/plugins/BC/bandcamp.js'],
 	"SC":['./src/plugins/SC/soundcloud.js'],
-	"MM":['./src/music-manager.js'],
+	"MM":['./src/meta-music.js'],
 	"Album":['./src/album.js'],
 }).then(function(obj){
 	//put in global scope for easier debugging

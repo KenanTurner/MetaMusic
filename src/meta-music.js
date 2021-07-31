@@ -1,5 +1,5 @@
 import Album from './album.js';
-export default class MusicManager extends Album{
+export default class MetaMusic extends Album{
 	constructor(obj = {}){
 		Album.players = MusicManager.players; //???
 		super({title:"queue",_unsorted:true});

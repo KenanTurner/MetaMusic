@@ -4,7 +4,7 @@ ModuleManager.importModules({
 	"YT":['./src/plugins/YT/youtube.js'],
 	"BC":['./src/plugins/BC/bandcamp.js'],
 	"SC":['./src/plugins/SC/soundcloud.js'],
-	"MM":['./src/music-manager.js'],
+	"MM":['./src/meta-music.js'],
 	"Album":['./src/album.js'],
 }).then(function(obj){
 	let HTML = obj.HTML.default;
