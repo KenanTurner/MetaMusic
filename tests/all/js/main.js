@@ -21,15 +21,7 @@ ModuleManager.importModules({
 	let disable_console = document.getElementById("option-disable-console");
 	let start_btn = document.getElementById("start_btn");
 	start_btn.addEventListener("click",function(){ //need to wait for user interaction
-		/*tc.clear();
-		for(let tc in test_obj){
-			for(let c in test_obj[key]){
-				console.log(key,c,test_args[key]);
-				if(test_cases[c]) tc.add(c,test_args[key]);
-			}
-		}
-		let disable_console = document.getElementById("option-disable-console");
-		tc.runAll(disable_console.checked);*/
+		//This is absolutely terrible but I don't have time to fix it so it stays
 		test_obj['albumTC'].clear();
 		for(let c in test_cases['albumTC']){
 			if(test_cases['albumTC'][c]) test_obj['albumTC'].add(c,test_args['albumTC']);
@@ -81,14 +73,6 @@ ModuleManager.importModules({
 	test_obj['playerTC'] = new obj.playerTC.default();
 	test_obj['metaTC'] = new obj.metaTC.default();
 })
-/*let test_cases = {
-	"pass":true,
-	"fail":true,
-	"error":true,
-	"bad_return":true,
-	"timeout":true,
-}
-createOptions(test_cases,"test_cases");*/
 window.test_obj = {}
 window.test_cases = {}
 window.test_args = {}
