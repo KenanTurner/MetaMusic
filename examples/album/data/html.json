@@ -1,0 +1,30 @@
+{
+	"title": "Gustav Holst, The Planets",
+	"tracks": [
+		{
+			"filetype": "HTML",
+			"src": "./audio/1. Mars.ogg",
+			"title": "Mars"
+		},
+		{
+			"filetype": "HTML",
+			"src": "./audio/2. Venus.ogg",
+			"title": "Venus"
+		},
+		{
+			"filetype": "HTML",
+			"src": "./audio/3. Mercury.ogg",
+			"title": "Mercury"
+		},
+		{
+			"filetype": "HTML",
+			"src": "./audio/4. Jupiter.ogg",
+			"title": "Jupiter"
+		},
+		{
+			"filetype": "HTML",
+			"src": "./audio/6. Uranus.ogg",
+			"title": "Uranus"
+		}
+	]
+}

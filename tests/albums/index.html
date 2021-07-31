@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="../shared/style.css">
+		<script type="text/javascript" src="../shared/jquery-3.5.1.min.js"></script>
+		<script type="text/javascript" src="../../src/module-manager.js"></script>
+		<script type="text/javascript" src="../shared/options.js"></script>
+		<script type="module" src="../shared/console.js"></script>
+		<script type="module" src="./js/main.js"></script>
+	</head>
+	<body>
+		<div class="controls sticky" id="header">
+			<div>
+				<a href="../">Back</a>
+			</div>
+			<div>
+				<div class="options">
+					<label>Disable Console: </label>
+					<input type="checkbox" id="option-disable-console" checked>
+				</div>
+				<div id="test_cases" class="options"></div>
+			</div>
+			<div>
+				<button id="start_btn">Start Tests</button>
+				<input type="text" id="code" value="">
+				<button id="go">></button>
+			</div>
+		</div>
+		<div id="console"></div>
+	</body>
+</html>

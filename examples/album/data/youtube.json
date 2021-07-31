@@ -1,0 +1,25 @@
+{
+	"title": "Classical",
+	"tracks": [
+		{
+			"filetype": "YT",
+			"src": "https://www.youtube.com/watch?v=U4yH4B9deok",
+			"title": "P.Dukas. The Sorcerer's Apprentice"
+		},
+		{
+			"filetype": "YT",
+			"src": "https://www.youtube.com/watch?v=1zbCfP9wGt4",
+			"title": "'Till Eulenspiegel's Merry Pranks' by Richard Strauss (Audio + Sheet Music)"
+		},
+		{
+			"filetype": "YT",
+			"src": "https://www.youtube.com/watch?v=rBhEEEloehA",
+			"title": "Symphony No. 1, “Jeremiah“: II. Profanation (arr. for wind ensemble)"
+		},
+		{
+			"filetype": "YT",
+			"src": "https://www.youtube.com/watch?v=9dljTJ9qJ4U",
+			"title": "Fanfare for the Common Man by Aaron Copland"
+		}
+	]
+}

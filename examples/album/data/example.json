@@ -1,0 +1,26 @@
+{
+	"title": "Example",
+	"_comment":"There is no need to include files of the same type in an album. They can be intermixed freely.",
+	"tracks": [
+		{
+			"filetype": "SC",
+			"src": "https://soundcloud.com/aivisura/kk-cruisin-interstate-5-remix",
+			"title": "K.K. Cruisin' (Interstate 5)"
+		},
+		{
+			"filetype": "HTML",
+			"src": "https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4",
+			"title": "Scott's Factory"
+		},
+		{
+			"filetype": "BC",
+			"src": "https://the8bitbigband.bandcamp.com/track/want-you-gone-feat-benny-benack-iii-from-portal-2",
+			"title": "Want you Gone - Portal 2"
+		},
+		{
+			"filetype": "YT",
+			"src": "https://www.youtube.com/watch?v=zhG7aorm0RI",
+			"title": "Waynard & Maynard"
+		}
+	]
+}

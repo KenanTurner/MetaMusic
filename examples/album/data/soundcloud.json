@@ -1,0 +1,23 @@
+{
+	"title": "Aivi Piano Pieces",
+	"tracks": [
+		{
+			"filetype": "SC",
+			"src": "https://soundcloud.com/waltzforluma/sketch-sleep-like-you",
+			"title": "Sleep like you"
+		},
+		{
+			"filetype": "SC",
+			"src": "https://soundcloud.com/waltzforluma/lostwoods",
+			"title": "Lost Woods (Zelda Jazz cover)"
+		},{
+			"filetype": "SC",
+			"src": "https://soundcloud.com/waltzforluma/zanarkandsundown",
+			"title": "Final Fantasy X - Zanarkand Sundown"
+		},{
+			"filetype": "SC",
+			"src": "https://soundcloud.com/waltzforluma/thejazzyprince",
+			"title": "The Jazzy Prince (Rimsky-Korsakov Cover)"
+		}
+	]
+}

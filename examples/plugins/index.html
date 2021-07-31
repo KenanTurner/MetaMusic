@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="./css/style.css">
+		<link rel="stylesheet" href="./css/header.css">
+		<script type="text/javascript" src="../../src/module-manager.js"></script>
+		<script type="text/javascript" src="../shared/jquery-3.5.1.min.js"></script>
+		<script type="module" src="./js/main.js"></script>
+	</head>
+	<body>
+		<div class="header" id="header">
+			<a href="../">Back</a>
+		</div>
+		<div id="controls" class="controls">
+			<input type="text" id="src" value="">
+			<button id="load">Load File</button>
+			<button id="play">Play</button>
+			<button id="pause">Pause</button>
+			<button id="stop">Stop</button>
+		</div>
+		<div class="controls">
+			<label for="plugins">Choose a plugin:</label>
+			<select name="plugins" id="plugins">
+				<option value="HTML">Default (HTML Audio)</option>
+				<option value="YT">Youtube</option>
+				<option value="BC">Bandcamp</option>
+				<option value="SC">Soundcloud</option>
+			</select>
+		</div>
+		
+		
+	</body>
+</html>
