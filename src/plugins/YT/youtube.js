@@ -1,36 +1,35 @@
 //Taken and modified from https://www.youtube.com/iframe_api
-let _yt_api = function(){
+let _yt_api = function(obj){
 	var scriptUrl = 'https:\/\/www.youtube.com\/s\/player\/3c3086a1\/www-widgetapi.vflset\/www-widgetapi.js';try{var ttPolicy=window.trustedTypes.createPolicy("youtube-widget-api",{createScriptURL:function(x){return x}});scriptUrl=ttPolicy.createScriptURL(scriptUrl)}catch(e){}
-	if(!this._YT) this._YT={loading:0,loaded:0};
-	if(!this._YTConfig) this._YTConfig={"host":"https://www.youtube.com"};
-	if(!this._YT.loading){
-		this._YT.loading=1;
+	if(!obj._YT) obj._YT={loading:0,loaded:0};
+	if(!obj._YTConfig) obj._YTConfig={"host":"https://www.youtube.com"};
+	let YT = obj._YT;
+	let YTConfig = obj._YTConfig;
+	if(!YT.loading){
+		YT.loading=1;
 		(function(){
 			var l=[];
-			this._YT.ready=function(f){
-				if(this._YT.loaded)f();
+			YT.ready=function(f){
+				if(YT.loaded)f();
 				else l.push(f)
-			}.bind(this);
+			};
 			window.onYTReady=function(){
-				this._YT.loaded=1;
+				YT.loaded=1;
 				for(var i=0;i<l.length;i++)try{l[i]()}catch(e$0){}
-			}.bind(this);
-			this._YT.setConfig=function(c){
-				for(var k in c)if(c.hasOwnProperty(k))this._YTConfig[k]=c[k]
-			}.bind(this);
+			};
+			YT.setConfig=function(c){
+				for(var k in c)if(c.hasOwnProperty(k))YTConfig[k]=c[k]
+			};
 			var a=document.createElement("script");
 			a.type="text/javascript";
 			a.id="www-widgetapi-script";
 			a.src=scriptUrl;
 			a.async=true;
 			var c=document.currentScript;
-			if(c){
-				var n=c.nonce||c.getAttribute("nonce");
-				if(n)a.setAttribute("nonce",n)
-			}
+			if(c){var n=c.nonce||c.getAttribute("nonce");if(n)a.setAttribute("nonce",n)}
 			var b=document.getElementsByTagName("script")[0];
 			b.parentNode.insertBefore(a,b)
-		}.bind(this)).bind(this)()
+		})()
 	};
 }
 import HTML from '../../html.js';
@@ -49,7 +48,7 @@ export default class YT extends HTML{
 		this._ready = false;
 		this._iframe_id = iframe_id;
 		delete this._player;
-		_yt_api.call(this);
+		_yt_api(this.constructor);
 		this._createYT(iframe_id);
 	}
 	_createYT(){
@@ -63,7 +62,7 @@ export default class YT extends HTML{
 			width: "100%",
 			playerVars: {'controls': 0,'disablekb':1,'fs':0,'modestbranding':1,'playsinline':1},
 		}
-		this._YT.ready(function() {
+		this.constructor._YT.ready(function() {
 			let f = function(g){
 				return function(evt){
 					return this[g](evt);
