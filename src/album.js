@@ -39,7 +39,7 @@ export default class Album extends EventTarget{
 				this.tracks.splice(index, 0, tmp);
 				index++;
 			}catch(error){
-				console.error(error);
+				console.log(error);
 			}
 		}.bind(this));
 		if(items.length > 0) this._publish('add');
@@ -54,7 +54,7 @@ export default class Album extends EventTarget{
 				tmp.track_num = val;
 				this.tracks.push(tmp);
 			}catch(error){
-				console.error(error);
+				console.log(error);
 			}
 		}.bind(this));
 		if(items.length > 0) this._publish('add');
