@@ -1,6 +1,6 @@
 # MetaMusic
 
-Play HTML audio, Youtube, Soundcloud, and Bandcamp all in one place with a single javascript library!
+Play HTML audio, Youtube, Soundcloud, and Bandcamp with a single javascript library!
 
 ## Description
 
