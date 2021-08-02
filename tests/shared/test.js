@@ -1,24 +1,30 @@
-export default class TestCases{
+export default class Test{
 	constructor(){
 		this.reset();
 		this.clear();
 		this._c = console.log;
 	}
-	remove(f,args,message){
-		let obj = {f:f,args:args,message:message};
+	remove(obj){
+		if(Array.prototype.isPrototypeOf(obj)) return obj.forEach(function(o){
+			this.remove(o);
+		}.bind(this));
+		if(typeof(obj.f) !== 'function') throw new Error("Not a function!");
+		if(!obj.args) obj.args = [];
 		this.test_cases = this.test_cases.filter(function(_obj){
-			if(JSON.stringify(obj) === JSON.stringify(_obj)) return false;
+			if(JSON.stringify(obj) === JSON.stringify(_obj) && obj.f.toString() === _obj.f.toString()) return false;
 			return true;
 		});
 	}
 	clear(){
 		this.test_cases = [];
+		this.reset();
 	}
 	add(obj){
 		if(Array.prototype.isPrototypeOf(obj)) return obj.forEach(function(o){
 			this.add(o);
-		});
+		}.bind(this));
 		if(typeof(obj.f) !== 'function') throw new Error("Not a function!");
+		if(!obj.args) obj.args = [];
 		this.test_cases.push(obj);
 	}
 	reset(){
@@ -32,15 +38,16 @@ export default class TestCases{
 			console.log = this._c;
 			console.log("Successful Cases: ",this.results.pass);
 			console.log("Failed Cases: ",this.results.fail);
+			console.log("Skipped Cases: ",this.results.skip);
 			return Promise.resolve(this.results);
 		}.bind(this));
 	}
 	run(obj){
 		try{
 			let p = obj.f(...obj.args);
-			if(!Promise.prototype.isPrototypeOf(p)) return Promise.reject("Test Case "+obj.f+" must return a promise!");
+			if(!Promise.prototype.isPrototypeOf(p)) return Promise.reject("Test Case "+obj.f.name+" must return a promise!");
 			let t = new Promise(function(resolve, reject) {
-				setTimeout(function(){reject("Timed out!")}, obj.timeout || 15000);
+				setTimeout(function(){reject("Timed out!")}, obj.timeout || 10000);
 			});
 			return Promise.race([p, t]);
 		}catch(err){
@@ -50,9 +57,9 @@ export default class TestCases{
 	_run(cases,index=0){ //recursively test each case
 		if(cases.length == index) return Promise.resolve("No more cases!");
 		let obj = cases[index];
-		this._c("Testing "+obj.f.name+": "+obj.message);
+		this._c("Testing "+obj.f.name+": "+(obj.message||""));
 		if(obj.skip){
-			this._c("%cSkipped","color: #00FF2D;");
+			this._c("%cSkipped","color: #3272fc;");
 			this.results.skip++;
 			return this._run(cases,index+1);
 		}

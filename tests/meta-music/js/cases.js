@@ -1,6 +1,5 @@
-import T from '../../shared/test.js';
-export default class TestCases extends T{
-	static constructor(MetaMusic,players,album){
+export default [
+	function constructor(MetaMusic,players,album){
 		MetaMusic.players = players;
 		let mm = new MetaMusic(); //default constructor
 		let nn = new MetaMusic(mm);
@@ -15,8 +14,8 @@ export default class TestCases extends T{
 		.then(oo.chain('destroy'))
 		.then(pp.chain('destroy'))
 		//TODO add case for non default constructor
-	}
-	static playPause(MetaMusic,players,album){
+	},
+	function playPause(MetaMusic,players,album){
 		MetaMusic.players = players;
 		let mm = new MetaMusic(album);
 		return mm.waitForEvent('ready')
@@ -27,9 +26,9 @@ export default class TestCases extends T{
 		.then(mm.chain('play'))
 		.then(mm.chain('pause'))
 		.finally(mm.chain('destroy'));
-	}
+	},
 	//Test cases may need more time to complete
-	static next(MetaMusic,players,album){
+	function next(MetaMusic,players,album){
 		MetaMusic.players = players;
 		let mm = new MetaMusic(album);
 		let wait = function(time){
@@ -55,9 +54,9 @@ export default class TestCases extends T{
 		.then(mm.chain('next')) //t4
 		.then(mm.chain('next')) //t1
 		.finally(mm.chain('destroy'));
-	}
+	},
 	//TODO update shuffle test
-	static shuffle(MetaMusic,players,album){
+	function shuffle(MetaMusic,players,album){
 		MetaMusic.players = players;
 		let mm = new MetaMusic(album);
 		let copy = new MetaMusic(album);
@@ -73,9 +72,8 @@ export default class TestCases extends T{
 		})
 		.then(mm.chain('destroy'))
 		.then(copy.chain('destroy'))
-	}
-	
-	static subs(MetaMusic,players,album){
+	},
+	function subs(MetaMusic,players,album){
 		MetaMusic.players = players;
 		let mm = new MetaMusic(album);
 		var check = {
@@ -101,6 +99,11 @@ export default class TestCases extends T{
 		return mm.waitForEvent('ready')
 		.then(mm.chain('setVolume',0))
 		.then(mm.chain('play'))
+		.then(function(){
+			return new Promise(function(res,rej){
+				setTimeout(res,1000); //play for 1 sec
+			})
+		})
 		.then(mm.chain('next'))
 		.then(mm.chain('next'))
 		.then(mm.chain('pause'))
@@ -123,5 +126,5 @@ export default class TestCases extends T{
 			});
 		})
 		.finally(mm.chain('destroy'));
-	}
-}
+	},
+]

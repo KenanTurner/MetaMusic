@@ -1,6 +1,5 @@
-import T from '../../shared/test.js';
-export default class TestCases extends T{
-	static constructor(Album,obj){
+export default [
+	function constructor(Album,obj){
 		let a1 = new Album(obj);
 		let a2 = new Album(a1);
 		let a3 = new Album({title:"title"});
@@ -10,15 +9,15 @@ export default class TestCases extends T{
 			return Promise.reject("Empty constructor is invalid");
 		}catch(e){}
 		return Promise.resolve();
-	}
-	static json(Album,obj){
+	},
+	function json(Album,obj){
 		let a1 = new Album(obj);
 		let jason_obj = a1.toJSON();
 		let a2 = new Album(jason_obj);
 		let json = JSON.stringify(a1);
 		let a3 = Album.fromJSON(json);
 		let a4 = a1.clone();
-		
+
 		if(!a1.equals(a2)) throw new Error("Bad comparison");
 		if(!a1.equals(a3)) throw new Error("Bad comparison");
 		if(!a1.equals(a4)) throw new Error("Bad comparison");
@@ -26,8 +25,8 @@ export default class TestCases extends T{
 		if(!a2.equals(a4)) throw new Error("Bad comparison");
 		if(!a3.equals(a4)) throw new Error("Bad comparison");
 		return Promise.resolve();
-	}
-	static tracks(Album,obj){
+	},
+	function tracks(Album,obj){
 		let a1 = new Album({title:"title"})
 		obj.tracks.forEach(function(track){
 			a1.push(track);
@@ -44,8 +43,8 @@ export default class TestCases extends T{
 		a1.clear();
 		if(a1.length > 0) throw new Error("Failed to clear");
 		return Promise.resolve();
-	}
-	static events(Album,obj){
+	},
+	function events(Album,obj){
 		let check = {
 			add:false,
 			sort:false,
@@ -70,8 +69,8 @@ export default class TestCases extends T{
 			if(!check[evt]) return Promise.reject(check);
 		}
 		return Promise.resolve();
-	}
-	static getInfo(Album,obj){
+	},
+	function getInfo(Album,obj){
 		let a1 = new Album(obj);
 		let info = a1.getInfo("title");
 		if(info.length != obj.tracks.length) throw new Error("Missing info");
@@ -80,8 +79,8 @@ export default class TestCases extends T{
 		info = a1.getInfo("this_key_does_not_exist");
 		if(info.length != 0) throw new Error("Returned a non-empty array");
 		return Promise.resolve();
-	}
-	static validTrack(Album,obj){
+	},
+	function validTrack(Album,obj){
 		console.log(Album.players);
 		let tmp = {title:"title",src:"src"};
 		let v = Album._validTrack(tmp);
@@ -92,8 +91,8 @@ export default class TestCases extends T{
 			if(!v) throw new Error("Track is invalid");
 		});
 		return Promise.resolve();
-	}
-	static sort(Album,obj){
+	},
+	function sort(Album,obj){
 		let a1 = new Album(obj);
 		let f = function(album,key,reversed=false){
 			album.sort(key,reversed);
@@ -113,8 +112,8 @@ export default class TestCases extends T{
 		f(a1,"track_num",true);
 		f(a1,"duration",true);
 		return Promise.resolve();
-	}
-	static conversion(ALbum,obj){
+	},
+	function conversion(ALbum,obj){
 		let a1 = new Album(obj);
 		//a1.tracks[2] is type BC
 		//BC tracks overwrite their src when cloned
@@ -122,8 +121,8 @@ export default class TestCases extends T{
 		let a2 = new Album(a1);
 		if(!a1.equals(a2)) throw new Error("Tracks are handled incorrectly");
 		return Promise.resolve();
-	}
-	static addRemove(Album,obj){
+	},
+	function addRemove(Album,obj){
 		let a1 = new Album(obj);
 		let a2 = new Album({title:obj.title});
 		a2.push(...obj.tracks);
@@ -135,8 +134,8 @@ export default class TestCases extends T{
 		a2.insert(0,...obj.tracks);
 		if(!a1.equals(a2)) throw new Error("Insert fails to add a track");
 		return Promise.resolve();
-	}
-	static addRemoveAlbum(Album,obj){
+	},
+	function addRemoveAlbum(Album,obj){
 		let a1 = new Album(obj);
 		let a2 = new Album(obj);
 		a1.insert(0,a1);
@@ -144,8 +143,8 @@ export default class TestCases extends T{
 		console.log(a1,a2);
 		if(!a1.equals(a2)) throw new Error("Adding an album fails!");
 		return Promise.resolve();
-	}
-	static shuffle(Album,obj){
+	},
+	function shuffle(Album,obj){
 		let a1 = new Album(obj);
 		let arr = Array.from({length: 64}, function(){
 			let tmp = a1.clone();
@@ -158,12 +157,11 @@ export default class TestCases extends T{
 		});
 		if(!result) throw new Error("Shuffling an album fails to generate unique permutations!");
 		return Promise.resolve();
-	}
-	static trackNum(Album,obj){
+	},
+	function trackNum(Album,obj){
 		let a1 = new Album(obj);
 		let a2 = new Album({...obj,...{_unsorted:true}});
-		
-		return Promise.resolve();
-	}
-}
 
+		return Promise.resolve();
+	},
+]

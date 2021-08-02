@@ -1,6 +1,5 @@
-import T from '../../shared/test.js';
-export default class TestCases extends T{
-	static tracks(Player,args,obj,obj_err){
+export default [
+	function tracks(Player,args,obj,obj_err){
 		var t1 = new Player.Track(obj);
 		var t2 = new Player.Track(obj_err);
 		var t3 = t1.clone();
@@ -18,8 +17,8 @@ export default class TestCases extends T{
 		if(!t4.equals(t2))throw new Error("Bad comparison");
 		t1 += "E";
 		return Promise.resolve("Finished");
-	}
-	static playPause(Player,args,obj,obj_err){
+	},
+	function playPause(Player,args,obj,obj_err){
 		var html = new Player(...args);
 		var t1 = new Player.Track(obj);
 		return html.waitForEvent('ready')
@@ -31,8 +30,8 @@ export default class TestCases extends T{
 		.then(html.chain('play'))
 		.then(html.chain('pause'))
 		.finally(html.chain('destroy'));
-	}
-	static subs(Player,args,obj,obj_err){
+	},
+	function subs(Player,args,obj,obj_err){
 		var html = new Player(...args);
 		var t1 = new Player.Track(obj);
 		var t2 = new Player.Track(obj_err);
@@ -56,7 +55,7 @@ export default class TestCases extends T{
 		html.subscribe('error',f);
 		html.subscribe('timeupdate',f);
 		html.subscribe('volumechange',f);
-		
+
 		return html.waitForEvent('ready')
 		.then(html.chain('load',t1)) //loaded
 		.then(html.chain('play')) //play
@@ -86,8 +85,8 @@ export default class TestCases extends T{
 			});
 		})
 		.finally(html.chain('destroy'));
-	}
-	static events(Player,args,obj,obj_err){
+	},
+	function events(Player,args,obj,obj_err){
 		var html = new Player(...args);
 		var t1 = new Player.Track(obj);
 		var t2 = new Player.Track(obj_err);
@@ -119,8 +118,8 @@ export default class TestCases extends T{
 			return Promise.resolve("Finished")
 		})
 		.finally(html.chain('destroy'));
-	}
-	static seek(Player,args,obj,obj_err){
+	},
+	function seek(Player,args,obj,obj_err){
 		var html = new Player(...args);
 		var t1 = new Player.Track(obj);
 		var g = function(evt){console.log(evt)}
@@ -168,6 +167,5 @@ export default class TestCases extends T{
 			return html.waitForEvent('ended');
 		})
 		.finally(html.chain('destroy'));
-	}
-	//TODO add test case for returning promises
-}
+	},
+]

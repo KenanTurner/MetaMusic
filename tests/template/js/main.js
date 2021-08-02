@@ -1,61 +1,28 @@
-ModuleManager.importModules({
-	"TestCases":['./tests/template/js/example-test-cases.js'],
-	"HTML":['./src/plugins/HTML/html.js'],
-	"YT":['./src/plugins/YT/youtube.js'],
-	"BC":['./src/plugins/BC/bandcamp.js'],
-	"SC":['./src/plugins/SC/soundcloud.js'],
-}).then(function(obj){
-	//put in global scope for easier debugging
-	window.TestCases = obj.TestCases.default;
-	window.HTML = obj.HTML.default;
-	window.YT = obj.YT.default;
-	window.BC = obj.BC.default;
-	window.SC = obj.SC.default;
-	console.log("Loaded");
-	
-	let start_btn = document.getElementById("start_btn");
-	start_btn.addEventListener("click",function(){ //need to wait for user interaction
-		tc.clear();
-		for(let c in test_cases){
-			if(test_cases[c]) tc.add(c,[]);
-		}
-		let disable_console = document.getElementById("option-disable-console");
-		tc.runAll(disable_console.checked);
-	});
-	
-	
-	window.tc = new TestCases();
-})
-let test_cases = {
-	"pass":true,
-	"fail":true,
-	"error":true,
-	"bad_return":true,
-	"timeout":true,
-}
-createOptions(test_cases,"test_cases");
+import HTML from '../../../src/plugins/HTML/html.js';
+import YT from '../../../src/plugins/YT/youtube.js';
+import BC from '../../../src/plugins/BC/bandcamp.js';
+import SC from '../../../src/plugins/SC/soundcloud.js';
+import Test from '../../shared/test.js';
+import Cases from './cases.js';
 
-function updateOptions(evt){
-	let name = evt.target.id.substring(7);
-	this[name] = evt.target.checked;
-}
+let imports = [HTML,YT,BC,SC,Test];
+function map(arr,obj={},f=function(i){return i}){arr.forEach(function(i){if(i.name) this[i.name] = f(i)}.bind(obj));return obj;}
+map(imports,window);
+window.Cases = Cases;
+console.log("Loaded");
 
-function createOptions(options,id){
-	let el = document.getElementById(id);
-	while (el.firstChild) {
-		el.removeChild(el.firstChild);
+let start_btn = document.getElementById("start_btn");
+let disable_console = document.getElementById("option-disable-console");
+start_btn.addEventListener("click",function(){ //need to wait for user interaction
+	test.clear();
+	for(let f of Cases){
+		if(test_cases[f.name]) test.add({f:f});
 	}
-	Object.keys(options).forEach(function(name){
-		let input = document.createElement("INPUT");
-		let label = document.createElement("LABEL");
-		input.type = "checkbox";
-		input.id = "option-"+name;
-		input.name = "option-"+name;
-		input.checked = true;
-		input.onclick = updateOptions.bind(options);
-		label.for = "option-"+name;
-		label.innerText = name+": ";
-		el.appendChild(label);
-		el.appendChild(input);
-	});
-}
+	test.runAll(disable_console.checked);
+});
+
+let test = new Test();
+
+//imported from shared/options.js folder
+let test_cases = map(Cases,{},function(i){return true});
+createOptions(test_cases,"test_cases");
