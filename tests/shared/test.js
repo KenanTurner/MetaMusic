@@ -1,12 +1,7 @@
-import EventTarget from '../../src/event-target.js';
-export default class TestCases extends EventTarget{
-	constructor(test_cases){
-		super();
-		this.results = {success_cases:0,fail_cases:0}
-		this.test_cases = [];
-		if(Array.isArray(test_cases)) test_cases.forEach(function(obj){
-			this.add(obj.f,obj.args,obj.message);
-		});
+export default class TestCases{
+	constructor(){
+		this.reset();
+		this.clear();
 		this._c = console.log;
 	}
 	remove(f,args,message){
@@ -15,20 +10,19 @@ export default class TestCases extends EventTarget{
 			if(JSON.stringify(obj) === JSON.stringify(_obj)) return false;
 			return true;
 		});
-		this._publish('remove');
 	}
 	clear(){
 		this.test_cases = [];
-		this._publish('clear');
 	}
-	add(f,args,message){
-		let obj = {f:f,args:args,message:message};
-		if(!message) obj.message = ""; //TODO handle message better
+	add(obj){
+		if(Array.prototype.isPrototypeOf(obj)) return obj.forEach(function(o){
+			this.add(o);
+		});
+		if(typeof(obj.f) !== 'function') throw new Error("Not a function!");
 		this.test_cases.push(obj);
-		this._publish('add');
 	}
 	reset(){
-		this.results = {success_cases:0,fail_cases:0};
+		this.results = {pass:0,fail:0,skip:0};
 	}
 	runAll(disable_console = true){
 		this.reset();
@@ -36,17 +30,17 @@ export default class TestCases extends EventTarget{
 		if(disable_console) console.log = function(){}
 		return this._run(this.test_cases).then(function(e){
 			console.log = this._c;
-			console.log("Successful Cases: ",this.results.success_cases);
-			console.log("Failed Cases: ",this.results.fail_cases);
+			console.log("Successful Cases: ",this.results.pass);
+			console.log("Failed Cases: ",this.results.fail);
 			return Promise.resolve(this.results);
 		}.bind(this));
 	}
 	run(obj){
 		try{
-			let p = this.constructor[obj.f](...obj.args);
+			let p = obj.f(...obj.args);
 			if(!Promise.prototype.isPrototypeOf(p)) return Promise.reject("Test Case "+obj.f+" must return a promise!");
 			let t = new Promise(function(resolve, reject) {
-				setTimeout(function(){reject("Timed out!")}, 15000);
+				setTimeout(function(){reject("Timed out!")}, obj.timeout || 15000);
 			});
 			return Promise.race([p, t]);
 		}catch(err){
@@ -56,16 +50,20 @@ export default class TestCases extends EventTarget{
 	_run(cases,index=0){ //recursively test each case
 		if(cases.length == index) return Promise.resolve("No more cases!");
 		let obj = cases[index];
-		this._c("Testing "+obj.f+": "+obj.message);
+		this._c("Testing "+obj.f.name+": "+obj.message);
+		if(obj.skip){
+			this._c("%cSkipped","color: #00FF2D;");
+			this.results.skip++;
+			return this._run(cases,index+1);
+		}
 		return this.run(obj).then(function(){
 			this._c("%cPassed","color: #00FF2D;");
-			this.results.success_cases++;
+			this.results.pass++;
 		}.bind(this),function(result){
 			this._c("%cFailed: ","color: #FF0000;",result);
-			this.results.fail_cases++;
+			this.results.fail++;
 		}.bind(this)).finally(function(){
 			return this._run(cases,index+1);
 		}.bind(this));
 	}
 }
-
