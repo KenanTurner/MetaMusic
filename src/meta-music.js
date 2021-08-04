@@ -59,18 +59,22 @@ export default class MetaMusic extends Album{
 		let index = this.find(this._track);
 		if(index === -1) return super.shuffle(); //shuffle normally
 		
-		if(!this._status.shuffled) this.updateTrackNum();
+		
 		let shuffleAll = (index == 0 && this._status.time == 0);
 		this._ready = false;
 		if(shuffleAll){
 			super.shuffle();
 			this.load(this.tracks[0]);
 		}else{
-			let previous = this.filter(function(t,i,arr){
-				return i<index;
+			let f = function(arr,obj={}){arr.forEach(function(t,i){this[t]=t.track_num}.bind(obj));return obj;}
+			let map = f(this.tracks);
+			let previous = new Album({title:'prev'});
+			let remaining = new Album({title:'rem'});
+			this.tracks.forEach(function(t,i,arr){
+				if(i<index) previous.push(t);
 			})
-			let remaining = this.filter(function(t,i,arr){
-				return i>index;
+			this.tracks.forEach(function(t,i,arr){
+				if(i>index) remaining.push(t);
 			})
 			if(shuffleAll) remaining.insert(0,this._track);
 			previous.shuffle();
@@ -78,14 +82,19 @@ export default class MetaMusic extends Album{
 			if(!shuffleAll) previous.push(this._track);
 			this.clear();
 			this.push(previous,remaining);
+			this.tracks.forEach(function(t){
+				t.track_num = map[t];
+			});
 		}
 		this._ready = true;
 		this._status.shuffled = true;
 		this._publish('shuffle');
 	}
 	unshuffle(){
-		if(!this._status.shuffled) return
+		if(!this._status.shuffled) return;
+		let index = this.find(this._track);
 		this.sort('track_num');
+		if(index == 0 && this._status.time == 0) this.load(this.tracks[0]);
 		this._status.shuffled = false;
 	}
 	//Functions related to interactions with a player: #################
