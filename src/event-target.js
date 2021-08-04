@@ -26,9 +26,15 @@ export default class EventTarget{
 			this._subscribers[type] = subs;
 		}
 	}
-	_publish(type){
+	_publish(type,data){
 		if(!this._ready) return;
 		let event = new this.constructor.Event(type,this.getStatus(),this);
+		if(data) event.data = data;
+		if(Promise.prototype.isPrototypeOf(event.data)){ //Kludge?
+			return event.data.then(function(o){
+				return this._publish(type,o);
+			}.bind(this));
+		}
 		if(type === 'error'){
 			for(let _type in this._subscribers){
 				let arr = this._subscribers[_type].filter(function(obj){
