@@ -91,8 +91,10 @@ export default class SC extends HTML{
 		this._player.pause();
 		return this._async('isPaused')
 		.then(function(p){
-			if(!p) return this.waitForEvent('pause');
-			return Promise.resolve();
+			let pr = this.waitForEvent('pause');
+			//already paused
+			if(p) this._publish('pause');
+			return pr;
 		}.bind(this))
 	}
 	play(){
