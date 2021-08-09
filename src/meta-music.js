@@ -18,7 +18,19 @@ export default class MetaMusic extends Album{
 				if(this._player === e.target) this._status.time = e.data.time;
 				this.handleEvent('timeupdate')(e);
 			}.bind(this),this.handleEvent('error',{paused:true}));
-			this._players[Player.name].subscribe('ended',this.handleEvent('ended',{},'next'));
+			this._players[Player.name].subscribe('ended',function(e){
+				if(e && this._player === e.target) this._publish('ended');
+				//play track again if repeating
+				if(!this._status.repeat) return this.next();
+				let paused = this._status.paused;
+				return this.stop().then(function(e){
+					if(!paused) return this.play();
+				}.bind(this),function(e){
+					this._publish('error');
+					console.log("Failed to load!");
+					return e;
+				}.bind(this));
+			}.bind(this));
 		}.bind(this));
 		
 		this._track;
@@ -30,6 +42,7 @@ export default class MetaMusic extends Album{
 			volume:1,
 			paused:true,
 			shuffled: false,
+			repeat: false,
 		}
 		
 		//wait for ready
@@ -157,9 +170,21 @@ export default class MetaMusic extends Album{
 			this._track = t.clone(); //TODO clone or shallow copy?
 			this._player = this._players[this._track.filetype];
 			return this._player.load(this._track).then(function(e){
-				this._status.src = e.data.src;
-				this._status.duration = e.data.duration;
 				this._status.time = 0;
+				let p = this._player.getStatus()
+				if(!Promise.prototype.isPrototypeOf(p)) p = Promise.resolve(p);
+				p.then(function(o){
+					this._status.time = o.time;
+					this._status.src = o.src;
+					this._status.duration = o.duration;
+					if(o.duration == 0) setTimeout(function(){ //TODO fix kludge
+						p = this._player.getStatus()
+						if(!Promise.prototype.isPrototypeOf(p)) p = Promise.resolve(p);
+						p.then(function(o){
+							this._status.duration = o.duration;
+						}.bind(this))
+					}.bind(this),1000);
+				}.bind(this));
 				return Promise.resolve(e);
 			}.bind(this))
 			.then(this.handleEvent('loaded'))
