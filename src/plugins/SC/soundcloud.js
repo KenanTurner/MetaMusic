@@ -22,25 +22,22 @@ export default class SC extends HTML{
 		this._iframe_id = iframe_id;
 		delete this._player;
 		_sc_api.call(this);
-		this._createSC(iframe_id);
+		this._createSC();
 	}
-	_createSC(iframe_id){
+	_createSC(src){
+		if(this._iframe) this._iframe.remove();
 		var div = document.createElement("iframe");
-			div.id = iframe_id;
 			div.style.display = "none";
 			div.style.width = "100%";
 			div.style.height = "144";
 			div.scrolling = "no";
 			div.frameborder = "no";
 			div.allow = "autoplay";
-			div.src = "https://w.soundcloud.com/player/?url=;";
+			div.src = "https://w.soundcloud.com/player/?url="+src;
 		document.body.append(div);
+		this._iframe = div;
 		let SC = window.SC //Grab SC from global scope
-		this._player = SC.Widget(iframe_id);
-		this._player.bind(SC.Widget.Events.READY, function() {
-			this._ready = true;
-			this._publish('ready');
-		}.bind(this));
+		this._player = this._SC.Widget(div);
 		this._player.bind(SC.Widget.Events.PLAY_PROGRESS, function() {
 			this._publish('timeupdate');
 		}.bind(this));
@@ -59,38 +56,36 @@ export default class SC extends HTML{
 		this._player.bind(SC.Widget.Events.ERROR, function() {
 			this._publish('error');
 		}.bind(this));
-		console.log('Soundcloud is ready');
+		return new Promise(function(res,rej){
+			this._player.bind(SC.Widget.Events.READY, function() {
+				this._ready = true;
+				this._publish('ready');
+				if(!src) console.log('Soundcloud is ready');
+				if(src) this._player.getCurrentSound(function(o){
+					if(o === null) rej();
+					if(o !== null) res();
+				}.bind(this));
+			}.bind(this));
+		}.bind(this));
 	}
 	load(track){
 		if(!this.constructor._validTrack(track)) throw new Error("Invalid Filetype");
-		let p = this.waitForEvent('loaded');
+		let p = this.waitForEvent('ready');
 		let vol = this._async('getVolume');
-		let f = function(){
-			p.then(function(e){ //TODO error handling?
-				return vol.then(function(v){
-					return this.setVolume(v/100).then(function(){return e});
-				}.bind(this));
-			}.bind(this)).then(function(e){
-				return e; //TODO return the newer event?
-			});
-			this._publish('loaded');
-		}.bind(this);
-		let o = {
-			auto_play: false,
-			buying: false,
-			sharing: false,
-			download: false,
-			show_artwork: false,
-			show_playcount: false,
-			show_user: false,
-			show_comments: false,
-			hide_related: true,
-			visual: false,
-			start_track: 0,
-			callback: f,
-		}
-		this._player.load(track.src,o);
-		return p;
+		return vol.then(function(v){
+			vol = v/100;
+			return this._createSC(track.src); //Totally a kludge
+		}.bind(this)).then(function(){
+			return this.setVolume(vol);
+		}.bind(this)).then(function(){
+			return this._publish('loaded');
+		}.bind(this)).catch(function(){
+			return new Promise(function(res,rej){
+				this._publish('error').then(function(o){
+					rej(o);
+				});
+			}.bind(this));
+		}.bind(this));
 	}
 	pause(){
 		this._player.pause();
@@ -163,7 +158,7 @@ export default class SC extends HTML{
 		}.bind(this));
 	}
 	destroy(){
-		document.getElementById(this._iframe_id).remove();
+		this._iframe.remove();
 		delete this._iframe_id;
 		return super.destroy();
 	}
