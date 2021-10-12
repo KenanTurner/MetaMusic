@@ -69,30 +69,11 @@ export default class YT extends HTML{
 				}.bind(this);
 			}.bind(this)
 			this._player = new window.YT.Player(this._iframe_id, player_vars);
-			this._player.addEventListener("onStateChange", f('_onLoad'));
 			this._player.addEventListener("onStateChange", f('_onTimeUpdate'));
 			this._player.addEventListener("onStateChange", f('_onStateChange'));
 			this._player.addEventListener("onError", f('_onError'));
 			this._player.addEventListener('onReady', f('_onReady'));
 		}.bind(this));
-	}
-	
-	_onLoad(evt){
-		if(this._player.ready) return; //correctly loads the video
-		switch(evt.data){
-			case 5:
-				this._player.setVolume(0);
-				this._player.playVideo();
-				break;
-			case 1:
-				this._player.pauseVideo();
-				break;
-			case 2:
-				this._player.ready = true;
-				this._player.setVolume(100);
-				this._publish('loaded');
-				break;
-		}
 	}
 	_onTimeUpdate(evt){
 		if(evt.data == 1){ //PLAYING
@@ -105,25 +86,23 @@ export default class YT extends HTML{
 		}
 	}
 	_onStateChange(evt){
-		if(!this._player.ready) return; //correctly loads the video
 		switch(evt.data){
-			case -1:
-				//self._publish('abort'); //not really abort
-				break;
-			case 0:
+			/*case -1: //unstarted
+				self._publish('abort'); //not really abort
+				break;*/
+			case 0: //ended
 				this._publish('ended');
 				break;
-			case 3: //no idea why but it works
-			case 1:
+			case 1: //playing
 				this._publish('play');
 				break;
-			case 2:
+			case 2: //paused
 				this._publish('pause');
 				break;
-			/*case 3:
+			/*case 3: //buffering
 				//self._publish('buffering'); //buffering
 				break;*/
-			case 5:
+			case 5: //video cued
 				this._publish('loaded');
 				break;
 		}
@@ -138,7 +117,6 @@ export default class YT extends HTML{
 	}
 	load(track){
 		if(!this.constructor._validTrack(track)) throw new Error("Invalid Filetype");
-		this._player.ready = false;
 		let p = this.waitForEvent('loaded');
 		try{
 			let id = YT.getYoutubeId(track.src);
@@ -164,6 +142,7 @@ export default class YT extends HTML{
 		this._player.playVideo();
 		return this.waitForEvent('play');
 	}
+	//TODO seek is inconsistent and inaccurate
 	seek(time){
 		this._player.seekTo(time,true);
 		let self = this;
