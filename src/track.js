@@ -3,7 +3,7 @@ export default class Track{
 		if(!obj.src || !obj.title) {
 			throw new Error('Invalid Constructor! Title and src are required!');
 		}
-		this.filetype = "DEFAULT";
+		this.filetype = obj.filetype;
 		this.src = obj.src;
 		this.title = obj.title;
 	}

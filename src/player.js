@@ -61,6 +61,4 @@ export default class Player extends EventTarget{
 	static async fetchAlbum(url){
 		return Promise.reject();
 	}
-	//TODO _getHTMLAudioDuration
-	//TODO upload class?
 }
