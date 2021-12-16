@@ -1,3 +1,4 @@
+import Player from '../../../src/player.js';
 import HTML from '../../../src/plugins/HTML/html.js';
 import YT from '../../../src/plugins/YT/youtube.js';
 import BC from '../../../src/plugins/BC/bandcamp.js';
@@ -5,7 +6,7 @@ import SC from '../../../src/plugins/SC/soundcloud.js';
 import Test from '../../shared/test.js';
 import Cases from './cases.js';
 
-let imports = [HTML,YT,BC,SC,Test,Cases];
+let imports = [Player,HTML,YT,BC,SC,Test,Cases];
 function map(arr,obj={},f=function(i){return i}){arr.forEach(function(i){if(i.name) this[i.name] = f(i)}.bind(obj));return obj;}
 map(imports,window);
 window.Cases = Cases;
