@@ -1,79 +1,68 @@
 export default class EventTarget{
 	constructor(is_ready=true){
 		this._subscribers = {all:[]};
-		this._ready = is_ready;
+		this._ready = is_ready == true;
 	}
-	subscribe(type,f,options) {
-		if(typeof f != "function") throw new Error("Callback must be a function");
-		let obj = {callback:f}
-		if(options) obj.once = options.once;
-		if(options) obj.error = options.error;
-		if (!this._subscribers[type]) {
-			this._subscribers[type] = []; //creates the event list
-		}
-		this._subscribers[type].push(obj);
-		if(type == 'ready' && this._ready) this._publish('ready');
+	//{type:[String],callback:[Function],<error>:[Function],<once>:[Boolean]}
+	subscribe(obj){
+		if(!obj.type) throw new Error("Subscriber must specify a type!");
+		if(!obj.callback) throw new Error("Subscriber must include a callback!");
+		if(typeof obj.callback !== "function") throw new Error("Callback must be a function");
+		
+		if(!this._subscribers[obj.type]) this._subscribers[obj.type] = []; //creates the subscriber list
+		this._subscribers[obj.type].push(obj);
+		if(obj.type === 'ready' && this._ready) this.publish(new this.constructor.Event("ready"));
 	}
-	unsubscribe(type,f,options){
-		if(typeof f != "function") throw new Error("Callback must be a function");
-		let obj = {callback:f}
-		if(options) obj.once = options.once;
-		if(options) obj.error = options.error;
-		if(this._subscribers[type]){
-			var subs = this._subscribers[type].filter(function(item){
-				return item === obj;
-			});
-			this._subscribers[type] = subs;
-		}
+	//{type:[String],callback:[Function],<error>:[Function],<once>:[Boolean]}
+	unsubscribe(obj){
+		if(!obj.type) throw new Error("Subscriber must specify a type!");
+		if(!obj.callback) throw new Error("Subscriber must include a callback!");
+		if(typeof obj.callback !== "function") throw new Error("Callback must be a function");
+		
+		if(!this._subscribers[obj.type]) return;
+		this._subscribers[obj.type] = this._subscribers[obj.type].filter(function(item){
+			return item === obj;
+		});
 	}
-	_publish(type,data){
-		if(!this._ready) return;
-		let event = new this.constructor.Event(type,this.getStatus(),this);
-		if(data) event.data = data;
-		if(Promise.prototype.isPrototypeOf(event.data)){ //Kludge?
-			return event.data.then(function(o){
-				return this._publish(type,o);
-			}.bind(this));
-		}
-		if(type === 'error'){
-			for(let _type in this._subscribers){
-				let arr = this._subscribers[_type].filter(function(obj){
-					if(obj.error) obj.error(event);
-					if(obj.error) return !obj.once;
-					return true;
-				});
-				this._subscribers[_type] = arr;
-			}
-		}
+	async publish(event){
+		if(!this._ready) await this.waitForEvent("ready"); //throw new Error("Cannot publish events until target is ready"); 
+		if(!event.type) throw new Error("Event must specify a type!");
+		event.target = this;
+		let types = Object.keys(this._subscribers).filter(function(type){
+			if(event.type === 'error') return true;
+			if(type === 'all') return true;
+			return type === event.type;
+		});
 		let f = function(obj){
-			obj.callback(event);
+			if(event.type === 'error' && obj.error && this !== 'error'){
+				obj.error(event);
+			}else{
+				obj.callback(event);
+			}
 			return !obj.once;
 		}
-		if(type !== 'all'){
-			this._subscribers['all'] = this._subscribers['all'].filter(f);
-		}
-		if (!this._subscribers[type]){return event;}
-		this._subscribers[type] = this._subscribers[type].filter(f);
+		types.forEach(function(type){
+			if(!this._subscribers[type]) return;
+			this._subscribers[type] = this._subscribers[type].filter(f,type);
+		}.bind(this));
 		return event;
 	}
-	getStatus(){ //TODO rename?
-		return undefined;
-	}
-	waitForEvent(type) {
+	waitForEvent(type){
 		return new Promise(function(resolve, reject) {
-			this.subscribe(type,resolve,{once:true,error:reject});
+			this.subscribe({type:type,callback:resolve,once:true,error:reject});
 		}.bind(this));
 	}
 	chain(f,...args){ //easy promise chaining
 		return function(evt){
 			return this[f](...args);
-		}.bind(this)
+		}.bind(this);
 	}
-	static Event = class Event{ //TODO overhaul event inheritance
-		constructor(type,data,target){
+	static Event = class Event{
+		constructor(type,options){
 			this.type = type;
-			this.data = data;
-			this.target = target;
+			for(let o in options){
+				this[o] = options[o];
+			}
 		}
 	}
 }
