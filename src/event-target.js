@@ -2,6 +2,7 @@ export default class EventTarget{
 	constructor(is_ready=true){
 		this._subscribers = {all:[]};
 		this._ready = is_ready == true;
+		//TODO maybe use a promise instead of boolean?
 	}
 	//{type:[String],callback:[Function],<error>:[Function],<once>:[Boolean]}
 	subscribe(obj){

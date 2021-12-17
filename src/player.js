@@ -14,9 +14,12 @@ export default class Player extends EventTarget{
 		super(is_ready);
 	}
 	async destroy(){
+		let p = await this.publish(new this.constructor.Event("destroy"));
 		this._ready = false;
-		delete this._subscribers;
-		return this.publish(new this.constructor.Event("destroy"));
+		Object.values(this._subscribers).forEach(function(arr){
+			arr.length = 0; //Removes all event listeners
+		});
+		return p;
 	}
 	async load(track){
 		if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
