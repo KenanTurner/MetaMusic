@@ -10,44 +10,61 @@ export default class Player extends EventTarget{
 			return new Player.Track(JSON.parse(json));
 		}
 	}
-	constructor(){
-		super();
-		//Add event listeners
+	constructor(is_ready=true){
+		super(is_ready);
 	}
 	async destroy(){
 		this._ready = false;
 		delete this._subscribers;
-		return Promise.resolve();
+		return this.publish(new this.constructor.Event("destroy"));
 	}
 	async load(track){
 		if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
-		return Promise.resolve();
+		return this.publish(new this.constructor.Event("load"));
 	}
 	async play(){
-		return Promise.resolve();
+		return this.publish(new this.constructor.Event("play"));
 	}
 	async pause(){
-		return Promise.resolve();
+		return this.publish(new this.constructor.Event("pause"));
 	}
 	async seek(time){
-		return Promise.resolve();
+		return this.publish(new this.constructor.Event("seek"));
 	}
 	async fastForward(time){
-		return Promise.resolve();
+		return this.publish(new this.constructor.Event("fastforward"));
 	}
 	async setVolume(vol){
-		return Promise.resolve();
+		return this.publish(new this.constructor.Event("volumechange"));
 	}
 	async stop(){
-		return Promise.resolve();
+		return this.publish(new this.constructor.Event("stop"));
 	}
 	async getStatus(){
-		return Promise.resolve({});
+		return {
+			'src':'',
+			'time':0.0,
+			'duration':0.0,
+			'volume':0.0,
+			'paused':true,
+			'muted':false,
+		}
+	}
+	async publish(event){
+		event.status = await this.getStatus();
+		return super.publish(event);
 	}
 	static isValidTrack(track){
 		let p = this.Track.prototype.isPrototypeOf(track);
 		let f = this.name === track.filetype;
 		return (p && f);
+	}
+	//Boring upload stuff
+	static hasTrackUpload(){
+		return false;
+	}
+	static hasAlbumUpload(){
+		return false;
 	}
 	static isValidTrackURL(url){
 		return false;
@@ -61,4 +78,5 @@ export default class Player extends EventTarget{
 	static async fetchAlbum(url){
 		return Promise.reject();
 	}
+	
 }
