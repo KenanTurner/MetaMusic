@@ -1,7 +1,6 @@
-import _Track from '../../track.js';
-import EventTarget from '../../event-target.js';
-export default class HTML extends EventTarget{
-	static Track = class Track extends _Track{
+import Player from '../../player.js';
+export default class HTML extends Player{
+	static Track = class Track extends Player.Track{
 		constructor(obj){
 			super(obj);
 			this.filetype = "HTML"; //overriding
@@ -10,13 +9,13 @@ export default class HTML extends EventTarget{
 			return new HTML.Track(JSON.parse(json));
 		}
 	}
-	constructor(){
-		super();
+	constructor(is_ready=true){
+		super(is_ready);
 		this._player = new Audio();
 		
 		let f = function(type){
 			return function(){
-				this._publish(type);
+				this.publish(new this.constructor.Event(type));
 			}.bind(this);
 		}.bind(this);
 		this._player.addEventListener('play',f('play'));
@@ -26,82 +25,70 @@ export default class HTML extends EventTarget{
 		this._player.addEventListener('timeupdate',f('timeupdate'));
 		this._player.addEventListener('volumechange',f('volumechange'));
 	}
-	destroy(){
-		//console.log("DESTROY!!!");
-		if(this._player.constructor.name == "HTMLAudioElement") this._player.load();
-		this._ready = false;
-		delete this._player;
-		delete this._subscribers;
-		return Promise.resolve();
+	async destroy(){
+		this._player.src = '';
+		this._player.load();
+		return super.destroy();
 	}
-	load(track){
-		if(!this.constructor._validTrack(track)) throw new Error("Invalid Filetype");
+	async load(track){
+		if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
 		let f = function(){
-			this._publish('loaded');
+			this.publish(new this.constructor.Event('loaded'));
 		}.bind(this);
 		this._player.addEventListener('canplay',f,{once:true});
 		this._player.src = track.src;
 		return this.waitForEvent('loaded');
 	}
-	play(){
-		if(!this._player.paused) return Promise.resolve(this._publish('play'));
+	async play(){
+		let status = await this.getStatus();
+		if(!status.paused) return this.publish(new this.constructor.Event('play'));
 		let p = this.waitForEvent('play');
 		this._player.play();
 		return p;
 	}
-	pause(){
-		if(this._player.paused) return Promise.resolve(this._publish('pause'));
+	async pause(){
+		let status = await this.getStatus();
+		if(status.paused) return this.publish(new this.constructor.Event('pause'));
 		let p = this.waitForEvent('pause');
 		this._player.pause();
 		return p;
 	}
-	seek(time){
-		let f = function(){
-			this._publish('timeupdate');
-			let status = this.getStatus();
-			if(status.time == status.duration) this._publish('ended');
-		}.bind(this);
-		this._player.addEventListener('seeked',f,{once:true});
+	async seek(time){
 		this._player.currentTime = time;
 		return this.waitForEvent('timeupdate');
 	}
-	fastForward(time){
-		return this.seek(this._player.currentTime + time);
+	async fastForward(time){
+		let status = await this.getStatus();
+		return this.seek(status.time + time);
 	}
-	setVolume(vol){
+	async setVolume(vol){
+		let status = await this.getStatus();
+		if(status.volume == vol) return this.publish(new this.constructor.Event('volumechange'));
 		this._player.volume = vol;
 		return this.waitForEvent('volumechange');
 	}
-	stop(){
-		let f = function(){
-			this._publish('loaded');
-		}.bind(this);
-		this._player.addEventListener('canplay',f,{once:true});
-		this._player.load();
-		return this.waitForEvent('loaded');
-		
-		//this._player.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAVFYAAFRWAAABAAgAZGF0YQAAAAA=';
+	async setMuted(bool){
+		let status = await this.getStatus();
+		if(status.muted == bool) return this.publish(new this.constructor.Event('volumechange'));
+		this._player.muted = bool;
+		return this.waitForEvent('volumechange');
 	}
-	getStatus(){
-		let data = {
-			src:this._player.currentSrc,
-			time:this._player.currentTime,
-			duration:this._player.duration,
-			volume:this._player.volume,
-			paused:this._player.paused
-		}
-		return data;
+	async stop(){
+		await this.pause();
+		await this.seek(0);
+		return this.publish(new this.constructor.Event('stop'));
 	}
-	wait(f,g,callback,step=50){
-		if(f() != g) return callback();
-		let self = this;
-		setTimeout(function(){ self.wait(f,g,callback,step)}, step);
+	async getStatus(){
+		let obj = await super.getStatus();
+		obj.src = this._player.currentSrc;
+		obj.time = this._player.currentTime;
+		obj.duration = this._player.duration;
+		obj.volume = this._player.volume;
+		obj.paused = this._player.paused;
+		obj.muted = this._player.muted;
+		return obj;
 	}
-	static _validTrack(track){
-		let p = this.Track.prototype.isPrototypeOf(track);
-		let f = this.name == track.filetype;
-		return (p && f);
-	}
+	/*
 	static _validURL(url){
 		try{
 			let tmp = new URL(url);
@@ -125,7 +112,5 @@ export default class HTML extends EventTarget{
 		}catch(e){
 			return false;
 		}
-	}
-	//TODO _getHTMLAudioDuration
-	//TODO upload class?
+	}*/
 }
