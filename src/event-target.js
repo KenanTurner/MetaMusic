@@ -22,7 +22,10 @@ export default class EventTarget{
 		
 		if(!this._subscribers[obj.type]) return;
 		this._subscribers[obj.type] = this._subscribers[obj.type].filter(function(item){
-			return item === obj;
+			for(let o in item){
+				if(item[o] !== obj[o]) return true;
+			}
+			return false;
 		});
 	}
 	async publish(event){
