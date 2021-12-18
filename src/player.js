@@ -22,8 +22,8 @@ export default class Player extends EventTarget{
 		return p;
 	}
 	async load(track){
-		if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
-		return this.publish(new this.constructor.Event("load"));
+		//if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
+		return this.publish(new this.constructor.Event("loaded"));
 	}
 	async play(){
 		return this.publish(new this.constructor.Event("play"));
@@ -38,6 +38,9 @@ export default class Player extends EventTarget{
 		return this.publish(new this.constructor.Event("fastforward"));
 	}
 	async setVolume(vol){
+		return this.publish(new this.constructor.Event("volumechange"));
+	}
+	async setMuted(bool){
 		return this.publish(new this.constructor.Event("volumechange"));
 	}
 	async stop(){
