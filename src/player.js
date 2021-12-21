@@ -12,6 +12,14 @@ export default class Player extends EventTarget{
 	}
 	constructor(is_ready=true){
 		super(is_ready);
+		this._player = {
+			'src':'',
+			'time':0.0,
+			'duration':0.0,
+			'volume':0.0,
+			'paused':true,
+			'muted':false,
+		}
 	}
 	async destroy(){
 		let p = await this.publish(new this.constructor.Event("destroy"));
@@ -23,38 +31,50 @@ export default class Player extends EventTarget{
 	}
 	async load(track){
 		//if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
-		return this.publish(new this.constructor.Event("loaded"));
+		let p = this.waitForEvent('loaded');
+		try{
+			await fetch(track.src);
+			this._player.src = track.src;
+			this.publish(new this.constructor.Event("loaded"));
+		}catch(e){
+			this.publish(new this.constructor.Event("error"));
+		}
+		return p;
 	}
 	async play(){
+		this._player.paused = false;
 		return this.publish(new this.constructor.Event("play"));
 	}
 	async pause(){
+		this._player.paused = true;
 		return this.publish(new this.constructor.Event("pause"));
 	}
 	async seek(time){
-		return this.publish(new this.constructor.Event("seek"));
+		let status = await this.getStatus();
+		this._player.time = time;
+		let p = this.publish(new this.constructor.Event("timeupdate"));
+		if(time >= status.duration) this.publish(new this.constructor.Event("ended"));
+		return p;
 	}
 	async fastForward(time){
-		return this.publish(new this.constructor.Event("fastforward"));
+		let status = await this.getStatus();
+		return this.seek(status.time + time);
 	}
 	async setVolume(vol){
+		this._player.volume = vol;
 		return this.publish(new this.constructor.Event("volumechange"));
 	}
 	async setMuted(bool){
+		this._player.muted = bool == true;
 		return this.publish(new this.constructor.Event("volumechange"));
 	}
 	async stop(){
+		await this.pause();
+		await this.seek(0);
 		return this.publish(new this.constructor.Event("stop"));
 	}
 	async getStatus(){
-		return {
-			'src':'',
-			'time':0.0,
-			'duration':0.0,
-			'volume':0.0,
-			'paused':true,
-			'muted':false,
-		}
+		return this._player;
 	}
 	async publish(event){
 		event.status = await this.getStatus();
@@ -84,5 +104,4 @@ export default class Player extends EventTarget{
 	static async fetchAlbum(url){
 		return Promise.reject();
 	}
-	
 }
