@@ -6,7 +6,7 @@
 	color: #E6E6E6;
 	font-family: monospace;
 }
-.console.hidden {
+.console .output div.hidden {
 	display: none;
 }
 .console .controls {
@@ -38,6 +38,8 @@
 	font-family: monospace;
 }
 .console .output div {
+	display: flex;
+	flex-wrap: wrap;
 	padding: 4px;
 	padding-left: 25px;
 	padding-right: 25px;

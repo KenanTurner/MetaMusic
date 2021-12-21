@@ -6,33 +6,36 @@ import SC from '../../../src/plugins/SC/soundcloud.js';
 import Test from '../../shared/test.js';
 import Cases from './cases.js';
 
-let imports = [Player,HTML,YT,BC,SC,Test,Cases];
-function map(arr,obj={},f=function(i){return i}){arr.forEach(function(i){if(i.name) this[i.name] = f(i)}.bind(obj));return obj;}
+let imports = {Player,HTML,YT,BC,SC,Test,Cases};
+function map(src,dest={},key=function(k){return k},value=function(v){return v}){for(let k in src){dest[key(k)] = value(src[k]);};return dest;}
 map(imports,window);
-window.Cases = Cases;
-console.log("Loaded");
+console.log("Imports Loaded");
 
-let html_args = [HTML,[],{src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4",title:"Scott's Factory"},{src:"https://throw-error",title:"Throw Error"}];
-let yt_args = [YT,[],{src:"https://www.youtube.com/watch?v=zhG7aorm0RI",title:"Maynard & Waynard"},{src:"https://throw-error",title:"Throw Error"}];
-let bc_args = [BC,[],{src:"https://austinwintory.bandcamp.com/track/then-were-created-the-gods-in-the-midst-of-heaven",title:"Abzu"},{src:"https://throw-error",title:"Throw Error"}];
-let sc_args = [SC,[],{src:"https://soundcloud.com/i-winxd/kirby-speedrun",title:"Trance Music for Kirby Speedrunning Game"},{src:"https://throw-error",title:"Throw Error"}];
-let args = {"HTML":html_args,"YT":yt_args,"BC":bc_args,"SC":sc_args};
+let args = {};
+let err_track = {src:"https://throw-error",title:"Throw Error"};
+args['Player'] = {EventTarget:Player,Player,track:{src:"http://localhost:5000/tests/players/",title:"Example"},err_track};
+args['HTML'] = {EventTarget:HTML,Player:HTML,track:{src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4",title:"Scott's Factory"},err_track};
+args['YT'] = {Player:YT,track:{src:"https://www.youtube.com/watch?v=zhG7aorm0RI",title:"Maynard & Waynard"},err_track};
+args['BC'] = {Player:BC,track:{src:"https://austinwintory.bandcamp.com/track/then-were-created-the-gods-in-the-midst-of-heaven",title:"Abzu"},err_track};
+args['SC'] = {Player:SC,track:{src:"https://soundcloud.com/i-winxd/kirby-speedrun",title:"Trance Music for Kirby Speedrunning Game"},err_track};
+
 let test = new Test();
 
 let start_btn = document.getElementById("start_btn");
-let disable_console = document.getElementById("option-disable-console");
 start_btn.addEventListener("click",function(){ //need to wait for user interaction
 	test.clear();
 	for(let p in test_players){
+		if(!test_players[p]) continue;
 		for(let f of Cases){
-			if(test_cases[f.name] && test_players[p]) test.add({f:f,args:args[p],message:p});
+			let skip = !test_cases[f.name];
+			test.add({f,args:args[p],skip,message:p});
 		}
 	}
-	test.runAll(disable_console.checked);
+	test.runAll();
 });
 
-let test_cases = map(Cases,{},function(i){return true});
-let test_players = map([HTML,YT,BC,SC],{},function(i){return true});
+let test_cases = map(Cases,{},function(k){return Cases[k].name},function(v){return true});
+let test_players = map({Player,HTML,YT,BC,SC},{},function(k){return k},function(v){return true});
 
 //imported from shared/options.js folder
 createOptions(test_cases,"test_cases");

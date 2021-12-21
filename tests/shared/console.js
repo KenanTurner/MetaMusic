@@ -1,6 +1,14 @@
 export default class Console{
 	constructor(){
 		if(window.top.console._console) return window.top.console;
+		let options = {debug:false,log:true,warn:true,error:true};
+		this._options = new Proxy(options,{
+			set(target,prop,value){
+				if(value === true) window.top.console.show(prop);
+				if(value === false) window.top.console.hide(prop);
+				return Reflect.set(...arguments);
+			}
+		});
 		this._console = {};
 		for(let f in window.top.console){
 			this._console[f] = window.top.console[f];
@@ -9,19 +17,29 @@ export default class Console{
 		this._div = document.createElement("div");
 		this._div.classList.add("console");
 		this._div.id = "console";
-		this._ouput = this.output();
-		this._div.appendChild(this._ouput);
+		this._output = this.output();
+		this._div.appendChild(this._output);
 		this._controls = this.controls();
 		this._div.appendChild(this._controls);
 		return new Proxy(this,this);
 	}
 	get(target,prop,receiver){
+		if(prop === 'clear'){
+			return function(...data){
+				while(this._output.firstChild){
+					this._output.removeChild(this._output.lastChild);
+				}
+				this._console[prop](...data);
+			}
+		}
 		if(this._console[prop]){
 			return function(...data){
 				let div = this.toHTML(...data);
 				div.classList.add(prop);
-				this._ouput.appendChild(div);
+				if(this._options[prop] === false) div.classList.add('hidden');
+				this._output.appendChild(div);
 				this._console[prop](...data);
+				this._controls.scrollIntoView();
 			}.bind(this);
 		}
 		return Reflect.get(...arguments);
@@ -78,12 +96,14 @@ export default class Console{
 			this.eval(input.value);
 			input.style.height = "15px";
 			input.value = "";
-			input.scrollIntoView();
 		}.bind(this));
 		let input = document.createElement("textarea");
 		input.style.height = "15px";
 		input.rows = "1";
 		input.autocomplete = "off";
+		input.autocorrect = "off";
+		input.autocapitalize = "off";
+		input.spellcheck = false;
 		input.wrap = "soft";
 		input.classList.add("input");
 		input.addEventListener("keydown",function(e){
@@ -112,6 +132,18 @@ export default class Console{
 			window.top.console.log(t);
 		}catch(e){
 			window.top.console.error(e);
+		}
+	}
+	show(level){
+		for(let div of Array.from(this._output.children)){
+			if(!div.classList.contains(level)) continue;
+			div.classList.remove('hidden');
+		}
+	}
+	hide(level){
+		for(let div of Array.from(this._output.children)){
+			if(!div.classList.contains(level)) continue;
+			div.classList.add('hidden');
 		}
 	}
 }

@@ -1,21 +1,21 @@
 export default [
-	async function constructor(obj){
+	async function constructor({EventTarget}){
 		//Default constructor
-		let target = new obj.EventTarget();
+		let target = new EventTarget();
 		if(target._ready !== true) throw new Error("Default constructor set ready incorrectly!");
 		if(target._subscribers.all.length !== 0) throw new Error("Default constructor subscribers.all should be empty!");
 		//Async constructor
-		target = new obj.EventTarget(false);
+		target = new EventTarget(false);
 		if(target._ready !== false) throw new Error("Async constructor set ready incorrectly!");
 		if(target._subscribers.all.length !== 0) throw new Error("Async constructor subscribers.all should be empty!");
 		//Default w/ ready set manually
-		target = new obj.EventTarget();
+		target = new EventTarget();
 		target._ready = false;
 		if(target._ready !== false) throw new Error("Async constructor set ready incorrectly!");
 	},
-	async function subscribe(obj){
+	async function subscribe({EventTarget}){
 		//Default constructor
-		let target = new obj.EventTarget();
+		let target = new EventTarget();
 		//arguments
 		let type = "DEBUG";
 		let callback = function(evt){console.debug(evt);}
@@ -43,9 +43,9 @@ export default [
 		target.subscribe({type,callback,error});
 		if(target._subscribers["DEBUG"].length !== 3) throw new Error("Subscribe must populate subscribers array!");
 	},
-	async function unsubscribe(obj){
+	async function unsubscribe({EventTarget}){
 		//Default constructor
-		let target = new obj.EventTarget();
+		let target = new EventTarget();
 		//arguments
 		let type = "DEBUG";
 		let callback = function(evt){console.debug(evt);}
@@ -82,9 +82,9 @@ export default [
 		target.unsubscribe({type,callback});
 		if(target._subscribers["DEBUG"].length !== 0) throw new Error("Unsubscribe failed to remove none!");
 	},
-	async function waitForEvent(obj){
+	async function waitForEvent({EventTarget}){
 		//Default constructor
-		let target = new obj.EventTarget();
+		let target = new EventTarget();
 		//regular wait
 		let p = target.waitForEvent("DEBUG");
 		//wait 100 ms
@@ -112,9 +112,9 @@ export default [
 		//check subscriber was removed
 		if(target._subscribers["DEBUG"].length !== 0) throw new Error("Failed to remove waitForEvent subscriber!");
 	},
-	async function publish(obj){
+	async function publish({EventTarget}){
 		//Default constructor
-		let target = new obj.EventTarget();
+		let target = new EventTarget();
 		//Create event
 		let event = new target.constructor.Event("DEBUG");
 		//Add subscribers

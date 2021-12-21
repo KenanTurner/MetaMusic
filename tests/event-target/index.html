@@ -2,8 +2,11 @@
 <html>
 	<head>
 		<link rel="stylesheet" href="../shared/style.css">
+		<!--enable HTML Console-->
+		<link rel="stylesheet" href="../shared/console.css">
+		<script type="module" src="../shared/enable-console.js"></script>
+		
 		<script type="text/javascript" src="../shared/options.js"></script>
-		<script type="module" src="../shared/console.js"></script>
 		<script type="module" src="./js/main.js"></script>
 	</head>
 	<body>
@@ -12,21 +15,11 @@
 				<a href="../">Back</a>
 			</div>
 			<div>
-				<div class="options">
-					<label>Disable Console: </label>
-					<input type="checkbox" id="option-disable-console" checked>
-				</div>
 				<div id="test_cases" class="options"></div>
 			</div>
 			<div>
-				<div id="players" class="options"><br></div>
-			</div>
-			<div>
 				<button id="start_btn">Start Tests</button>
-				<input type="text" id="code" value="">
-				<button id="go">></button>
 			</div>
 		</div>
-		<div id="console"></div>
 	</body>
 </html>

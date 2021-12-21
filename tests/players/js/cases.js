@@ -1,7 +1,8 @@
-export default [
-	function tracks(Player,args,obj,obj_err){
-		var t1 = new Player.Track(obj);
-		var t2 = new Player.Track(obj_err);
+import Cases from '../../event-target/js/cases.js';
+export default Cases.concat([
+	async function tracks({Player,track,err_track}){
+		var t1 = new Player.Track(track);
+		var t2 = new Player.Track(err_track);
 		var t3 = t1.clone();
 		t1.toJSON();
 		t1.toString();
@@ -16,25 +17,24 @@ export default [
 		var t4 = Player.Track.fromJSON(t2.toString());
 		if(!t4.equals(t2))throw new Error("Bad comparison");
 		t1 += "E";
-		return Promise.resolve("Finished");
 	},
-	function playPause(Player,args,obj,obj_err){
-		var html = new Player(...args);
-		var t1 = new Player.Track(obj);
-		return html.waitForEvent('ready')
-		.then(html.chain('load',t1)) //loaded
-		.then(html.chain('play')) //play
-		.then(html.chain('pause'))
-		.then(html.chain('pause'))
-		.then(html.chain('play'))
-		.then(html.chain('play'))
-		.then(html.chain('pause'))
-		.finally(html.chain('destroy'));
+	async function play_pause({Player,track}){
+		var html = new Player();
+		var t1 = new Player.Track(track);
+		await html.waitForEvent('ready');
+		await html.load(t1); //loaded
+		await html.play(); //play
+		await html.pause(); //pause
+		await html.pause();
+		await html.play();
+		await html.play();
+		await html.pause();
+		await html.destroy();
 	},
-	function subs(Player,args,obj,obj_err){
-		var html = new Player(...args);
-		var t1 = new Player.Track(obj);
-		var t2 = new Player.Track(obj_err);
+	async function subs({Player,track,err_track}){
+		var html = new Player();
+		var t1 = new Player.Track(track);
+		var t2 = new Player.Track(err_track);
 		var check = {
 			loaded:false,
 			play:false,
@@ -42,130 +42,102 @@ export default [
 			ended:false,
 			error:false,
 			timeupdate:false,
-			volumechange:false
+			volumechange:false,
+			destroy:false,
 		}
-		var f = function(evt){
-			console.log(evt);
+		var callback = function(evt){
+			console.debug(evt);
 			check[evt.type] = true;
 		}
-		html.subscribe('loaded',f);
-		html.subscribe('play',f);
-		html.subscribe('pause',f);
-		html.subscribe('ended',f);
-		html.subscribe('error',f);
-		html.subscribe('timeupdate',f);
-		html.subscribe('volumechange',f);
+		html.subscribe({type:'loaded',callback});
+		html.subscribe({type:'play',callback});
+		html.subscribe({type:'pause',callback});
+		html.subscribe({type:'ended',callback});
+		html.subscribe({type:'error',callback});
+		html.subscribe({type:'timeupdate',callback});
+		html.subscribe({type:'volumechange',callback});
+		html.subscribe({type:'destroy',callback});
 
-		return html.waitForEvent('ready')
-		.then(html.chain('load',t1)) //loaded
-		.then(html.chain('play')) //play
-		.then(html.chain('pause')) //pause
-		.then(html.chain('setVolume',0)) //volumechange
-		.then(html.chain('seek',10)) //timeupdate
-		.then(html.chain('seek',9999)) //ended
-		.then(function(){
-			return new Promise(function(resolve,reject){
-				setTimeout(resolve,100); //wait so ended is called
-			});
-		})
-		.then(html.chain('load',t2)) //error
-		.then(function(){
-			throw new Error("This Error should not be thrown");
-		})
-		.catch(function(evt){
-			if(evt.message) throw evt;
-			return Promise.resolve()
-		})
-		.then(function(){
-			return new Promise(function(res,rej){
-				for(let evt in check){
-					if(!check[evt]) return rej(check);
-				}
-				return res("Finished");
-			});
-		})
-		.finally(html.chain('destroy'));
-	},
-	function events(Player,args,obj,obj_err){
-		var html = new Player(...args);
-		var t1 = new Player.Track(obj);
-		var t2 = new Player.Track(obj_err);
-		return html.waitForEvent('ready')
-		.then(html.chain('load',t1))
-		.then(html.chain('play'))
-		.then(html.chain('seek',10))
-		.then(html.chain('pause'))
-		.then(html.chain('pause'))
-		.then(html.chain('fastForward',10))
-		.then(html.chain('play'))
-		.then(html.chain('setVolume',0))
-		.then(html.chain('stop'))
-		.then(html.chain('play'))
-		.then(function(){
-			return new Promise(function(resolve,reject){
-				setTimeout(resolve,1000);
-			});
-		})
-		.catch(function(evt){
-			throw new Error(evt);
-		})
-		.then(html.chain('load',t2))
-		.then(function(){
-			throw new Error("This Error should not be thrown");
-		})
-		.catch(function(evt){
-			if(!html.constructor.Event.prototype.isPrototypeOf(evt)) throw evt;
-			return Promise.resolve("Finished")
-		})
-		.finally(html.chain('destroy'));
-	},
-	function seek(Player,args,obj,obj_err){
-		var html = new Player(...args);
-		var t1 = new Player.Track(obj);
-		var g = function(evt){console.log(evt)}
-		var f = function(time){
-			return function(obj){
-				let diff = Math.abs(obj.time - time);
-				if(diff > 0.1) return Promise.reject(obj);
-				return Promise.resolve(obj);
-			}
+		await html.waitForEvent('ready');
+		await html.load(t1); //loaded
+		await html.play(); //play
+		await html.pause(); //pause
+		await html.setVolume(0); //volumechange
+		await html.seek(10); //timeupdate
+		await html.seek(99999); //ended
+		await new Promise(function(resolve,reject){
+			setTimeout(resolve,100); //wait so ended is called
+		});
+		await throwIfNoError("Failed to throw error when loading an invalid track",html.load.bind(html),t2);
+		await html.destroy();
+		for(let evt in check){
+			if(!check[evt]) throw new Error("Failed to fire event: "+evt);
 		}
-		html.subscribe('all',g);
-		return html.waitForEvent('ready')
-		.then(html.chain('load',t1))
-		.then(html.chain('fastForward',10))
-		.then(html.chain('getStatus'))
-		.then(f(10))
-		.then(html.chain('fastForward',13))
-		.then(html.chain('getStatus'))
-		.then(f(23))
-		.then(html.chain('seek',3.1415))
-		.then(html.chain('getStatus'))
-		.then(f(3.1415))
-		.then(html.chain('seek',15))
-		.then(html.chain('getStatus'))
-		.then(f(15))
-		.then(html.chain('seek',0))
-		.then(html.chain('setVolume',0))
-		.then(html.chain('play'))
-		.then(html.chain('fastForward',10))
-		.then(html.chain('getStatus'))
-		.then(f(10))
-		.then(html.chain('fastForward',13.3))
-		.then(html.chain('getStatus'))
-		.then(f(23.3))
-		.then(html.chain('seek',3.1415))
-		.then(html.chain('getStatus'))
-		.then(f(3.1415))
-		.then(html.chain('seek',15))
-		.then(html.chain('getStatus'))
-		.then(f(15))
-		.then(function(obj){ //play for 1 second
-			return html.seek(obj.duration - 1);
-		})
-		.then(function(){
-			return html.waitForEvent('ended');
-		})
-		.finally(html.chain('destroy'));
 	},
-]
+	async function events({Player,track,err_track}){
+		var html = new Player();
+		var t1 = new Player.Track(track);
+		var t2 = new Player.Track(err_track);
+		await html.waitForEvent('ready');
+		await html.load(t1);
+		await html.play();
+		await html.seek(10);
+		await html.pause();
+		await html.pause();
+		await html.fastForward(10);
+		await html.play();
+		await html.setVolume(0);
+		await html.stop();
+		await html.play();
+		await new Promise(function(resolve,reject){
+			setTimeout(resolve,1000);
+		});
+		await throwIfNoError("Failed to throw error when loading an invalid track",html.load.bind(html),t2);
+		await html.chain('destroy');
+	},
+	async function seek({Player,track,err_track}){
+		var html = new Player();
+		var t1 = new Player.Track(track);
+		//var callback = function(evt){console.debug(evt)}
+		var f = async function(time){
+			let obj = await html.getStatus();
+			console.debug(obj);
+			let diff = Math.abs(obj.time - time);
+			if(diff > 0.1) throw new Error("Failed to seek within 0.1 seconds");
+		}
+		//html.subscribe({type:'all',callback});
+		await html.waitForEvent('ready');
+		await html.load(t1);
+		await html.fastForward(10);
+		await f(10);
+		await html.fastForward(13);
+		await f(23);
+		await html.seek(3.1415);
+		await f(3.1415);
+		await html.seek(15);
+		await f(15);
+		await html.seek(0);
+		await html.setVolume(0);
+		await html.play();
+		await html.fastForward(10);
+		await f(10);
+		await html.fastForward(13.3);
+		await f(23.3);
+		await html.seek(3.1415);
+		await f(3.1415);
+		await html.seek(15);
+		await f(15);
+		await html.destroy();
+	},
+]);
+async function throwsError(f,...args){
+	try{
+		await f(...args);
+		return false;
+	}catch(e){
+		return true;
+	}
+}
+async function throwIfNoError(message,f,...args){
+	if(!await throwsError(f,...args)) throw new Error(message);
+}

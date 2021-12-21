@@ -10,7 +10,7 @@ export default [
 		return Promise.resolve("Done");
 	},
 	function bad_return(){
-		console.log("Oops");
+		console.debug("Oops");
 		return true;
 	},
 	function timeout(){

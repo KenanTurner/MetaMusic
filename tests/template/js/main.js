@@ -5,24 +5,22 @@ import SC from '../../../src/plugins/SC/soundcloud.js';
 import Test from '../../shared/test.js';
 import Cases from './cases.js';
 
-let imports = [HTML,YT,BC,SC,Test];
-function map(arr,obj={},f=function(i){return i}){arr.forEach(function(i){if(i.name) this[i.name] = f(i)}.bind(obj));return obj;}
+let imports = {HTML,YT,BC,SC,Cases,Test};
+function map(src,dest={},key=function(k){return k},value=function(v){return v}){for(let k in src){dest[key(k)] = value(src[k]);};return dest;}
 map(imports,window);
-window.Cases = Cases;
-console.log("Loaded");
+
+let test = new Test();
+let args = {};
 
 let start_btn = document.getElementById("start_btn");
-let disable_console = document.getElementById("option-disable-console");
 start_btn.addEventListener("click",function(){ //need to wait for user interaction
 	test.clear();
 	for(let f of Cases){
-		if(test_cases[f.name]) test.add({f:f});
+		test.add({f,args,skip:!test_cases[f.name]});
 	}
-	test.runAll(disable_console.checked);
+	test.runAll();
 });
 
-let test = new Test();
-
 //imported from shared/options.js folder
-let test_cases = map(Cases,{},function(i){return true});
+let test_cases = map(Cases,{},function(k){return Cases[k].name},function(v){return true});
 createOptions(test_cases,"test_cases");
