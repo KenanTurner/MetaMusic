@@ -79,7 +79,7 @@ export default class HTML extends Player{
 		return this.publish(new this.constructor.Event('stop'));
 	}
 	async getStatus(){
-		let obj = await super.getStatus();
+		let obj = {};
 		obj.src = this._player.currentSrc;
 		obj.time = this._player.currentTime;
 		obj.duration = this._player.duration;
