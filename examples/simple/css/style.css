@@ -4,19 +4,19 @@ body {
 	color: #E6E6E6;
 	font-size: 100%;
 }
-.controls {
+#controls {
 	display: flex;
 	justify-content: center;
 	margin: 24px;
 }
-.controls > *{ /*selects all children*/
+#controls > *{ /*selects all children*/
 	padding: 12px;
 	border-radius: 5px;
 	border-width: 1px;
 	border-color: #868686;
 	margin: 2px;
 }
-.controls > button:hover {
+#controls > button:hover {
 	background-color: #4D4D4D;
 	color: white;
 	border-color: white;
