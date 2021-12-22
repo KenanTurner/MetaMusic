@@ -6,6 +6,9 @@
 	color: #E6E6E6;
 	font-family: monospace;
 }
+.console.hidden {
+	display: none;
+}
 .console .output div.hidden {
 	display: none;
 }
