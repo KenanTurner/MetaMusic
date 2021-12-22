@@ -15,9 +15,9 @@ let args = {};
 let err_track = {src:"https://throw-error",title:"Throw Error"};
 args['Player'] = {EventTarget:Player,Player,track:{src:window.location.href,title:"Example"},err_track};
 args['HTML'] = {EventTarget:HTML,Player:HTML,track:{src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4",title:"Scott's Factory"},err_track};
-args['YT'] = {Player:YT,track:{src:"https://www.youtube.com/watch?v=zhG7aorm0RI",title:"Maynard & Waynard"},err_track};
-args['BC'] = {Player:BC,track:{src:"https://austinwintory.bandcamp.com/track/then-were-created-the-gods-in-the-midst-of-heaven",title:"Abzu"},err_track};
-args['SC'] = {Player:SC,track:{src:"https://soundcloud.com/i-winxd/kirby-speedrun",title:"Trance Music for Kirby Speedrunning Game"},err_track};
+args['YT'] = {EventTarget:YT,Player:YT,track:{src:"https://www.youtube.com/watch?v=zhG7aorm0RI",title:"Maynard & Waynard"},err_track};
+args['BC'] = {EventTarget:BC,Player:BC,track:{src:"https://austinwintory.bandcamp.com/track/then-were-created-the-gods-in-the-midst-of-heaven",title:"Abzu"},err_track};
+args['SC'] = {EventTarget:SC,Player:SC,track:{src:"https://soundcloud.com/i-winxd/kirby-speedrun",title:"Trance Music for Kirby Speedrunning Game"},err_track};
 
 let test = new Test();
 
