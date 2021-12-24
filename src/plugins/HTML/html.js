@@ -69,9 +69,10 @@ export default class HTML extends Player{
 	}
 	async setMuted(bool){
 		let status = await this.getStatus();
-		if(status.muted == bool) return this.publish(new this.constructor.Event('volumechange'));
+		let p = this.waitForEvent('volumechange');
 		this._player.muted = bool;
-		return this.waitForEvent('volumechange');
+		if(status.muted == bool) return this.publish(new this.constructor.Event('volumechange'));
+		return p;
 	}
 	async stop(){
 		await this.pause();
