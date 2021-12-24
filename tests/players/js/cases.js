@@ -93,7 +93,7 @@ export default Cases.concat([
 			setTimeout(resolve,1000);
 		});
 		await throwIfNoError("Failed to throw error when loading an invalid track",html.load.bind(html),t2);
-		await html.chain('destroy');
+		await html.destroy();
 	},
 	async function seek({Player,track,err_track}){
 		var html = new Player();
