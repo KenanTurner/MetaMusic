@@ -16,6 +16,7 @@ export default [
 	async function subscribe({EventTarget}){
 		//Default constructor
 		let target = new EventTarget();
+		await target.waitForEvent('ready');
 		//arguments
 		let type = "DEBUG";
 		let callback = function(evt){console.debug(evt);}
@@ -46,6 +47,7 @@ export default [
 	async function unsubscribe({EventTarget}){
 		//Default constructor
 		let target = new EventTarget();
+		await target.waitForEvent('ready');
 		//arguments
 		let type = "DEBUG";
 		let callback = function(evt){console.debug(evt);}
@@ -85,6 +87,7 @@ export default [
 	async function waitForEvent({EventTarget}){
 		//Default constructor
 		let target = new EventTarget();
+		await target.waitForEvent('ready');
 		//regular wait
 		let p = target.waitForEvent("DEBUG");
 		//wait 100 ms
@@ -115,6 +118,7 @@ export default [
 	async function publish({EventTarget}){
 		//Default constructor
 		let target = new EventTarget();
+		await target.waitForEvent('ready');
 		//Create event
 		let event = new target.constructor.Event("DEBUG");
 		//Add subscribers
