@@ -1,5 +1,12 @@
 import Cases from '../../event-target/js/cases.js';
-export default Cases.concat([
+let cases = Cases.map(function(f){
+    let g = async function({Player}){
+        f({EventTarget:Player});
+    }
+    Object.defineProperty(g,"name",{value:f.name});
+    return g;
+})
+export default cases.concat([
 	async function tracks({Player,track,err_track}){
 		var t1 = new Player.Track(track);
 		var t2 = new Player.Track(err_track);
