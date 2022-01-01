@@ -35,6 +35,7 @@ export default class MetaMusic extends Player{
 			}.bind(this)});
 			this._players[Player.name].subscribe({type:'ended',callback:function(e){
 				if(this.current_player === this._players[Player.name]) this.publish(e);
+				if(this.queue.has(this.current_track)) this.next(1);
 			}.bind(this)});
 		}.bind(this));
 		
