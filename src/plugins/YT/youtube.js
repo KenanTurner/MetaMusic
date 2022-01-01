@@ -34,12 +34,12 @@ export default class YT extends Player{
 			}.bind(this)
 			this._player = new window.YT.Player(this._iframe_id, player_vars);
 			this._player.addEventListener("onStateChange", function(evt){
-				if(evt.data === YT.PlayerState.PLAYING){ //PLAYING
+				if(evt.data === window.YT.PlayerState.PLAYING){ //PLAYING
 					this._player._timer = setInterval(function(){
 						this.publish(new this.constructor.Event("timeupdate"));
 					}.bind(this), 100);
 				}
-				if(evt.data !== YT.PlayerState.PLAYING) clearInterval(this._player._timer);
+				if(evt.data !== window.YT.PlayerState.PLAYING) clearInterval(this._player._timer);
 			}.bind(this));
 			this._player.addEventListener("onStateChange", function(evt){
 				console.debug("YT State Change: ",evt.data);
@@ -47,19 +47,19 @@ export default class YT extends Player{
 					/*case YT.PlayerState.UNSTARTED: //unstarted: -1
 						self._publish('abort'); //not really abort
 						break;*/
-					case YT.PlayerState.ENDED: //ended: 0
+					case window.YT.PlayerState.ENDED: //ended: 0
 						this.publish(new this.constructor.Event("ended"));
 						break;
-					case YT.PlayerState.PLAYING: //playing: 1
+					case window.YT.PlayerState.PLAYING: //playing: 1
 						this.publish(new this.constructor.Event("play"));
 						break;
-					case YT.PlayerState.PAUSED: //paused: 2
+					case window.YT.PlayerState.PAUSED: //paused: 2
 						this.publish(new this.constructor.Event("pause"));
 						break;
 					/*case YT.PlayerState.BUFFERING: //buffering: 3
 						//self._publish('buffering'); //buffering
 						break;*/
-					case YT.PlayerState.CUED: //video cued: 5
+					case window.YT.PlayerState.CUED: //video cued: 5
 						this.publish(new this.constructor.Event("loaded"));
 						break;
 				}
