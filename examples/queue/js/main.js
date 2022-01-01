@@ -16,6 +16,10 @@ Object.setPrototypeOf(Player.Track,Custom); //This is poggers
 Object.setPrototypeOf(Player.Track.prototype,Custom.prototype); //Like super poggers
 
 MetaMusic.players = {HTML,YT,SC,BC};
+if(window.location.href.includes('.github.io/')){
+	MetaMusic.players = {HTML,YT,SC};
+	console.warn("Bandcamp playback has been disabled. See the README for more information.");
+}
 
 window.mm = new MetaMusic();
 mm.subscribe({type:'error',callback:function(err){

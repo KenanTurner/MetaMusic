@@ -10,6 +10,10 @@ map(imports,window);
 console.log("Imports Loaded");
 
 MetaMusic.players = {HTML,YT,SC,BC};
+if(window.location.href.includes('.github.io/')){
+	MetaMusic.players = {HTML,YT,SC};
+	console.warn("Bandcamp playback has been disabled. See the README for more information.");
+}
 	
 let load_btn = document.getElementById("load");
 let play_btn = document.getElementById("play");
@@ -61,7 +65,7 @@ stop_btn.addEventListener('click',async function(){
 });
 plugin_btn.addEventListener('change',function(e){
 	if(this.value == "BC" && window.location.href.includes('.github.io/')){
-		return alert("Bandcamp will not work from a static site. See the README for more information.");
+		return alert("Bandcamp playback has been disabled. See the README for more information.");
 	}
 	let p = this.value;
 	track = new MetaMusic.players[p].Track(plugins[p]);
