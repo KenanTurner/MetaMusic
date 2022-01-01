@@ -3,7 +3,6 @@ import YT from '../../../src/plugins/YT/youtube.js';
 import BC from '../../../src/plugins/BC/bandcamp.js';
 import SC from '../../../src/plugins/SC/soundcloud.js';
 import Album from '../../../src/album.js';
-//import Album from '../../../src/new-album.js';
 import Test from '../../shared/test.js';
 import Cases from './cases.js';
 

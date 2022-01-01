@@ -75,8 +75,13 @@ export default class Album extends EventTarget{
 			return f(t,i,arr);
 		});
 	}
-	find(track){
+	findIndex(track){
 		return this.tracks.findIndex(function(t){
+			return t.equals(track);
+		});
+	}
+	find(track){
+		return this.tracks.find(function(t){
 			return t.equals(track);
 		});
 	}
