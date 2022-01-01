@@ -17,9 +17,9 @@ export default class EventTarget{
 		if(!obj.callback) throw new Error("Subscriber must include a callback!");
 		if(typeof obj.callback !== "function") throw new Error("Callback must be a function");
 		
+		if(obj.type === 'ready' && this._ready) return obj.callback(new this.constructor.Event("ready"));
 		if(!this._subscribers[obj.type]) this._subscribers[obj.type] = []; //creates the subscriber list
 		this._subscribers[obj.type].push(obj);
-		if(obj.type === 'ready' && this._ready) this.publish(new this.constructor.Event("ready"));
 	}
 	//{type:[String],callback:[Function],<error>:[Function],<once>:[Boolean]}
 	unsubscribe(obj){
