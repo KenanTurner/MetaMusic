@@ -10,7 +10,7 @@ export default class Queue extends Album{
 		let index = this.findIndex(this.current_track);
 		if(index === -1) throw new Error("Failed to find current track!");
 		
-		if(index+step >= this.length) this.publish(new this.constructor.Event("ended"));
+		if(index+step >= this.length) this.publish(new this.constructor.Event("done"));
 		
 		let mod = function(n, m) {return ((n % m) + m) % m;}
 		index = mod(index+step,this.length);
