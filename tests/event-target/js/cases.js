@@ -2,16 +2,9 @@ export default [
 	async function constructor({EventTarget}){
 		//Default constructor
 		let target = new EventTarget();
-		if(target._ready !== true) throw new Error("Default constructor set ready incorrectly!");
+		await target.waitForEvent('ready');
 		if(target._subscribers.all.length !== 0) throw new Error("Default constructor subscribers.all should be empty!");
-		//Async constructor
-		target = new EventTarget(false);
-		if(target._ready !== false) throw new Error("Async constructor set ready incorrectly!");
-		if(target._subscribers.all.length !== 0) throw new Error("Async constructor subscribers.all should be empty!");
-		//Default w/ ready set manually
-		target = new EventTarget();
-		target._ready = false;
-		if(target._ready !== false) throw new Error("Async constructor set ready incorrectly!");
+		await target.destroy();
 	},
 	async function subscribe({EventTarget}){
 		//Default constructor
@@ -43,6 +36,7 @@ export default [
 		target.subscribe({type,callback});
 		target.subscribe({type,callback,error});
 		if(target._subscribers["DEBUG"].length !== 3) throw new Error("Subscribe must populate subscribers array!");
+		await target.destroy();
 	},
 	async function unsubscribe({EventTarget}){
 		//Default constructor
@@ -83,6 +77,7 @@ export default [
 		//test for none
 		target.unsubscribe({type,callback});
 		if(target._subscribers["DEBUG"].length !== 0) throw new Error("Unsubscribe failed to remove none!");
+		await target.destroy();
 	},
 	async function waitForEvent({EventTarget}){
 		//Default constructor
@@ -114,6 +109,7 @@ export default [
 		});
 		//check subscriber was removed
 		if(target._subscribers["DEBUG"].length !== 0) throw new Error("Failed to remove waitForEvent subscriber!");
+		await target.destroy();
 	},
 	async function publish({EventTarget}){
 		//Default constructor
@@ -157,6 +153,7 @@ export default [
 		if(all.error_count !== 1) throw new Error("Failed to fire all callback!");
 		if(error.count !== 1) throw new Error("Failed to fire error callback!");
 		if(error.error_count !== 0) throw new Error("Failed to not fire error callback!");
+		await target.destroy();
 	},
 ]
 async function throwsError(f,...args){
