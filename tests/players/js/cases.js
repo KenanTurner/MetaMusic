@@ -1,7 +1,7 @@
 import Cases from '../../event-target/js/cases.js';
 let cases = Cases.map(function(f){
     let g = async function({Player}){
-        f({EventTarget:Player});
+        return f({EventTarget:Player});
     }
     Object.defineProperty(g,"name",{value:f.name});
     return g;
