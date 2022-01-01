@@ -6,7 +6,6 @@ export default class Album extends EventTarget{
 		
 		this.title = obj.title;
 		this.tracks = [];
-		this._unsorted = obj._unsorted == true;
 		if(obj.tracks) this.push(...obj.tracks);
 	}
 	push(...items){
@@ -99,10 +98,9 @@ export default class Album extends EventTarget{
 	toJSON(key){
 		let obj = {};
 		obj.title = this.title;
-		obj._unsorted = this._unsorted;
 
 		let arr = [...this.tracks];
-		if(!this._unsorted) arr.sort(function(t1,t2){
+		arr.sort(function(t1,t2){
 			let val = t1.compare(t2,"track_num");
 			if(val === 0) val = t1.compare(t2,"title");
 			if(val === 0) val = t1.compare(t2,"src");
