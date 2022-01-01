@@ -1,5 +1,13 @@
-export default [
-	function constructor(MetaMusic,players,album){
+import Cases from '../../players/js/cases.js';
+let cases = Cases.map(function(f){
+    let g = async function({MetaMusic,track,err_track}){
+        return f({Player:MetaMusic,track,err_track});
+    }
+    Object.defineProperty(g,"name",{value:f.name});
+    return g;
+})
+export default cases.concat([
+	/*function constructor(MetaMusic,players,album){
 		MetaMusic.players = players;
 		let mm = new MetaMusic(); //default constructor
 		let nn = new MetaMusic(mm);
@@ -126,5 +134,5 @@ export default [
 			});
 		})
 		.finally(mm.chain('destroy'));
-	},
-]
+	},*/
+]);

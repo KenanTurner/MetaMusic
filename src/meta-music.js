@@ -1,232 +1,100 @@
-import Album from './album.js';
-export default class MetaMusic extends Album{
-	constructor(obj = {}){
-		Album.players = MetaMusic.players; //???
-		super({title:"queue",_unsorted:true});
-		this._ready = false;
+import Queue from './queue.js';
+import Player from './player.js';
+export default class MetaMusic extends Player{
+	static players = {};
+	static Track = class Track extends Player.Track{
+		constructor(obj){
+			if(MetaMusic.players[obj.filetype]) return new MetaMusic.players[obj.filetype].Track(obj);
+			super(obj);
+		}
+		static fromJSON(json){
+			let obj = JSON.parse(json);
+			if(MetaMusic.players[obj.filetype]) return new MetaMusic.players[obj.filetype].Track(obj);
+			return new Player.Track(JSON.parse(json));
+		}
+	}
+	constructor(){
+		Queue.players = MetaMusic.players; //???
+		super(false);
 		
-		//add tracks
-		if(obj.tracks) this.push(...obj.tracks);
+		delete this._player;
+		this.queue = new Queue();
+		this.queue.subscribe({type:'all',callback:function(e){
+			this.publish(e);
+		}.bind(this)});
 		
-		//create players
+		this.current_player = new Player();
 		this._players = {};
-		let p = Object.values(this.constructor.players);
-		if(p.length == 0) throw new Error("At least one player is required!");
-		p.forEach(function(Player){
+		Object.values(this.constructor.players).forEach(function(Player){
 			this._players[Player.name] = new Player();
-			this._players[Player.name].subscribe('timeupdate',function(e){
-				if(this._player === e.target) this._status.time = e.data.time;
-				this.handleEvent('timeupdate')(e);
-			}.bind(this),this.handleEvent('error',{paused:true}));
-			this._players[Player.name].subscribe('ended',function(e){
-				if(e && this._player === e.target) this._publish('ended');
-				//play track again if repeating
-				if(!this._status.repeat) return this.next();
-				let paused = this._status.paused;
-				return this.stop().then(function(e){
-					if(!paused) return this.play();
-				}.bind(this),function(e){
-					this._publish('error');
-					console.log("Failed to load!");
-					return e;
-				}.bind(this));
-			}.bind(this));
+			this._players[Player.name].subscribe({type:'error',callback:function(e){
+				if(this.current_player === this._players[Player.name]) this.publish(e);
+			}.bind(this)});
+			this._players[Player.name].subscribe({type:'timeupdate',callback:function(e){
+				if(this.current_player === this._players[Player.name]) this.publish(e);
+			}.bind(this)});
+			this._players[Player.name].subscribe({type:'ended',callback:function(e){
+				if(this.current_player === this._players[Player.name]) this.publish(e);
+			}.bind(this)});
 		}.bind(this));
 		
-		this._track;
-		this._player;
-		this._status = {
-			src:"",
-			time:0,
-			duration:0,
-			volume:1,
-			paused:true,
-			shuffled: false,
-			repeat: false,
-		}
-		
-		//wait for ready
-		this._ready = false;
 		this.waitForAll('waitForEvent','ready').then(function(){
-			this._ready = true;
-			this._publish('ready');
-			if(this.length > 0) this.load(this.tracks[0]);
+			this.ready = true;
 		}.bind(this));
 	}
-	static fromJSON(json){
-		let obj = {...JSON.parse(json),...super.fromJSON(json)}; //merge the two objects
-		return new MetaMusic(obj);
+	get current_track(){
+		return this.queue.current_track;
 	}
-	//Functions relating to interacting with the queue #################
-	insertNext(...items){
-		let index = this.find(this._track)+1;
-		return this.insert(index,...items);
+	set current_track(track){
+		this.queue.current_track = track;
 	}
-	//Functions related to shuffling: ##################################
-	updateTrackNum(){
-		this.tracks.forEach(function(t,i,arr){
-			arr[i].track_num = i;
-		});
+	async next(step=1){
+		let index = this.queue.findIndex(this.current_track);
+		let status = await this.getStatus();
+		this.queue.next(step);
+		await this.stop();
+		await this.load(this.current_track);
+		if(!status.paused && index+step < this.queue.length) await this.play();
+		return this.current_track;
 	}
-	shuffle(){
-		let index = this.find(this._track);
-		if(index === -1) return super.shuffle(); //shuffle normally
-		
-		
-		let shuffleAll = (index == 0 && this._status.time == 0);
-		this._ready = false;
-		if(shuffleAll){
-			super.shuffle();
-			this.load(this.tracks[0]);
-		}else{
-			let f = function(arr,obj={}){arr.forEach(function(t,i){this[t]=t.track_num}.bind(obj));return obj;}
-			let map = f(this.tracks);
-			let previous = new Album({title:'prev'});
-			let remaining = new Album({title:'rem'});
-			this.tracks.forEach(function(t,i,arr){
-				if(i<index) previous.push(t);
-			})
-			this.tracks.forEach(function(t,i,arr){
-				if(i>index) remaining.push(t);
-			})
-			if(shuffleAll) remaining.insert(0,this._track);
-			previous.shuffle();
-			remaining.shuffle();
-			if(!shuffleAll) previous.push(this._track);
-			this.clear();
-			this.push(previous,remaining);
-			this.tracks.forEach(function(t){
-				t.track_num = map[t];
-			});
-		}
-		this._ready = true;
-		this._status.shuffled = true;
-		this._publish('shuffle');
-	}
-	unshuffle(){
-		if(!this._status.shuffled) return;
-		let index = this.find(this._track);
-		this.sort('track_num');
-		if(index == 0 && this._status.time == 0) this.load(this.tracks[0]);
-		this._status.shuffled = false;
-	}
-	//Functions related to interactions with a player: #################
-	handleEvent(type,status = {},f){
-		return function(e){
-			for(let item in status){
-				this._status[item] = status[item];
-			}
-			if(type === 'error'){
-				this._publish(type);
-				return Promise.reject(e);
-			}
-			if(e && this._player === e.target) this._publish(type);
-			if(f) this[f]();
-			return e;
-		}.bind(this);
-	}
-	play(){
-		if(!this._track) return Promise.reject("Track needs to be loaded first!");
-		return this._player.play()
-		.then(this.handleEvent('play',{paused:false}))
-		.catch(this.handleEvent('error',{paused:true}));
-	}
-	pause(){
-		if(!this._track) return Promise.reject("Track needs to be loaded first!");
-		return this._player.pause()
-		.then(this.handleEvent('pause',{paused:true}))
-		.catch(this.handleEvent('error',{paused:true}));
-	}
-	stop(){
-		if(!this._track) return Promise.reject("Track needs to be loaded first!");
-		return this._player.stop()
-		.then(this.handleEvent('stop',{paused:true}))
-		.catch(this.handleEvent('error',{paused:true}));
-	}
-	seek(time){
-		if(!this._track) return Promise.reject("Track needs to be loaded first!");
-		return this._player.seek(time)
-		.then(this.handleEvent('timeupdate'))
-		.catch(this.handleEvent('error',{paused:true}));
-	}
-	fastForward(time){
-		if(!this._track) return Promise.reject("Track needs to be loaded first!");
-		return this._player.fastForward(time)
-		.then(this.handleEvent('timeupdate'))
-		.catch(this.handleEvent('error',{paused:true}));
-	}
-	//TODO handle vol = current_vol edge case
-	setVolume(vol){
-		return this.waitForAll('setVolume',vol)
-		.then(function(arr){
-			this._status.volume = vol;
-			return this._publish('volumechange');
-		}.bind(this))
-		.catch(this.handleEvent('error',{paused:true}));
-	}
-	load(t){
-		if(this._track) this.stop(); //TODO handle asynchronous stopping
-		try{
-			this._track = t.clone(); //TODO clone or shallow copy?
-			this._player = this._players[this._track.filetype];
-			return this._player.load(this._track).then(function(e){
-				this._status.time = 0;
-				let p = this._player.getStatus()
-				if(!Promise.prototype.isPrototypeOf(p)) p = Promise.resolve(p);
-				p.then(function(o){
-					this._status.time = o.time;
-					this._status.src = o.src;
-					this._status.duration = o.duration;
-					if(o.duration == 0) setTimeout(function(){ //TODO fix kludge
-						p = this._player.getStatus()
-						if(!Promise.prototype.isPrototypeOf(p)) p = Promise.resolve(p);
-						p.then(function(o){
-							this._status.duration = o.duration;
-						}.bind(this))
-					}.bind(this),1000);
-				}.bind(this));
-				return Promise.resolve(e);
-			}.bind(this))
-			.then(this.handleEvent('loaded'))
-			.catch(this.handleEvent('error',{paused:true}));
-		}catch(e){
-			return Promise.reject(e);
-		}
-	}
-	//Functions related to traversing the queue: #######################
-	next(step=1){
-		if(this.length === 0) return Promise.reject("Empty playlist!");
-		let index = this.find(this._track);
-		if(index === -1) return Promise.reject("Unable to find next track!");
-		
-		let mod = function(n, m) {
-			return ((n % m) + m) % m;
-		}
-		if(index+step != mod(index+step,this.length)){
-			this._status.paused = true;
-			this._publish('ended'); //End of playlist
-		}
-		index = mod(index+step,this.length);
-		let track = this.tracks[index];
-		let paused = this._status.paused;
-		return this.load(track).then(function(e){
-			this._publish('next');
-			if(!paused) return this.play(); //TODO return load event?
-			return e;
-		}.bind(this),function(e){
-			this._publish('error');
-			console.log("Failed to load!");
-			return e;
-		}.bind(this));
-	}
-	previous(step=1){ //TODO remove?
+	async previous(step=1){
 		return this.next(-step);
 	}
-	//Bonus: ###########################################################
-	destroy(){
-		return this.waitForAll('destroy').then(function(){
-			this._ready = false;
-		}.bind(this));
+	async destroy(){
+		let p = super.destroy();
+		await this.waitForAll('destroy');
+		return p;
+	}
+	async load(track){
+		if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
+		let status = await this.getStatus();
+		await this.stop();
+		this.current_track = track;
+		this.current_player = this._players[track.filetype];
+		let p = await this.current_player.load(track);
+		await this.setVolume(status.volume);
+		return this.publish(p);
+	}
+	async play(){
+		return this.publish(await this.current_player.play());
+	}
+	async pause(){
+		return this.publish(await this.current_player.pause());
+	}
+	async seek(time){
+		return this.publish(await this.current_player.seek(time));
+	}
+	async fastForward(time){
+		return this.publish(await this.current_player.fastForward(time));
+	}
+	async setVolume(vol){
+		return this.publish(await this.current_player.setVolume(vol));
+	}
+	async setMuted(bool){
+		return this.publish(await this.current_player.setMuted(bool));
+	}
+	async stop(){
+		return this.publish(await this.current_player.stop());
 	}
 	all(f,...args){
 		return Object.values(this._players).map(function(player){
@@ -237,17 +105,18 @@ export default class MetaMusic extends Album{
 			}
 		});
 	}
-	waitForAll(f,...args){
+	async waitForAll(f,...args){
 		return Promise.allSettled(this.all(f,...args))
 	}
-	playerStatus(){
+	async getStatus(){
+		return this.current_player.getStatus();
+	}
+	async getPlayerStatus(){
 		return Promise.all(this.all('getStatus'));
 	}
-	//Used for Events
-	getStatus(){
-		let obj = JSON.parse(JSON.stringify(this._status));
-		obj.track = this._track;
-		obj.player = this._player;
-		return obj;
+	static isValidTrack(track){
+		return Object.values(Album.players).some(function(player){
+			return player.isValidTrack(track);
+		});
 	}
 }
