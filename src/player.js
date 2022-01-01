@@ -16,7 +16,7 @@ export default class Player extends EventTarget{
 			'src':'',
 			'time':0.0,
 			'duration':0.0,
-			'volume':0.0,
+			'volume':1.0,
 			'paused':true,
 			'muted':false,
 		}
