@@ -115,7 +115,7 @@ export default class MetaMusic extends Player{
 		return Promise.all(this.all('getStatus'));
 	}
 	static isValidTrack(track){
-		return Object.values(Album.players).some(function(player){
+		return Object.values(MetaMusic.players).some(function(player){
 			return player.isValidTrack(track);
 		});
 	}
