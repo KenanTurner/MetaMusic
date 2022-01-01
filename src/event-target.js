@@ -4,6 +4,14 @@ export default class EventTarget{
 		this._ready = is_ready == true;
 		//TODO maybe use a promise instead of boolean?
 	}
+	async destroy(){
+		let p = await this.publish(new this.constructor.Event("destroy"));
+		this.ready = false;
+		Object.values(this._subscribers).forEach(function(arr){
+			arr.length = 0; //Removes all event listeners
+		});
+		return p;
+	}
 	get ready(){
 		return this._ready;
 	}
