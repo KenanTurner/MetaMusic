@@ -4,6 +4,13 @@ export default class EventTarget{
 		this._ready = is_ready == true;
 		//TODO maybe use a promise instead of boolean?
 	}
+	get ready(){
+		return this._ready;
+	}
+	set ready(bool){
+		this._ready = bool == true;
+		if(this._ready) this.publish(new this.constructor.Event("ready"));
+	}
 	//{type:[String],callback:[Function],<error>:[Function],<once>:[Boolean]}
 	subscribe(obj){
 		if(!obj.type) throw new Error("Subscriber must specify a type!");
