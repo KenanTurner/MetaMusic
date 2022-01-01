@@ -60,7 +60,7 @@ export default class YT extends Player{
 						//self._publish('buffering'); //buffering
 						break;*/
 					case window.YT.PlayerState.CUED: //video cued: 5
-						this.publish(new this.constructor.Event("loaded"));
+						this.publish(new this.constructor.Event("cued"));
 						break;
 				}
 			}.bind(this));
@@ -76,7 +76,7 @@ export default class YT extends Player{
 	async load(track){
 		if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
 		let status = await this.getStatus();
-		let p = this.waitForEvent('loaded');
+		let p = this.waitForEvent('cued');
 		try{
 			let id = this.constructor.getYoutubeId(track.src);
 			this._player.cueVideoById(id,0);
@@ -92,7 +92,7 @@ export default class YT extends Player{
 		await this.play(); //start player
 		await this.stop(); //stop player
 		await this.setVolume(status.volume); //unmute player
-		return p;
+		return this.publish(new this.constructor.Event("loaded"));
 	}
 	async waitForChange(f,value,step=50,...args){
 		let result = await f(...args);
@@ -146,8 +146,9 @@ export default class YT extends Player{
 		return this.publish(new this.constructor.Event('volumechange'));
 	}
 	async stop(){
-		await this.pause();
-		await this.seek(0);
+		let p = this.waitForEvent('cued');
+		this._player.stopVideo();
+		await p;
 		return this.publish(new this.constructor.Event('stop'));
 	}
 	async getStatus(key){
