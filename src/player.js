@@ -20,6 +20,7 @@ export default class Player extends EventTarget{
 			'paused':true,
 			'muted':false,
 		}
+		this._command_queue = []; //allows queuing of future commands
 	}
 	async destroy(){
 		let p = await this.publish(new this.constructor.Event("destroy"));
@@ -84,6 +85,31 @@ export default class Player extends EventTarget{
 		let p = this.Track.prototype.isPrototypeOf(track);
 		let f = this.name === track.filetype;
 		return (p && f);
+	}
+	async enqueue(f,...args){
+		return new Promise(function(res,rej){
+			let obj = {f:typeof(f)==='function'? f: this[f].bind(this),res,rej,args};
+			this._command_queue.push(obj);
+			if(this._command_queue.length === 1) this.dequeue();
+		}.bind(this))
+	}
+	async dequeue(){
+		if(this._command_queue.length === 0) return;
+		let obj = this._command_queue[0];
+		try{
+			let e = await obj.f(...obj.args);
+			obj.res(e);
+		}catch(e){
+			obj.rej(e);
+		}finally{
+			this._command_queue.shift();
+			return this.dequeue();
+		}
+	}
+	async clear(){
+		if(this._command_queue.length === 0) return;
+		this._command_queue.length = 1;
+		await this.enqueue(function(){});
 	}
 	//Boring upload stuff
 	static hasTrackUpload(){
