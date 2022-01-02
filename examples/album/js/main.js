@@ -3,8 +3,7 @@ import HTML from '../../../src/plugins/HTML/html.js';
 import YT from '../../../src/plugins/YT/youtube.js';
 import BC from '../../../src/plugins/BC/bandcamp.js';
 import SC from '../../../src/plugins/SC/soundcloud.js';
-//import MetaMusic from '../../../src/meta-music.js';
-import MetaMusic from './meta-music.js';
+import MetaMusic from '../../../src/meta-music.js';
 import Custom from './custom.js';
 import Album from './custom-album.js';
 
