@@ -136,6 +136,20 @@ export default cases.concat([
 		await f(15);
 		await html.destroy();
 	},
+	async function command_queue({Player,track,err_track}){
+		var player = new Player();
+		var t1 = new Player.Track(track);
+		await player.waitForEvent('ready');
+		player.enqueue('load',t1);
+		player.enqueue('play');
+		player.enqueue('pause');
+		player.enqueue('setVolume',0);
+		player.enqueue('play');
+		player.enqueue('seek',10);
+		player.enqueue('stop');
+		await player.waitForEvent('stop');
+		await player.destroy();
+	}
 ]);
 async function throwsError(f,...args){
 	try{
