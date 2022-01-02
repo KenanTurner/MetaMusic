@@ -36,10 +36,6 @@ let tracks = [
 ];
 mm.queue.push(...tracks);
 
-Custom.onclick = function(){
-	mm.load(this);
-}
-
 let previous_btn = document.getElementById("previous");
 let backward_btn = document.getElementById("backward");
 let play_btn = document.getElementById("play");
@@ -48,13 +44,24 @@ let stop_btn = document.getElementById("stop");
 let forward_btn = document.getElementById("forward");
 let next_btn = document.getElementById("next");
 
-previous_btn.addEventListener('click',mm.next.bind(mm,-1));
-backward_btn.addEventListener('click',mm.fastForward.bind(mm,-5));
-play_btn.addEventListener('click',mm.play.bind(mm));
-pause_btn.addEventListener('click',mm.pause.bind(mm));
-stop_btn.addEventListener('click',mm.stop.bind(mm));
-forward_btn.addEventListener('click',mm.fastForward.bind(mm,5));
-next_btn.addEventListener('click',mm.next.bind(mm,1));
+//################### Handle user interaction ###################
+Custom.onclick = function(){
+	mm.clear();
+	mm.enqueue('load',this);
+}
+
+let f = function(f,...args){
+    return function(){
+		mm.enqueue(f,...args);
+	}
+}
+previous_btn.addEventListener('click',f('next',-1));
+backward_btn.addEventListener('click',f('fastForward',-5));
+play_btn.addEventListener('click',f('play'));
+pause_btn.addEventListener('click',f('pause'));
+stop_btn.addEventListener('click',f('stop'));
+forward_btn.addEventListener('click',f('fastForward',5));
+next_btn.addEventListener('click',f('next',1));
 
 let is_paused = true;
 function isPaused(bool){
@@ -62,7 +69,6 @@ function isPaused(bool){
 		is_paused = bool;
 	}
 }
-
 play_btn.addEventListener('click',isPaused(false));
 pause_btn.addEventListener('click',isPaused(true));
 stop_btn.addEventListener('click',isPaused(true));
@@ -76,6 +82,7 @@ mm.subscribe({type:'loaded',callback:function(e){
 	if(!is_paused) mm.play();
 }});
 
+//################### Display tracks ###################
 let queue = document.getElementById("queue");
 mm.queue.tracks.forEach(function(t){
 	queue.appendChild(t.toHTML());

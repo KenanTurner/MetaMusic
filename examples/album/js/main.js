@@ -87,7 +87,7 @@ mm.subscribe({type:'loaded',callback:function(e){
 	if(!is_paused) mm.play();
 }});
 
-//################### Handle file download ###################
+//################### Display albums ###################
 window.files = [
 	'./data/html.json',
 	'./data/youtube.json',
