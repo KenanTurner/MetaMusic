@@ -42,9 +42,6 @@ let track_container = document.getElementById('track-container');
 
 //################### Handle user interaction ###################
 Album.onClick = async function(a){
-	if(a.tracks.some(function(track){return track.filetype === "BC"}) && window.location.href.includes('.github.io/')){
-		return alert("Bandcamp will not work from a static site. See the README for more information.");
-	}
 	while(track_container.firstChild) track_container.removeChild(track_container.lastChild);
 	a.tracks.forEach(function(t){
 		track_container.appendChild(t.toHTML());
@@ -105,5 +102,5 @@ window.album_data = await Promise.all(files.map(async function(url){
 }));
 album_data.forEach(function(data){
 	let a = new Album(data);
-	album_container.appendChild(a.toHTML());
+	if(a.tracks.length > 0) album_container.appendChild(a.toHTML());
 });
