@@ -1,4 +1,4 @@
-import Console from '../../../tests/shared/console.js';
+import Console from '../../tests/shared/console.js';
 
 window.top.console = new Console();
 window.top.console._div.classList.add('hidden');
