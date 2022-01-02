@@ -2,18 +2,14 @@ import _Track from '../../../src/track.js';
 export default class Track extends _Track{
 	constructor(obj){
 		super(obj);
-		this.filetype = "CUSTOM";
 		this.elements = [];
 	}
 	clone(){
-		let tmp = this.constructor.fromJSON(JSON.stringify(this));
-		this.elements.forEach(function(el){
-			tmp.elements.push(el);
-		});
-		return tmp;
+		let track = super.clone();
+		track.elements = this.elements;
+		return track;
 	}
 	static fromJSON(json){ //deserialization
-		//TODO is this order correct?
 		let obj = {...super.fromJSON(json),...JSON.parse(json)}; //merge the two objects
 		return new Track(obj);
 	}
@@ -40,9 +36,7 @@ export default class Track extends _Track{
 				track_subtitle.innerText = this.src;
 				track_text_div.appendChild(track_subtitle);
 			track_div.appendChild(track_text_div);
-		track_div.addEventListener('click',function(e){
-			this.constructor.onClick(this);
-		}.bind(this));
+		track_div.addEventListener('click',this.constructor.onclick.bind(this));
 		this.elements.push(track_div);
 		return track_div;
 	}
@@ -51,8 +45,11 @@ export default class Track extends _Track{
 			el.innerText = this.title;
 		}.bind(this));
 	}
+	css(f='toggle',css_class){
+		this.elements.forEach(function(e){
+			e.classList[f](css_class);
+		});
+	}
 	//to be overloaded later
-	static onClick(){}
-	static onLoad(){}
-	static onUnload(){}
+	static async onclick(){}
 }
