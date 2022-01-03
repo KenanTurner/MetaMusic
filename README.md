@@ -77,9 +77,5 @@ For advanced functionality, see the [examples section](https://github.com/KenanT
 - [Queue](https://kenanturner.github.io/MetaMusic/examples/queue/)
 - [Album](https://kenanturner.github.io/MetaMusic/examples/album/)
 
-## Help
-
-[github pages](https://kenanturner.github.io/MetaMusic/tests/help/)
-
 ## License
 [Mozilla Public License Version 2.0](/LICENSE.txt)
