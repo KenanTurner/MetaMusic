@@ -111,23 +111,6 @@ export default class Player extends EventTarget{
 		this._command_queue.length = 1;
 		await this.enqueue(function(){});
 	}
-	//Boring upload stuff
-	static hasTrackUpload(){
-		return false;
-	}
-	static hasAlbumUpload(){
-		return false;
-	}
-	static isValidTrackURL(url){
-		return false;
-	}
-	static isValidAlbumURL(url){
-		return false;
-	}
-	static async fetchTrack(url){
-		return Promise.reject();
-	}
-	static async fetchAlbum(url){
-		return Promise.reject();
-	}
+	//to enable future features
+	static supported_features = {};
 }

@@ -154,14 +154,4 @@ export default class SC extends Player{
 		data['muted'] = false;
 		return data;
 	}
-	/*
-	static _validURL(url){
-		try{
-			let tmp = new URL(url);
-			if(tmp.hostname == "soundcloud.com") return true;
-			return false;
-		}catch(e){
-			return false;
-		}
-	}*/
 }

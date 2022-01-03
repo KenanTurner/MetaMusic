@@ -46,16 +46,4 @@ export default class BC extends HTML{
 		if(time >= status.duration) this.publish(new this.constructor.Event('ended'));
 		return p;
 	}
-	/*static _validURL(url){
-		try{
-			let tmp = new URL(url);
-			let arr = tmp.hostname.split('.');
-			arr.shift();
-			arr = arr.join('.');
-			if(arr == "bandcamp.com") return true;
-			return false;
-		}catch(e){
-			return false;
-		}
-	}*/
 }

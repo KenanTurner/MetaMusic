@@ -89,29 +89,4 @@ export default class HTML extends Player{
 		obj.muted = this._player.muted;
 		return obj;
 	}
-	/*
-	static _validURL(url){
-		try{
-			let tmp = new URL(url);
-			let type = tmp.pathname.split('.').pop();
-			type = type.toUpperCase();
-			switch(type){
-				case "WAV":
-				case "MP3":
-				case "MP4":
-				case "M4A":
-				case "AAC":
-				case "ADTS":
-				case "OGG":
-				case "OGA":
-				case "MOGG":
-				case "FLAC":
-				case "WEBM":
-					return true;
-			}
-			return false;
-		}catch(e){
-			return false;
-		}
-	}*/
 }

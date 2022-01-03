@@ -186,15 +186,5 @@ export default class YT extends Player{
 			throw new Error("Invalid url");
 		}
 	}
-	/*
-	static _validURL(url){
-		try{
-			let tmp = new URL(url);
-			if(tmp.hostname == "www.youtube.com" || tmp.hostname == "youtu.be") return true;
-			return false;
-		}catch(e){
-			return false;
-		}
-	}*/
 }
 
