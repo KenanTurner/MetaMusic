@@ -32,32 +32,36 @@ body {
 	text-decoration: underline;
 }
 .content {
-	display:flex;
-	justify-content: center;
-	flex-direction: column;
 	padding: 12px;
+	font-size: 23px;
+	display: flex;
+    flex-direction: column;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 18px;
 }
-.content > *{
-	margin-bottom: 12px;
+.subheader {
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content;
+    text-align: center;
+    font-size: 300%;
 }
-.title {
-	text-align: center;
-	font-size: 600%;
+.listheader {
+    width: fit-content;
+    font-size: 120%;
+    border-width: 0px;
+    border-style: solid;
+    border-bottom-width: 1px;
 }
-.subtitle {
-	text-align: center;
-	font-size: 300%;
+.content pre {
+	margin: 0px;
+	padding: 12px;
+	overflow: auto;
+	font-size: 75%;
+	background-color: #303030;
 }
-.blurb {
-	text-align: left;
-	font-size: 125%;
-	width: 512px;
-	margin-left: auto;
-	margin-right: auto;
-}
-.blurb ul{
-	margin: 6px;
-}
-.blurb li{
-	font-size: 100%;
+.content a {
+	color: #E6E6E6;
 }

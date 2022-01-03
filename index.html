@@ -11,13 +11,88 @@
 			<a href="./tests/">Tests</a>
 		</div>
 		<div class="content">
-			<div class="title">MetaMusic</div>
-			<div class="subtitle">TODO subtitle</div>
-			<div class="blurb">TODO cool blurb
-				<ul>
-					<li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean nec odio congue, blandit mauris at, mollis lorem. Mauris nisi quam, tempor quis ligula non, viverra venenatis libero. Proin maximus elit magna, ac vulputate libero varius sed. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas gravida lacus in ultrices accumsan. Aliquam vehicula tellus eget arcu aliquet, et consectetur velit porttitor. Morbi cursus malesuada tellus, ac condimentum lacus faucibus a. Sed nibh orci, consectetur dapibus sem at, eleifend pellentesque ipsum. Fusce at malesuada mi. Nunc nibh augue, tincidunt nec metus eget, dictum pretium eros. Etiam consequat nibh mauris, vitae rhoncus tellus scelerisque gravida. Suspendisse feugiat velit sit amet sem viverra, ac feugiat urna malesuada. In ac tellus nec augue efficitur pellentesque nec vitae nulla.</li>
-				</ul>
-			</div>
-		</div>
+			<div class='subheader'>MetaMusic</div>
+
+			<div>Play HTML audio, Youtube, Soundcloud, and Bandcamp with a single javascript library!</div>
+
+			<div class='listheader'>Description</div>
+
+			<div>MetaMusic is an open source javascript library which enables the playback of various internet music sources through the use of metadata.</div>
+
+			<div class='listheader'>Dependencies</div>
+
+			<div>None :)</div>
+
+			<div class='listheader'>Features</div>
+
+			<ul>
+				<li>Modular design</li>
+				<li>Plugin support</li>
+				<li>Custom event handling</li>
+				<li>Flexible data structure</li>
+				<li>Standard JSON for metadata</li>
+			</ul>
+
+			<div class='listheader'>Browser Compatibility</div>
+
+			<ul>
+				<li><a href="https://caniuse.com/es6">ES6 as a baseline</a></li>
+			</ul>
+
+			<div class='listheader'>Installation</div>
+
+			<div>Download the lastest release from the <a href="https://github.com/KenanTurner/MetaMusic/releases">releases tab</a>. <br />
+			Place the extracted files in the project folder.</div>
+
+			<div class='listheader'>Usage</div>
+
+			Import MetaMusic and any required plugins
+			<pre>
+import MetaMusic from './MetaMusic/src/meta-music.js';
+import HTML from './MetaMusic/src/plugins/HTML/html.js';</pre>
+			Next, enable the plugins
+			<pre>
+MetaMusic.players = {HTML};</pre>
+			Finally, create the MetaMusic instance
+			<pre>
+let mm = new MetaMusic();</pre>
+			Then wait for the instance to be ready before calling any methods
+			<pre>
+await mm.waitForEvent('ready');
+//mm is ready to go</pre>
+			Once the instance is ready, all methods can be used. Here is a quick example of loading a track and immediately playing it.
+			<pre>
+let track = new HTML.Track({src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4",title:"Scott's Factory"});
+await mm.waitForEvent('ready');
+await mm.load(track);
+await mm.play();</pre>
+			Here is the complete code.
+			<pre>
+import MetaMusic from './MetaMusic/src/meta-music.js';
+import HTML from './MetaMusic/src/plugins/HTML/html.js';
+
+MetaMusic.players = {HTML};
+let mm = new MetaMusic();
+
+let track = new HTML.Track({src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4",title:"Scott's Factory"});
+await mm.waitForEvent('ready');
+await mm.load(track);
+await mm.play();</pre>
+
+			<div>For advanced functionality, see the <a href="https://github.com/KenanTurner/MetaMusic/tree/master/examples">examples section</a></div>
+
+			<div class='listheader'>Live Demo</div>
+
+			<ul>
+				<li><a href="https://kenanturner.github.io/MetaMusic/examples/simple/">Simple</a></li>
+				<li><a href="https://kenanturner.github.io/MetaMusic/examples/plugins/">Plugins</a></li>
+				<li><a href="https://kenanturner.github.io/MetaMusic/examples/queue/">Queue</a></li>
+				<li><a href="https://kenanturner.github.io/MetaMusic/examples/album/">Album</a></li>
+			</ul>
+
+			<div class='listheader'>License</div>
+
+			<div><a href="/LICENSE.txt">Mozilla Public License Version 2.0</a></div>
+        </div>
 	</body>
 </html>
