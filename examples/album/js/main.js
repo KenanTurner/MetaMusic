@@ -93,6 +93,7 @@ window.files = [
 	'./data/youtube.json',
 	'./data/bandcamp.json',
 	'./data/soundcloud.json',
+	'./data/example.json',
 ]
 window.album_data = await Promise.all(files.map(async function(url){
 	let res = await fetch(url);
