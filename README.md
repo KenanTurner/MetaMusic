@@ -4,7 +4,7 @@ Play HTML audio, Youtube, Soundcloud, and Bandcamp with a single javascript libr
 
 ## Description
 
-MetaMusic is an open source javascript library which enables the playing of various internet music players through the use of metadata.
+MetaMusic is an open source javascript library which enables the playback of various internet music sources through the use of metadata.
 
 ## Dependencies
 
@@ -24,7 +24,7 @@ None :)
 
 ## Installation
 
-Download the lastest release from the [releases tab](/https://github.com/KenanTurner/MetaMusic/releases)
+Download the lastest release from the [releases tab](/https://github.com/KenanTurner/MetaMusic/releases).  
 Place the extracted files in the project folder.
 
 ## Usage
