@@ -239,4 +239,5 @@ export default function init(obj){
 			SKIP: "skip"
 		}
 	}]);
+	console.log('Soundcloud is ready');
 }

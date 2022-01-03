@@ -40,7 +40,6 @@ export default class SC extends Player{
 		this._addEventListeners();
 		this._ready = true;
 		this.publish(new this.constructor.Event("ready"));
-		if(!src) console.log('Soundcloud is ready');
 	}
 	_addEventListeners(){
 		let SC = window.SC //Grab SC from global scope
