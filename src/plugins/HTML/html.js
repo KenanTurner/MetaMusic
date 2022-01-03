@@ -35,27 +35,31 @@ export default class HTML extends Player{
 		let f = function(){
 			this.publish(new this.constructor.Event('loaded'));
 		}.bind(this);
+		let p = this.waitForEvent('loaded');
 		this._player.addEventListener('canplay',f,{once:true});
 		this._player.src = track.src;
-		return this.waitForEvent('loaded');
+		return p;
 	}
 	async play(){
 		let status = await this.getStatus();
-		if(!status.paused) return this.publish(new this.constructor.Event('play'));
 		let p = this.waitForEvent('play');
+		if(!status.paused) this.publish(new this.constructor.Event('play'));
 		this._player.play();
 		return p;
 	}
 	async pause(){
 		let status = await this.getStatus();
-		if(status.paused) return this.publish(new this.constructor.Event('pause'));
 		let p = this.waitForEvent('pause');
+		if(status.paused) this.publish(new this.constructor.Event('pause'));
 		this._player.pause();
 		return p;
 	}
 	async seek(time){
+		let status = await this.getStatus();
+		let p = this.waitForEvent('timeupdate');
+		if(status.time === time) this.publish(new this.constructor.Event('timeupdate'));
 		this._player.currentTime = time;
-		return this.waitForEvent('timeupdate');
+		return p;
 	}
 	async fastForward(time){
 		let status = await this.getStatus();
@@ -63,21 +67,22 @@ export default class HTML extends Player{
 	}
 	async setVolume(vol){
 		let status = await this.getStatus();
-		if(status.volume == vol) return this.publish(new this.constructor.Event('volumechange'));
+		let p = this.waitForEvent('volumechange');
+		if(status.volume == vol) this.publish(new this.constructor.Event('volumechange'));
 		this._player.volume = vol;
-		return this.waitForEvent('volumechange');
+		return p
 	}
 	async setMuted(bool){
 		let status = await this.getStatus();
 		let p = this.waitForEvent('volumechange');
+		if(status.muted == bool) this.publish(new this.constructor.Event('volumechange'));
 		this._player.muted = bool;
-		if(status.muted == bool) return this.publish(new this.constructor.Event('volumechange'));
 		return p;
 	}
 	async stop(){
 		await this.pause();
 		await this.seek(0);
-		return this.publish(new this.constructor.Event('stop'));
+		return this.publish(new this.constructor.Event("stop"));
 	}
 	async getStatus(){
 		let obj = {};
