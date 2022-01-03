@@ -4,7 +4,7 @@ Play HTML audio, Youtube, Soundcloud, and Bandcamp with a single javascript libr
 
 ## Description
 
-TODO
+MetaMusic is an open source javascript library which enables the playing of various internet music players through the use of metadata.
 
 ## Dependencies
 
@@ -12,7 +12,11 @@ None :)
 
 ## Features
 
-- Fully modular plugins
+- Modular design
+- Plugin support
+- Custom event handling
+- Flexible data structure
+- Standard JSON for metadata
 
 ## Browser Compatibility
 
@@ -20,11 +24,49 @@ None :)
 
 ## Installation
 
-TODO
+Download the lastest release from the [releases tab](/https://github.com/KenanTurner/MetaMusic/releases)
+Place the extracted files in the project folder.
 
 ## Usage
 
-- TODO
+Import MetaMusic and any required plugins
+```
+import MetaMusic from './MetaMusic/src/meta-music.js';
+import HTML from './MetaMusic/src/plugins/HTML/html.js';
+```
+Next, enable the plugins
+```
+MetaMusic.players = {HTML};
+```
+Finally, create the MetaMusic instance
+```
+let mm = new MetaMusic();
+```
+Then wait for the instance to be ready before calling any methods
+```
+await mm.waitForEvent('ready');
+//mm is ready to go
+```
+Once the instance is ready, all methods can be used. Here is a quick example of loading a track and immediately playing it.
+```
+let track = new HTML.Track({src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4",title:"Scott's Factory"});
+await mm.waitForEvent('ready');
+await mm.load(track);
+await mm.play();
+```
+Here is the complete code.
+```
+import MetaMusic from './MetaMusic/src/meta-music.js';
+import HTML from './MetaMusic/src/plugins/HTML/html.js';
+
+MetaMusic.players = {HTML};
+let mm = new MetaMusic();
+
+let track = new HTML.Track({src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4",title:"Scott's Factory"});
+await mm.waitForEvent('ready');
+await mm.load(track);
+await mm.play();
+```
 
 For advanced functionality, see the [examples section](https://github.com/KenanTurner/MetaMusic/tree/master/examples)
 
@@ -40,4 +82,4 @@ For advanced functionality, see the [examples section](https://github.com/KenanT
 [github pages](https://kenanturner.github.io/MetaMusic/tests/help/)
 
 ## License
-[MIT](/LICENSE)
+[Mozilla Public License Version 2.0](/LICENSE.txt)
