@@ -10,8 +10,8 @@ export default class YT extends Player{
 			return new YT.Track(JSON.parse(json));
 		}
 	}
-	constructor(is_ready=false){
-		super(is_ready);
+	constructor(){
+		super(false);
 		this._iframe_id = "_YT_"+Math.random().toString(36).substring(7);
 		if(!this.constructor._YT) init(this.constructor);
 		
@@ -68,8 +68,7 @@ export default class YT extends Player{
 				this.publish(new this.constructor.Event("error"));
 			}.bind(this));
 			this._player.addEventListener('onReady', function(evt){
-				this._ready = true;
-				this.publish(new this.constructor.Event("ready"));
+				this.ready = true;
 			}.bind(this));
 		}.bind(this));
 	}

@@ -13,8 +13,8 @@ export default class SC extends Player{
 			return new SC.Track(JSON.parse(json));
 		}
 	}
-	constructor(is_ready=false){
-		super(is_ready);
+	constructor(){
+		super(false);
 		this._iframe_id = "_SC_"+Math.random().toString(36).substring(7);
 		if(!this.constructor._SC) init(this.constructor);
 		this._createSC();
@@ -38,8 +38,7 @@ export default class SC extends Player{
 			this._player.bind(SC.Widget.Events.READY,res);
 		}.bind(this));
 		this._addEventListeners();
-		this._ready = true;
-		this.publish(new this.constructor.Event("ready"));
+		this.ready = true;
 	}
 	_addEventListeners(){
 		let SC = window.SC //Grab SC from global scope

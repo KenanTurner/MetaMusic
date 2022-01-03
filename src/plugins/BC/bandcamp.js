@@ -16,8 +16,8 @@ export default class BC extends HTML{
 			return new BC.Track(JSON.parse(json));
 		}
 	}
-	constructor(is_ready=true){
-		super(is_ready);
+	constructor(){
+		super(true);
 	}
 	async load(track){
 		if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");

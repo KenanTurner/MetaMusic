@@ -9,8 +9,8 @@ export default class HTML extends Player{
 			return new HTML.Track(JSON.parse(json));
 		}
 	}
-	constructor(is_ready=true){
-		super(is_ready);
+	constructor(){
+		super(true);
 		this._player = new Audio();
 		
 		let f = function(type){
