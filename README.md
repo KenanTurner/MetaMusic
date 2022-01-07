@@ -30,32 +30,32 @@ Place the extracted files in the project folder.
 ## Usage
 
 Import MetaMusic and any required plugins
-```
+```javascript
 import MetaMusic from './MetaMusic/src/meta-music.js';
 import HTML from './MetaMusic/src/plugins/HTML/html.js';
 ```
 Next, enable the plugins
-```
+```javascript
 MetaMusic.players = {HTML};
 ```
 Finally, create the MetaMusic instance
-```
+```javascript
 let mm = new MetaMusic();
 ```
 Then wait for the instance to be ready before calling any methods
-```
+```javascript
 await mm.waitForEvent('ready');
 //mm is ready to go
 ```
 Once the instance is ready, all methods can be used. Here is a quick example of loading a track and immediately playing it.
-```
+```javascript
 let track = new HTML.Track({src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4",title:"Scott's Factory"});
 await mm.waitForEvent('ready');
 await mm.load(track);
 await mm.play();
 ```
-Here is the complete code.
-```
+Here is the final code.
+```javascript
 import MetaMusic from './MetaMusic/src/meta-music.js';
 import HTML from './MetaMusic/src/plugins/HTML/html.js';
 
