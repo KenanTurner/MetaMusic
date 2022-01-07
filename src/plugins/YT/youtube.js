@@ -65,7 +65,7 @@ export default class YT extends Player{
 				}
 			}.bind(this));
 			this._player.addEventListener("onError", function(evt){
-				this.publish(new this.constructor.Event("error"));
+				this.publish(new this.constructor.Event("error",{error:evt}));
 			}.bind(this));
 			this._player.addEventListener('onReady', function(evt){
 				this.ready = true;
@@ -84,7 +84,7 @@ export default class YT extends Player{
 				await this.setVolume(status.volume);
 			}
 		}catch(error){
-			this.publish(new this.constructor.Event("error"));
+			this.publish(new this.constructor.Event("error",{error}));
 		}
 		await p; //video cued
 		await this.setVolume(0); //mute player
@@ -170,20 +170,12 @@ export default class YT extends Player{
 		return super.destroy();
 	}
 	static getYoutubeId(url){
-		try{
-			let tmp = new URL(url);
-			if(tmp.hostname == "www.youtube.com" || tmp.hostname == "youtu.be"){
-				if(tmp.pathname == "/watch"){
-					let index = tmp.search.indexOf("?v=");
-					return tmp.search.substr(index+3,11);
-				}else{
-					return tmp.pathname.substr(1,11);
-				}
-			}
-			throw new Error("Invalid url");
-		}catch(e){
-			throw new Error("Invalid url");
-		}
+		let tmp = new URL(url);
+		if(tmp.hostname !== "www.youtube.com" && tmp.hostname !== "youtu.be") throw new Error("Invalid hostname!");
+		let id = tmp.searchParams.get('v');
+		if(!id) id = tmp.pathname.substring(1);
+		if(id.length !== 11) throw new Error("Invalid id!");
+		return id;
 	}
 }
 

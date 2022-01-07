@@ -35,8 +35,8 @@ export default class BC extends HTML{
 			if(Object.values(obj).length === 0) throw new Error("Invalid BC url");
 			track.src = Object.values(obj)[0];
 			super.load(track);
-		}catch(e){
-			this.publish(new this.constructor.Event('error'));
+		}catch(error){
+			this.publish(new this.constructor.Event('error',{error}));
 		}
 		return p;
 	}

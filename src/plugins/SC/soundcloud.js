@@ -29,6 +29,7 @@ export default class SC extends Player{
 			div.frameborder = "no";
 			div.allow = "autoplay";
 			div.src = "https://w.soundcloud.com/player/?url="+src;
+			div.sandbox = "allow-scripts allow-same-origin";
 		document.body.append(div);
 		
 		this._iframe = div;
@@ -65,6 +66,7 @@ export default class SC extends Player{
 		if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
 		let status = await this.getStatus();
 		let p = this.waitForEvent('loaded');
+		//this._iframe.remove();
 		await new Promise(function(res,rej){
 			let o = {
 				auto_play: false,
@@ -82,6 +84,8 @@ export default class SC extends Player{
 			}
 			this._player.load(track.src,o);
 		}.bind(this));
+		console.log(this._iframe);
+		//document.body.append(this._iframe);
 		this.publish(new this.constructor.Event("loaded"));
 		return p;
 	}

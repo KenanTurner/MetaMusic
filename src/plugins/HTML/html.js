@@ -13,9 +13,9 @@ export default class HTML extends Player{
 		super(true);
 		this._player = new Audio();
 		
-		let f = function(type){
+		let f = function(type,options){
 			return function(){
-				this.publish(new this.constructor.Event(type));
+				this.publish(new this.constructor.Event(type,type==='error'? {error:this._player.error}: {}));
 			}.bind(this);
 		}.bind(this);
 		this._player.addEventListener('play',f('play'));
