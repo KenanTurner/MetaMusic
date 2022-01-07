@@ -185,7 +185,12 @@ export default function init(obj){
 							for(e in n) n.hasOwnProperty(e) && e !== s.READY && y(l.ADD_LISTENER, e, r.element);
 							t.callback && t.callback()
 						}))
-					}, o.contentWindow.location.replace(O(u, e, t))
+					//}, o.contentWindow.location.replace(O(u, e, t))
+					}
+					let parent = o.parentNode;
+					o.remove();
+					o.src = O(u, e, t)
+					parent.appendChild(o);
 				}
 			},
 			bind: function(e, t) {
