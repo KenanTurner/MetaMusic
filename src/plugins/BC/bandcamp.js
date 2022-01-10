@@ -29,11 +29,11 @@ export default class BC extends HTML{
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({href:track.bc_url}),
+				body: JSON.stringify({url:track.bc_url}),
 			});
-			let obj = await result.json();
-			if(Object.values(obj).length === 0) throw new Error("Invalid BC url");
-			track.src = Object.values(obj)[0];
+			let arr = await result.json();
+			if(arr.length === 0) throw new Error("Invalid BC url");
+			track.src = arr[0]['src'];
 			super.load(track);
 		}catch(error){
 			this.publish(new this.constructor.Event('error',{error}));
