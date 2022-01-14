@@ -92,6 +92,26 @@ export default class HTML extends Player{
 		obj.volume = this._player.volume;
 		obj.paused = this._player.paused;
 		obj.muted = this._player.muted;
+		if(obj.duration === Infinity) obj.duration = await this.fixDuration();
 		return obj;
 	}
+	async fixDuration(){
+		let player = new Audio(this._player.currentSrc);
+		return new Promise(async function(res,rej){
+			player.addEventListener("error",rej);
+			player.addEventListener("durationchange",function(e){
+				if(this.duration!=Infinity){
+					let duration = this.duration;
+					player.remove();
+					res(duration);
+				};
+			}, false);
+			player.load();
+			player.volume = 0;
+			player.currentTime = 24*60*60; //fake big time
+			try{
+				await player.play();
+			}catch(e){}
+		});
+	};
 }
