@@ -94,28 +94,27 @@ export default class HTML extends Player{
 		obj.paused = this._player.paused;
 		obj.muted = this._player.muted;
 		if(obj.duration === Infinity){
-			if(!this._player.fixed_duration) this._player.fixed_duration = this.fixDuration();
-			obj.duration = await this._player.fixed_duration;
+			if(!this._player.fixed_duration) this.fixDuration();
+			if(isFinite(this._player.fixed_duration)) obj.duration = this._player.fixed_duration;
 		}
 		return obj;
 	}
 	async fixDuration(){
 		let player = new Audio(this._player.currentSrc);
-		return new Promise(async function(res,rej){
+		let duration = await new Promise(async function(res,rej){
 			player.addEventListener("error",rej);
 			player.addEventListener("durationchange",function(e){
 				if(this.duration!=Infinity){
-					let duration = this.duration;
+					let tmp = this.duration;
 					player.remove();
-					res(duration);
+					res(tmp);
 				};
 			}, false);
 			player.load();
 			player.volume = 0;
 			player.currentTime = 24*60*60; //fake big time
-			try{
-				await player.play();
-			}catch(e){}
+			player.play().catch(function(){});
 		});
+		this._player.fixed_duration = duration;
 	};
 }
