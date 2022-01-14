@@ -33,6 +33,7 @@ export default class HTML extends Player{
 	async load(track){
 		if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
 		let f = function(){
+			delete this._player.fixed_duration;
 			this.publish(new this.constructor.Event('loaded'));
 		}.bind(this);
 		let p = this.waitForEvent('loaded');
@@ -93,8 +94,8 @@ export default class HTML extends Player{
 		obj.paused = this._player.paused;
 		obj.muted = this._player.muted;
 		if(obj.duration === Infinity){
-			if(!this._player.fixed_duration) this._player.fixed_duration = await this.fixDuration();
-			obj.duration = this._player.fixed_duration;
+			if(!this._player.fixed_duration) this._player.fixed_duration = this.fixDuration();
+			obj.duration = await this._player.fixed_duration;
 		}
 		return obj;
 	}
