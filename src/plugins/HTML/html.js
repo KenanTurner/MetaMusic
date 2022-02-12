@@ -111,7 +111,7 @@ export default class HTML extends Player{
 		obj.paused = this._player.paused;
 		obj.muted = this._player.muted;
 		if(obj.duration === Infinity){
-			if(!this._player.fixed_duration) this.fixDuration();
+			if(!this._player.fixed_duration) this._player.fixed_duration = this.fixDuration();
 			if(isFinite(this._player.fixed_duration)) obj.duration = this._player.fixed_duration;
 		}
 		return obj;
