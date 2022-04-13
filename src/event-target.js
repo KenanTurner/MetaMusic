@@ -15,8 +15,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-export default class EventTarget{
+import AsyncQueue from './async-queue.js';
+export default class EventTarget extends AsyncQueue{
 	constructor(is_ready=true){
+		super(1); //AsyncQueue is used to queue commands
 		this._subscribers = {all:[]};
 		this._ready = is_ready == true;
 		//TODO maybe use a promise instead of boolean?
