@@ -136,7 +136,7 @@ export default cases.concat([
 		await f(15);
 		await html.destroy();
 	},
-	async function command_queue({Player,track,err_track}){
+	async function async_queue({Player,track,err_track}){
 		var player = new Player();
 		var t1 = new Player.Track(track);
 		await player.waitForEvent('ready');
