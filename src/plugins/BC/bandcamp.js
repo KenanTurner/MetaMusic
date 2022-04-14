@@ -15,47 +15,17 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import HTML from '../HTML/html.js';
-export default class BC extends HTML{
+import PROXY from '../PROXY/proxy.js';
+export default class BC extends PROXY{
 	static proxy_url = "../../src/plugins/BC/bandcamp-proxy.php";
-	static Track = class Track extends HTML.Track{
+	static Track = class Track extends PROXY.Track{
 		constructor(obj){
 			super(obj);
 			this.filetype = "BC";
-			this.bc_url = this.src; //copy for later
-		}
-		toJSON(){
-			let obj = super.toJSON();
-			obj.src = this.bc_url;
-			return obj;
 		}
 		static fromJSON(json){
 			return new BC.Track(JSON.parse(json));
 		}
-	}
-	constructor(){
-		super(true);
-	}
-	async load(track){
-		if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
-		if(track.bc_url !== track.src) return super.load(track);
-		let p = this.waitForEvent('loaded');
-		try{
-			let result = await fetch(this.constructor.proxy_url,{
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({url:track.bc_url}),
-			});
-			let arr = await result.json();
-			if(arr.length === 0) throw new Error("Invalid BC url");
-			track.src = arr[0]['src'];
-			super.load(track);
-		}catch(error){
-			this.publish(new this.constructor.Event('error',{error}));
-		}
-		return p;
 	}
 	async seek(time){
 		let status = await this.getStatus();
