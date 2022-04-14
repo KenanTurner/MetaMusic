@@ -50,7 +50,7 @@ export default class AsyncQueue{
 		this._async_queue.length = 0;
 		this._concurrent_promises.length = 0;
 		this._pending_promises.length = 0;
-		if(is_blocking){
+		if(is_blocking && this._max_concurrent_promises > 0){
 			let max = this._max_concurrent_promises;
 			this._max_concurrent_promises = 0; //disable dequeuing
 			await p;
