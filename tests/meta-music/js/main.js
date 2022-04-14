@@ -32,10 +32,10 @@ start_btn.addEventListener("click",function(){ //need to wait for user interacti
 	tracks.forEach(function(track){
 		let args = {MetaMusic,track:track.toJSON(),err_track:{src:"https://throw-error",title:"Throw Error",filetype:track.filetype}};
 		for(let f of Cases){
-			test.add({f,args,skip:!test_cases[f.name],message:track.filetype});
+			test.enqueue({f,args,skip:!test_cases[f.name],message:track.filetype,timeout:15000});
 		}
 	});	
-	test.runAll();
+	test.run(16);
 });
 
 let test_cases = map(Cases,{},function(k){return Cases[k].name},function(v){return true});

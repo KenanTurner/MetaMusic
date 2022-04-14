@@ -25,9 +25,9 @@ let start_btn = document.getElementById("start_btn");
 start_btn.addEventListener("click",function(){ //need to wait for user interaction
 	test.clear();
 	for(let f of Cases){
-		test.add({f,args,skip:!test_cases[f.name]});
+		test.enqueue({f,args,skip:!test_cases[f.name]});
 	}
-	test.runAll();
+	test.run(64);
 });
 
 

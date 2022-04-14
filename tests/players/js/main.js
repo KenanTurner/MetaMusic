@@ -28,10 +28,10 @@ start_btn.addEventListener("click",function(){ //need to wait for user interacti
 		if(!test_players[p]) continue;
 		for(let f of Cases){
 			let skip = !test_cases[f.name];
-			test.add({f,args:args[p],skip,message:p});
+			test.enqueue({f,args:args[p],skip,message:p});
 		}
 	}
-	test.runAll();
+	test.run(64);
 });
 
 let test_cases = map(Cases,{},function(k){return Cases[k].name},function(v){return true});
