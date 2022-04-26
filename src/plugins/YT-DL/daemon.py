@@ -6,7 +6,7 @@ import json
 from yt_dlp import YoutubeDL, parse_options
 
 #run this script with the following command:
-#nohup python3 daemon.py > /dev/null 2> /dev/null &
+#python3 daemon.py > /dev/null 2> /dev/null &
 
 #test urls
 #url = 'https://www.youtube.com/watch?v=Pi-MRZBP91I'
@@ -21,23 +21,30 @@ ydl_opts = {
 
 def handle_client(sock,ydl):
     try:
-        data = sock.recv(8192)#.decode('utf-8')
-        track = json.loads(data.decode('utf-8'))
+        #Retrieve track
+        track = json.loads(sock.recv(8192).decode('utf-8'))
+        
+        #Retrieve info from url
         info = ydl.extract_info(track['src'], download=False)
-        #sources = [{"audio_ext":x['audio_ext'],"url":x['fragment_base_url'] if "fragment_base_url" in x else x['url']} for x in info['formats'] if x['acodec'] != "none" and x['vcodec'] == "none"]
+        
+        #Filter available audio sources
         sources = [{
             "ext":x['ext'] if "ext" in x else None,
             "codec":x['acodec'] if "acodec" in x else None,
             "abr":x['abr'] if "abr" in x else None,
             "asr":x['asr'] if "asr" in x else None,
+            #"protocol":x['protocol'] if "protocol" in x else None,
             "src":x['fragment_base_url'] if "fragment_base_url" in x else x['url']}
-        for x in info['formats'] if x['resolution'] == "audio only"]
+        for x in info['formats'] if x['resolution'] == "audio only"
+        and (x['protocol'] == "http"
+        or x['protocol'] == "https"
+        or x['protocol'] == "http_dash_segments")]
         sources.reverse()
-        #print(sources)
+        
+        #Update track and send
         track['sources'] = sources
         track['src'] = info['url']
         sock.sendall(json.dumps(track).encode('utf-8'))
-        #print(info['audio_ext'])
     except Exception as e:
         print(e)
         sock.sendall("ERROR: Invalid URL!".encode('utf-8'))
