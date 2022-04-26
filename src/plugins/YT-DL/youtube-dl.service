@@ -1,0 +1,10 @@
+[Unit]
+Description=Youtube-dl daemon service
+
+[Service]
+Type=simple
+WorkingDirectory=dirname/yt-dlp/
+ExecStart=python3 daemon.py > daemon.log 2> error.log
+
+[Install]
+WantedBy=default.target
