@@ -15,7 +15,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import PROXY from './proxy.js';
+import PROXY from '../PROXY/proxy.js';
 export default class YTDL extends PROXY{
-	static proxy_url = "./youtube-dl.php";
+	static proxy_url = "/src/plugins/YT-DL/youtube-dl.php";
 }

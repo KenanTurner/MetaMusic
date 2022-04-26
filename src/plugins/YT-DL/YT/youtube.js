@@ -15,10 +15,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import PROXY from '../proxy.js';
-export default class YT extends PROXY{
-	static proxy_url = "/src/plugins/PROXY/youtube-dl.php";
-	static Track = class Track extends PROXY.Track{
+import YTDL from '../youtube-dl.js';
+export default class YT extends YTDL{
+	static Track = class Track extends YTDL.Track{
 		constructor(obj){
 			super(obj);
 			this.filetype = "YT";
