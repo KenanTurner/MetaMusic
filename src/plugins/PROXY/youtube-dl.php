@@ -14,14 +14,13 @@
 	$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 	if(!$socket) error('Unable to create socket!');
 	if(!socket_connect($socket, $address, $port)) error('Unable to connect to socket!');
-	if(!socket_write($socket, $url, 2048)) error('Failed to write to socket!');
-	while($chunk = socket_read($socket, 2048)){
+	if(!socket_write($socket, json_encode($track), 8192)) error('Failed to write to socket!');
+	while($chunk = socket_read($socket, 8192)){
 		if(!$chunk) error('Failed to read from socket!');
 		$result .= $chunk;
 	}
 	socket_close($socket);
-	if(empty($result) or filter_var($result, FILTER_VALIDATE_URL) === FALSE) error('Unable to resolve URL!');
+	if(empty($result)) error('Unable to resolve URL!');
 	
-	$track["src"] = $result;
-	echo json_encode($track);
+	echo $result;
 ?>
