@@ -35,7 +35,7 @@ export default class PROXY extends HTML{
 	}
 	async load(track){
 		if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype!");
-		if(track.src !== track.static_url) return super.load(track);
+		if(track.src !== track.static_url && track._expiration_date > Date.now()) return super.load(track);
 		let p = this.waitForEvent('loaded');
 		try{
 			let result = await fetch(this.constructor.proxy_url,{
@@ -48,7 +48,8 @@ export default class PROXY extends HTML{
 			if(!result.ok) throw new Error(await result.text());
 			let resolved = await result.json();
 			track.src = resolved.src;
-			super.load(track);
+			let e = await super.load(track);
+			track._expiration_date = Date.now() + 1000*Math.floor(e.status.duration || 0);
 		}catch(error){
 			this.publish(new this.constructor.Event('error',{error}));
 		}
