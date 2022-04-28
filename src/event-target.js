@@ -39,25 +39,25 @@ export default class EventTarget extends AsyncQueue{
 		if(this._ready) this.publish(new this.constructor.Event("ready"));
 	}
 	//{type:[String],callback:[Function],<error>:[Function],<once>:[Boolean]}
-	subscribe(obj){
-		if(!obj.type) throw new Error("Subscriber must specify a type!");
-		if(!obj.callback) throw new Error("Subscriber must include a callback!");
-		if(typeof obj.callback !== "function") throw new Error("Callback must be a function");
+	subscribe({type,callback,error,once}){
+		if(!type) throw new Error("Subscriber must specify a type!");
+		if(!callback) throw new Error("Subscriber must include a callback!");
+		if(typeof callback !== "function") throw new Error("Callback must be a function");
 		
-		if(obj.type === 'ready' && this._ready) return obj.callback(new this.constructor.Event("ready"));
-		if(!this._subscribers[obj.type]) this._subscribers[obj.type] = []; //creates the subscriber list
-		this._subscribers[obj.type].push(obj);
+		if(type === 'ready' && this._ready) return callback(new this.constructor.Event("ready"));
+		if(!this._subscribers[type]) this._subscribers[type] = []; //creates the subscriber list
+		this._subscribers[type].push({type,callback,error,once});
 	}
 	//{type:[String],callback:[Function],<error>:[Function],<once>:[Boolean]}
-	unsubscribe(obj){
-		if(!obj.type) throw new Error("Subscriber must specify a type!");
-		if(!obj.callback) throw new Error("Subscriber must include a callback!");
-		if(typeof obj.callback !== "function") throw new Error("Callback must be a function");
+	unsubscribe({type,callback,error,once}){
+		if(!type) throw new Error("Subscriber must specify a type!");
+		if(!callback) throw new Error("Subscriber must include a callback!");
+		if(typeof callback !== "function") throw new Error("Callback must be a function");
 		
-		if(!this._subscribers[obj.type]) return;
-		this._subscribers[obj.type] = this._subscribers[obj.type].filter(function(item){
+		if(!this._subscribers[type]) return;
+		this._subscribers[type] = this._subscribers[type].filter(function(item){
 			for(let o in item){
-				if(item[o] !== obj[o]) return true;
+				if(item[o] !== ({type,callback,error,once})[o]) return true;
 			}
 			return false;
 		});
