@@ -3,13 +3,21 @@ import HTML from '../../../src/plugins/HTML/html.js';
 import YT from '../../../src/plugins/YT/youtube.js';
 import BC from '../../../src/plugins/BC/bandcamp.js';
 import SC from '../../../src/plugins/SC/soundcloud.js';
+import PROXY from '../../../src/plugins/PROXY/proxy.js';
+import YTDL_YT from '../../../src/plugins/YT-DL/YT/youtube.js';
+import YTDL_BC from '../../../src/plugins/YT-DL/BC/bandcamp.js';
+import YTDL_SC from '../../../src/plugins/YT-DL/SC/soundcloud.js';
 import Test from '../../shared/test.js';
 import Cases from './cases.js';
 
-let imports = {Player,HTML,YT,BC,SC,Test,Cases};
+let imports = {Player,HTML,YT,BC,SC,PROXY,Test,Cases,YTDL_YT,YTDL_BC,YTDL_SC};
 function map(src,dest={},key=function(k){return k},value=function(v){return v}){for(let k in src){dest[key(k)] = value(src[k]);};return dest;}
 map(imports,window);
 console.log("Imports Loaded");
+
+if(window.location.href.includes('.github.io/')){
+	console.warn("PROXY playback has been disabled. See the README for more information.");
+}
 
 let args = {};
 let err_track = {src:"https://throw-error",title:"Throw Error"};
@@ -18,6 +26,9 @@ args['HTML'] = {Player:HTML,track:{src:"https://v.redd.it/6m47mro5xpv51/DASH_aud
 args['YT'] = {Player:YT,track:{src:"https://www.youtube.com/watch?v=zhG7aorm0RI",title:"Maynard & Waynard"},err_track};
 args['BC'] = {Player:BC,track:{src:"https://austinwintory.bandcamp.com/track/then-were-created-the-gods-in-the-midst-of-heaven",title:"Abzu"},err_track};
 args['SC'] = {Player:SC,track:{src:"https://soundcloud.com/i-winxd/kirby-speedrun",title:"Trance Music for Kirby Speedrunning Game"},err_track};
+args['YTDL_YT'] = {Player:YTDL_YT,track:{src:"https://www.youtube.com/watch?v=zhG7aorm0RI",title:"Maynard & Waynard"},err_track};
+args['YTDL_BC'] = {Player:YTDL_BC,track:{src:"https://austinwintory.bandcamp.com/track/then-were-created-the-gods-in-the-midst-of-heaven",title:"Abzu"},err_track};
+args['YTDL_SC'] = {Player:YTDL_SC,track:{src:"https://soundcloud.com/i-winxd/kirby-speedrun",title:"Trance Music for Kirby Speedrunning Game"},err_track};
 
 let test = new Test();
 
@@ -34,8 +45,18 @@ start_btn.addEventListener("click",function(){ //need to wait for user interacti
 	test.run(64);
 });
 
+function getProtoChain(obj){
+    obj = obj.constructor === Object.constructor? obj: obj.constructor;
+    if(obj === Object.getPrototypeOf(Object)) return [];
+    let chain = getProtoChain(Object.getPrototypeOf(obj));
+    chain.push(obj);
+    return chain;
+}
+
 let test_cases = map(Cases,{},function(k){return Cases[k].name},function(v){return true});
-let test_players = map({Player,HTML,YT,BC,SC},{},function(k){return k},function(v){return true});
+let test_players = map(args,{},function(k){return k},function(v){
+	return window.location.href.includes('.github.io/')? !getProtoChain(v.Player).includes(PROXY): true;
+});
 
 //imported from shared/options.js folder
 createOptions(test_cases,"test_cases");
