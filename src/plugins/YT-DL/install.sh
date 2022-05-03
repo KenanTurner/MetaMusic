@@ -1,5 +1,6 @@
 echo "Installing youtube-dl.servce..."
 DirName=$(pwd)
+tar -xzf yt-dlp.tar.gz
 mkdir -p ~/.config/systemd/user/
 cp ./youtube-dl.service ~/.config/systemd/user/youtube-dl.service
 sed -i "s:dirname:$DirName:g" ~/.config/systemd/user/youtube-dl.service
