@@ -4,7 +4,7 @@ Description=Youtube-dl daemon service
 [Service]
 Type=simple
 WorkingDirectory=dirname/
-ExecStart=yt-dlp > output.log 2> error.log
+ExecStart=yt-dlp/yt-dlp > output.log 2> error.log
 
 [Install]
 WantedBy=default.target
