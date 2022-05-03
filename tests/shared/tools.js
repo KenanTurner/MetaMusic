@@ -1,4 +1,4 @@
-import PROXY from '../../../src/plugins/PROXY/proxy.js';
+import PROXY from '../../src/plugins/PROXY/proxy.js';
 
 let params = new URLSearchParams(window.location.search);
 export const CONCURRENT = Number(params.get('concurrent')) || 64;
