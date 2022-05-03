@@ -17,17 +17,19 @@
  */
 export default class Track{
 	constructor(obj){
-		if(!obj.src || !obj.title) {
+		if(!obj.src || !obj.title){
 			throw new Error('Invalid Constructor! Title and src are required!');
 		}
 		this.filetype = obj.filetype;
 		this.src = obj.src;
+		this.sources = obj.sources;
 		this.title = obj.title;
 	}
 	toJSON(){ //serialization
 		let obj = {};
 		obj.filetype = this.filetype;
 		obj.src = this.src;
+		obj.sources = this.sources;
 		obj.title = this.title;
 		return obj;
 	}
@@ -49,7 +51,7 @@ export default class Track{
 		return JSON.stringify(this);
 	}
 	valueOf(){
-		return JSON.stringify({src:this.src,title:this.title}); //TODO?
+		return JSON.stringify({src:this.src,title:this.title,sources:this.sources}); //TODO?
 	}
 	static fromJSON(json){ //deserialization
 		return new Track(JSON.parse(json));

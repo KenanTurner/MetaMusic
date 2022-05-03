@@ -55,6 +55,18 @@ export default class HTML extends Player{
 		}.bind(this);
 		let p = this.waitForEvent('loaded');
 		this._player.addEventListener('canplay',f,{once:true});
+		while(this._player.firstChild){
+			this._player.removeChild(this._player.lastChild);
+		}
+		if(track.sources) track.sources.forEach(function(obj){
+			let type = "audio/"+obj.ext;
+			switch(obj.ext){
+				case "m4a":
+					type = "audio/mp4";
+					break;
+			}
+			this._player.appendChild(createNode("source",{src:obj.src,type}));
+		}.bind(this));
 		this._player.src = track.src;
 		return p;
 	}
@@ -134,4 +146,17 @@ export default class HTML extends Player{
 		});
 		this._player.fixed_duration = duration;
 	};
+}
+function createNode(tag_name,options = {},class_list = [],child_nodes = []){
+	let el = document.createElement(tag_name);
+	for(let key in options){
+		el[key] = options[key];
+	}
+	class_list.forEach(function(cl){
+		el.classList.add(cl);
+	});
+	child_nodes.forEach(function(node){
+		el.appendChild(node);
+	});
+	return el;
 }

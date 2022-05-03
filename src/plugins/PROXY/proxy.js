@@ -27,6 +27,7 @@ export default class PROXY extends HTML{
 		toJSON(){
 			let obj = super.toJSON();
 			obj.src = this.static_url;
+			delete obj.sources;
 			return obj;
 		}
 		static fromJSON(json){
@@ -48,6 +49,7 @@ export default class PROXY extends HTML{
 			if(!result.ok) throw new Error(await result.text());
 			let resolved = await result.json();
 			track.src = resolved.src;
+			track.sources = resolved.sources;
 			let e = await super.load(track);
 			track._expiration_date = Date.now() + 1000*Math.floor(e.status.duration || 0);
 		}catch(error){
