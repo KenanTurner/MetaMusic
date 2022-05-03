@@ -58,16 +58,20 @@ export default class HTML extends Player{
 		while(this._player.firstChild){
 			this._player.removeChild(this._player.lastChild);
 		}
-		if(track.sources) track.sources.forEach(function(obj){
-			let type = "audio/"+obj.ext;
-			switch(obj.ext){
-				case "m4a":
-					type = "audio/mp4";
-					break;
-			}
-			this._player.appendChild(createNode("source",{src:obj.src,type}));
-		}.bind(this));
-		this._player.src = track.src;
+		if(track.sources){
+			delete this._player.src;
+			track.sources.forEach(function(obj){
+				let type = "audio/"+obj.ext;
+				switch(obj.ext){
+					case "m4a":
+						type = "audio/mp4";
+						break;
+				}
+				this._player.appendChild(createNode("source",{src:obj.src,type}));
+			}.bind(this));
+		}else{
+			this._player.src = track.src;
+		}
 		return p;
 	}
 	async play(){
