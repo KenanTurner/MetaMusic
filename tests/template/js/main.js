@@ -1,16 +1,16 @@
-import HTML from '../../../src/plugins/HTML/html.js';
-import YT from '../../../src/plugins/YT/youtube.js';
-import BC from '../../../src/plugins/BC/bandcamp.js';
-import SC from '../../../src/plugins/SC/soundcloud.js';
 import Test from '../../shared/test.js';
 import Cases from './cases.js';
+import {map,casesToOptions,displayOptions,CONCURRENT} from '../../shared/tools.js';
 
-let imports = {HTML,YT,BC,SC,Cases,Test};
-function map(src,dest={},key=function(k){return k},value=function(v){return v}){for(let k in src){dest[key(k)] = value(src[k]);};return dest;}
+let imports = {Cases,Test};
 map(imports,window);
+console.log("Imports Loaded");
 
-let test = new Test();
 let args = {};
+let test = new Test();
+
+let test_cases = casesToOptions(Cases);
+displayOptions(test_cases,"test_cases");
 
 let start_btn = document.getElementById("start_btn");
 start_btn.addEventListener("click",function(){ //need to wait for user interaction
@@ -18,9 +18,5 @@ start_btn.addEventListener("click",function(){ //need to wait for user interacti
 	for(let f of Cases){
 		test.enqueue({f,args,skip:!test_cases[f.name],timeout:1000});
 	}
-	test.run(64);
+	test.run(CONCURRENT);
 });
-
-//imported from shared/options.js folder
-let test_cases = map(Cases,{},function(k){return Cases[k].name},function(v){return true});
-createOptions(test_cases,"test_cases");
