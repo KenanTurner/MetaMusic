@@ -1,0 +1,30 @@
+{
+	"title": "ABZU",
+	"tracks": [
+		{
+			"filetype": "BC",
+			"src": "https://austinwintory.bandcamp.com/track/to-know-water",
+			"title": "To Know Water"
+		},
+		{
+			"filetype": "BC",
+			"src": "https://austinwintory.bandcamp.com/track/heaven-was-not-named",
+			"title": "Heaven was not named"
+		},
+		{
+			"filetype": "BC",
+			"src": "https://austinwintory.bandcamp.com/track/seriola-lalandi",
+			"title": "Seriola Lalandi"
+		},
+		{
+			"filetype": "BC",
+			"src": "https://austinwintory.bandcamp.com/track/and-the-earth-did-not-yet-bear-a-name",
+			"title": "And the Earth did not yet bear a name"
+		},
+		{
+			"filetype": "BC",
+			"src": "https://austinwintory.bandcamp.com/track/then-were-created-the-gods-in-the-midst-of-heaven",
+			"title": "Then were created the gods in the midst of heaven"
+		}
+	]
+}
