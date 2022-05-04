@@ -3,15 +3,14 @@ import HTML from '../../../src/plugins/HTML/html.js';
 import YT from '../../../src/plugins/YT/youtube.js';
 import BC from '../../../src/plugins/BC/bandcamp.js';
 import SC from '../../../src/plugins/SC/soundcloud.js';
-import PROXY from '../../../src/plugins/PROXY/proxy.js';
 import YTP from '../../../src/plugins/YT-DL/YT/youtube.js';
 import BCP from '../../../src/plugins/YT-DL/BC/bandcamp.js';
 import SCP from '../../../src/plugins/YT-DL/SC/soundcloud.js';
 import Test from '../../shared/test.js';
 import Cases from './cases.js';
-import {map,argsToOptions,casesToOptions,getProtoChain,displayOptions,CONCURRENT,TIMEOUT} from '../../shared/tools.js';
+import {map,argsToOptions,casesToOptions,displayOptions,CONCURRENT,TIMEOUT} from '../../shared/tools.js';
 
-let imports = {Player,HTML,YT,BC,SC,PROXY,Test,Cases,YTP,BCP,SCP};
+let imports = {Player,HTML,YT,BC,SC,Test,Cases,YTP,BCP,SCP};
 map(imports,window);
 console.log("Imports Loaded");
 
