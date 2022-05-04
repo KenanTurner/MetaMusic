@@ -8,6 +8,8 @@
 	$url = $track["src"];
 	if(empty($url) or filter_var($url, FILTER_VALIDATE_URL) === FALSE) error("invalid URL!");
 	
-	$args = ["python3 -m yt-dlp","'".json_encode($track)."'"];
-	passthru(join(" ",$args));
+	$result;
+	$args = ["python3 yt-dlp/__main__.py","'".json_encode($track)."'"];
+	passthru(join(" ",$args),$result);
+	if($result != 0) exit("Error: process exited with code ".$result);
 ?>
