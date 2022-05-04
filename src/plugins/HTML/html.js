@@ -69,6 +69,7 @@ export default class HTML extends Player{
 				}
 				this._player.appendChild(createNode("source",{src:obj.src,type}));
 			}.bind(this));
+			this._player.load();
 		}else{
 			this._player.src = track.src;
 		}
