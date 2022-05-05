@@ -9,7 +9,7 @@
 	if(empty($url) or filter_var($url, FILTER_VALIDATE_URL) === FALSE) error("invalid URL!");
 	
 	$result;
-	$args = ["python3 yt_dlp/__main__.py","'".json_encode($track)."'"];
+	$args = ["python3 yt_dlp/__main__.py",$url];
 	passthru(join(" ",$args),$result);
 	if($result != 0) exit("Error: process exited with code ".$result);
 ?>
