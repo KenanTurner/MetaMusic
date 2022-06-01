@@ -205,7 +205,7 @@ export default cases.concat([
 			check[evt.type] = true;
 		}
 		let a1 = new Album();
-		a1.subscribe({type:'all',callback:f});
+		a1.subscribe('all',{callback:f});
 		a1.push(...tracks);
 		a1.remove(tracks[0]);
 		a1.clear();

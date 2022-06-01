@@ -6,7 +6,7 @@ let cases = Cases.map(function(f){
     Object.defineProperty(g,"name",{value:f.name});
     return g;
 })
-export default cases.concat([
+export default cases.concat([ //TODO add cool MetaMusic test cases
 	/*function constructor(MetaMusic,players,album){
 		MetaMusic.players = players;
 		let mm = new MetaMusic(); //default constructor

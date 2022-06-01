@@ -1,3 +1,5 @@
+/*
+//unfortunately, the EventTarget cases cannot be used as Player has an asynchronous constructor :(
 import Cases from '../../event-target/js/cases.js';
 let cases = Cases.map(function(f){
     let g = async function({Player}){
@@ -5,8 +7,24 @@ let cases = Cases.map(function(f){
     }
     Object.defineProperty(g,"name",{value:f.name});
     return g;
-})
-export default cases.concat([
+})*/
+export default [
+	async function constructor({Player,track,err_track}){
+		//standard constructor
+		let p1 = await new Player();
+		await p1.destroy();
+		//async constructor
+		let p2 = await new Player(function(res,rej){
+			setTimeout(res,100);
+		});
+		await p2.destroy();
+		//failed constructor
+		throwIfNoError("Failed to throw exception when constructor promise was rejected!",async function(){
+			let p3 = await new Player(function(res,rej){
+				setTimeout(rej,100);
+			});
+		});
+	},
 	async function tracks({Player,track,err_track}){
 		var t1 = new Player.Track(track);
 		var t2 = new Player.Track(err_track);
@@ -26,9 +44,8 @@ export default cases.concat([
 		t1 += "E";
 	},
 	async function play_pause({Player,track}){
-		var html = new Player();
+		var html = await new Player();
 		var t1 = new Player.Track(track);
-		await html.waitForEvent('ready');
 		await html.load(t1); //loaded
 		await html.play(); //play
 		await html.pause(); //pause
@@ -39,7 +56,7 @@ export default cases.concat([
 		await html.destroy();
 	},
 	async function subs({Player,track,err_track}){
-		var html = new Player();
+		var html = await new Player();
 		var t1 = new Player.Track(track);
 		var t2 = new Player.Track(err_track);
 		var check = {
@@ -47,7 +64,6 @@ export default cases.concat([
 			play:false,
 			pause:false,
 			ended:false,
-			error:false,
 			timeupdate:false,
 			volumechange:false,
 			destroy:false,
@@ -56,16 +72,15 @@ export default cases.concat([
 			console.debug(evt);
 			check[evt.type] = true;
 		}
-		html.subscribe({type:'loaded',callback});
-		html.subscribe({type:'play',callback});
-		html.subscribe({type:'pause',callback});
-		html.subscribe({type:'ended',callback});
-		html.subscribe({type:'error',callback});
-		html.subscribe({type:'timeupdate',callback});
-		html.subscribe({type:'volumechange',callback});
-		html.subscribe({type:'destroy',callback});
+		html.subscribe('loaded',{callback});
+		html.subscribe('play',{callback});
+		html.subscribe('pause',{callback});
+		html.subscribe('ended',{callback});
+		html.subscribe('error',{callback});
+		html.subscribe('timeupdate',{callback});
+		html.subscribe('volumechange',{callback});
+		html.subscribe('destroy',{callback});
 
-		await html.waitForEvent('ready');
 		await html.load(t1); //loaded
 		await html.play(); //play
 		await html.pause(); //pause
@@ -82,10 +97,9 @@ export default cases.concat([
 		}
 	},
 	async function events({Player,track,err_track}){
-		var html = new Player();
+		var html = await new Player();
 		var t1 = new Player.Track(track);
 		var t2 = new Player.Track(err_track);
-		await html.waitForEvent('ready');
 		await html.load(t1);
 		await html.play();
 		await html.seek(10);
@@ -103,7 +117,7 @@ export default cases.concat([
 		await html.destroy();
 	},
 	async function seek({Player,track,err_track}){
-		var html = new Player();
+		var html = await new Player();
 		var t1 = new Player.Track(track);
 		//var callback = function(evt){console.debug(evt)}
 		var f = async function(time){
@@ -113,7 +127,6 @@ export default cases.concat([
 			if(diff > 0.1) throw new Error("Failed to seek within 0.1 seconds");
 		}
 		//html.subscribe({type:'all',callback});
-		await html.waitForEvent('ready');
 		await html.load(t1);
 		await html.fastForward(10);
 		await f(10);
@@ -137,9 +150,8 @@ export default cases.concat([
 		await html.destroy();
 	},
 	async function async_queue({Player,track,err_track}){
-		var player = new Player();
+		var player = await new Player();
 		var t1 = new Player.Track(track);
-		await player.waitForEvent('ready');
 		player.enqueue('load',t1);
 		player.enqueue('play');
 		player.enqueue('pause');
@@ -150,7 +162,7 @@ export default cases.concat([
 		await player.waitForEvent('stop');
 		await player.destroy();
 	}
-]);
+];
 async function throwsError(f,...args){
 	try{
 		await f(...args);
