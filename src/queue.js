@@ -27,12 +27,12 @@ export default class Queue extends Album{
 		let index = this.findIndex(this.current_track);
 		if(index === -1) throw new Error("Failed to find current track!");
 		
-		if(index+step >= this.length) this.publish(new this.constructor.Event("done"));
+		if(index+step >= this.length) this.publish("done");
 		
 		let mod = function(n, m) {return ((n % m) + m) % m;}
 		index = mod(index+step,this.length);
 		this.current_track = this.tracks[index];
-		return this.publish(new this.constructor.Event("next"));
+		return this.publish("next");
 	}
 	previous(step=1){
 		return this.next(-step);
@@ -58,7 +58,7 @@ export default class Queue extends Album{
 		copy.forEach(function(track){
 			this.find(track).track_num = track.track_num;
 		}.bind(this));
-		return this.publish(new this.constructor.Event("shuffle"));
+		return this.publish("shuffle");
 	}
 	toJSON(key){
 		let obj = {};
@@ -70,9 +70,9 @@ export default class Queue extends Album{
 		});
 		return obj;
 	}
-	async publish(event){
-		if(this.current_track) event.current_track = this.current_track.clone();
-		return super.publish(event);
+	async publish(type,options){
+		if(this.current_track) options.current_track = this.current_track.clone();
+		return super.publish(type,options);
 	}
 	static fromJSON(json){ //deserialization
 		return new Queue(JSON.parse(json));

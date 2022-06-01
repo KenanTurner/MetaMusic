@@ -18,12 +18,12 @@
 import EventTarget from './event-target.js';
 export default class Album extends EventTarget{
 	static players = {};
-	constructor(obj = {}){
-		super(obj?true:false); //fix for EventTarget case
+	constructor({title,tracks} = {}){
+		super();
 		
-		this.title = obj.title;
+		this.title = title;
 		this.tracks = [];
-		if(obj.tracks) this.push(...obj.tracks);
+		if(tracks) this.push(...tracks);
 	}
 	push(...items){
 		items.forEach(function(track){
@@ -34,7 +34,7 @@ export default class Album extends EventTarget{
 			tmp.track_num = val;
 			this.tracks.push(tmp);
 		}.bind(this));
-		return this.publish(new this.constructor.Event("add"));
+		return this.publish("add");
 	}
 	insert(index,...items){
 		items.forEach(function(track){
@@ -54,7 +54,7 @@ export default class Album extends EventTarget{
 			this.tracks.splice(index, 0, tmp);
 			index++;
 		}.bind(this));
-		return this.publish(new this.constructor.Event("add"));
+		return this.publish("add");
 	}
 	remove(...items){
 		items.forEach(function(track){
@@ -63,18 +63,18 @@ export default class Album extends EventTarget{
 				return !t.equals(track);
 			});
 		}.bind(this));
-		return this.publish(new this.constructor.Event("remove"));
+		return this.publish("remove");
 	}
 	clear(){
 		this.tracks.length = 0;
-		this.publish(new this.constructor.Event("clear"));
+		this.publish("clear");
 	}
 	shuffle(){
 		for(let i = this.length - 1; i > 0; i--){
 			const j = Math.floor(Math.random() * (i + 1));
 			[this.tracks[i], this.tracks[j]] = [this.tracks[j], this.tracks[i]];
 		}
-		return this.publish(new this.constructor.Event("shuffle"));
+		return this.publish("shuffle");
 	}
 	sort(key="track_num",reversed=false){
 		this.tracks.sort(function(t1,t2){
@@ -84,7 +84,7 @@ export default class Album extends EventTarget{
 			return val;
 		})
 		if(reversed) this.tracks.reverse();
-		return this.publish(new this.constructor.Event("sort"));
+		return this.publish("sort");
 	}
 	filter(f){
 		let tmp = this.clone();

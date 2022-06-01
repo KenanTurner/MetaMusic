@@ -30,36 +30,35 @@ export default class MetaMusic extends Player{
 			return new Player.Track(JSON.parse(json));
 		}
 	}
-	constructor(){
+	constructor(async_constructor = function(res){res()}){
 		Queue.players = MetaMusic.players; //???
-		super(false);
-		
-		delete this._player;
-		this.queue = new Queue();
-		this.queue.subscribe({type:'all',callback:function(e){
-			this.publish(e);
-		}.bind(this)});
-		
-		this.current_player = new Player();
-		this._players = {};
-		Object.values(this.constructor.players).forEach(function(Player){
-			this._players[Player.name] = new Player();
-			this._players[Player.name].subscribe({type:'error',callback:function(e){
-				if(this.current_player === this._players[Player.name]) this.publish(e);
+		super(async function(res,rej){
+			delete this._player;
+			this.queue = new Queue();
+			this.queue.subscribe('all',{callback:function(event){
+				this.publish(event.type,event);
 			}.bind(this)});
-			this._players[Player.name].subscribe({type:'timeupdate',callback:function(e){
-				if(this.current_player === this._players[Player.name]) this.publish(e);
-			}.bind(this)});
-			this._players[Player.name].subscribe({type:'ended',callback:function(e){
-				if(this.current_player !== this._players[Player.name]) return;
-				this.publish(e);
-				if(this.queue.has(this.current_track)) this.next(1);
-			}.bind(this)});
-		}.bind(this));
-		
-		this.waitForAll('waitForEvent','ready').then(function(){
-			this.ready = true;
-		}.bind(this));
+			
+			this.current_player = await new Player();
+			this._players = {};
+			Object.values(this.constructor.players).forEach(async function(Player){
+				this._players[Player.name] = await new Player();
+				this._players[Player.name].subscribe('error',{callback:function(e){
+					if(this.current_player === this._players[Player.name]) this.publish(e.type,e);
+				}.bind(this)});
+				this._players[Player.name].subscribe('timeupdate',{callback:function(e){
+					if(this.current_player === this._players[Player.name]) this.publish(e.type,e);
+				}.bind(this)});
+				this._players[Player.name].subscribe('ended',{callback:function(e){
+					if(this.current_player !== this._players[Player.name]) return;
+					this.publish(e.type,e);
+					if(this.queue.has(this.current_track)) this.next(1);
+				}.bind(this)});
+			}.bind(this));
+			
+			await this.waitForAll('waitForEvent','ready');
+			async_constructor.call(this,res,rej);
+		});
 	}
 	get current_track(){
 		return this.queue.current_track;
@@ -85,35 +84,73 @@ export default class MetaMusic extends Player{
 		return p;
 	}
 	async load(track){
-		if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
 		let status = await this.getStatus();
-		await this.stop();
 		this.current_track = track;
 		this.current_player = this._players[track.filetype];
-		let p = await this.current_player.load(track);
-		await this.setVolume(status.volume);
-		return this.publish(p);
+		try{
+			await this.stop();
+			let p = await this.current_player.load(track);
+			await this.setVolume(status.volume);
+			this.publish("loaded");
+		}catch(e){
+			throw this.publish("loaded",{error:e});
+		}
 	}
 	async play(){
-		return this.publish(await this.current_player.play());
+		try{
+			await this.current_player.play();
+			return this.publish("play");
+		}catch(e){
+			throw this.publish("play",{error:e});
+		}
 	}
 	async pause(){
-		return this.publish(await this.current_player.pause());
+		try{
+			await this.current_player.pause();
+			return this.publish("pause");
+		}catch(e){
+			throw this.publish("pause",{error:e});
+		}
 	}
 	async seek(time){
-		return this.publish(await this.current_player.seek(time));
+		try{
+			await this.current_player.seek(time);
+			return this.publish("timeupdate");
+		}catch(e){
+			throw this.publish("timeupdate",{error:e});
+		}
 	}
 	async fastForward(time){
-		return this.publish(await this.current_player.fastForward(time));
+		try{
+			await this.current_player.fastForward(time);
+			return this.publish("timeupdate");
+		}catch(e){
+			throw this.publish("timeupdate",{error:e});
+		}
 	}
 	async setVolume(vol){
-		return this.publish(await this.current_player.setVolume(vol));
+		try{
+			await this.current_player.setVolume(vol);
+			return this.publish("volumechange");
+		}catch(e){
+			throw this.publish("volumechange",{error:e});
+		}
 	}
 	async setMuted(bool){
-		return this.publish(await this.current_player.setMuted(bool));
+		try{
+			await this.current_player.setMuted(bool);
+			return this.publish("volumechange");
+		}catch(e){
+			throw this.publish("volumechange",{error:e});
+		}
 	}
 	async stop(){
-		return this.publish(await this.current_player.stop());
+		try{
+			await this.current_player.stop();
+			return this.publish("stop");
+		}catch(e){
+			throw this.publish("stop",{error:e});
+		}
 	}
 	all(f,...args){
 		return Object.values(this._players).map(function(player){
