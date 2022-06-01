@@ -27,14 +27,10 @@ export default class RADIO extends HTML{
 		}
 	}
 	async seek(time){
-		let event = new this.constructor.Event('timeupdate');
-		this.publish(event);
-		return event;
+		return this.publish('timeupdate');
 	}
 	async fastForward(time){
-		let event = new this.constructor.Event('timeupdate');
-		this.publish(event);
-		return event;
+		return this.publish('timeupdate');
 	}
 	async getStatus(){
 		let obj = {};
