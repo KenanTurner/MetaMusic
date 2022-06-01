@@ -17,77 +17,68 @@
  */
 import AsyncQueue from './async-queue.js';
 export default class EventTarget extends AsyncQueue{
-	constructor(is_ready=true){
-		super(1); //AsyncQueue is used to queue commands
+	constructor(){
+		super(...arguments);
 		this._subscribers = {all:[]};
-		this._ready = is_ready == true;
-		//TODO maybe use a promise instead of boolean?
 	}
 	async destroy(){
-		let p = await this.publish(new this.constructor.Event("destroy"));
-		this.ready = false;
+		let p = await this.publish("destroy");
 		Object.values(this._subscribers).forEach(function(arr){
 			arr.length = 0; //Removes all event listeners
 		});
 		return p;
 	}
-	get ready(){
-		return this._ready;
-	}
-	set ready(bool){
-		this._ready = bool == true;
-		if(this._ready) this.publish(new this.constructor.Event("ready"));
-	}
 	//{type:[String],callback:[Function],<error>:[Function],<once>:[Boolean]}
-	subscribe({type,callback,error,once}){
+	subscribe(type,{callback,error,once} = {}){
 		if(!type) throw new Error("Subscriber must specify a type!");
-		if(!callback) throw new Error("Subscriber must include a callback!");
-		if(typeof callback !== "function") throw new Error("Callback must be a function");
+		if(!callback && !error) throw new Error("Subscriber must include a callback or an error!");
+		if(callback && typeof callback !== "function") throw new Error("Callback must be a function");
+        if(error && typeof error !== "function") throw new Error("Error must be a function");
 		
-		if(type === 'ready' && this._ready) return callback(new this.constructor.Event("ready"));
 		if(!this._subscribers[type]) this._subscribers[type] = []; //creates the subscriber list
-		this._subscribers[type].push({type,callback,error,once});
+		this._subscribers[type].push({type,callback,once,error});
 	}
 	//{type:[String],callback:[Function],<error>:[Function],<once>:[Boolean]}
-	unsubscribe({type,callback,error,once}){
+	unsubscribe(type,{callback,error,once} = {}){
 		if(!type) throw new Error("Subscriber must specify a type!");
-		if(!callback) throw new Error("Subscriber must include a callback!");
-		if(typeof callback !== "function") throw new Error("Callback must be a function");
+		if(!callback && !error) throw new Error("Subscriber must include a callback or an error!");
+		if(callback && typeof callback !== "function") throw new Error("Callback must be a function");
+        if(error && typeof error !== "function") throw new Error("Error must be a function");
 		
 		if(!this._subscribers[type]) return;
-		this._subscribers[type] = this._subscribers[type].filter(function(item){
-			for(let o in item){
-				if(item[o] !== ({type,callback,error,once})[o]) return true;
-			}
+		this._subscribers[type] = this._subscribers[type].filter(function(obj){
+            if(type !== obj.type) return true;
+            if(callback !== obj.callback) return true;
+            if(error !== obj.error) return true;
+            if(once !== obj.once) return true;
 			return false;
 		});
 	}
-	async publish(event){
-		if(!this._ready) await this.waitForEvent("ready"); //throw new Error("Cannot publish events until target is ready"); 
-		if(!event.type) throw new Error("Event must specify a type!");
+	async publish(type,options = {}){
+		if(!type) throw new Error("Type must be specified!");
+		let event = Object.entries(options).reduce(function(obj,[key, value]){
+			obj[key] = value; return obj;
+		},{});
+		event.type = type;
 		event.target = this;
-		let types = Object.keys(this._subscribers).filter(function(type){
-			if(event.type === 'error') return true;
+        Object.entries(this._subscribers).map(function([key,value]){
+            return {type:key,arr:value};
+        }).filter(function({type,arr}){
 			if(type === 'all') return true;
 			return type === event.type;
-		});
-		let f = function(obj){
-			if(event.type === 'error' && obj.error && this !== 'error'){
-				obj.error(event);
-			}else{
-				obj.callback(event);
-			}
-			return !obj.once;
-		}
-		types.forEach(function(type){
-			if(!this._subscribers[type]) return;
-			this._subscribers[type] = this._subscribers[type].filter(f,type);
-		}.bind(this));
+        }).forEach(function({arr}){
+            if(!arr) return;
+            arr.forEach(function({type,callback,once,error},index){
+                if(callback && !event.error) callback(event);
+                if(error && event.error) error(event);
+                if(once) arr.splice(index,1);
+            });
+        });
 		return event;
 	}
 	waitForEvent(type){
 		return new Promise(function(resolve, reject) {
-			this.subscribe({type:type,callback:resolve,once:true,error:reject});
+			this.subscribe(type,{callback:resolve,once:true,error:reject});
 		}.bind(this));
 	}
 	chain(f,...args){ //easy promise chaining
@@ -95,12 +86,27 @@ export default class EventTarget extends AsyncQueue{
 			return this[f](...args);
 		}.bind(this);
 	}
-	static Event = class Event{
-		constructor(type,options){
-			this.type = type;
-			for(let o in options){
-				this[o] = options[o];
+	static observe = function(state = {}){
+		state.observer = new EventTarget();
+		return new Proxy(state,{
+			set: function(state, prop, value, receiver){
+				state[prop] = value;
+				state.observer.publish(prop,{state});
+				return true;
+			},
+			get: function(state, prop, receiver){
+				if(typeof state[prop] === "function") return function(){
+					try{
+						let result = state[prop].call(this,...arguments);
+						state.observer.publish(prop,{args:arguments,state});
+						return result;
+					}catch(e){
+						state.observer.publish(prop,{error:e,args:arguments,state});
+						throw e;
+					}
+				}
+				return Reflect.get(...arguments);
 			}
-		}
+		});
 	}
 }
