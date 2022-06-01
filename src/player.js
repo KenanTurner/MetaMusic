@@ -27,8 +27,8 @@ export default class Player extends EventTarget{
 			return new Player.Track(JSON.parse(json));
 		}
 	}
-	constructor(is_ready=true){
-		super(is_ready);
+	constructor(async_constructor = function(res){res()}){
+		super();
 		this._player = {
 			'src':'',
 			'time':0.0,
@@ -37,40 +37,32 @@ export default class Player extends EventTarget{
 			'paused':true,
 			'muted':false,
 		}
-	}
-	async destroy(){
-		let p = await this.publish(new this.constructor.Event("destroy"));
-		this._ready = false;
-		Object.values(this._subscribers).forEach(function(arr){
-			arr.length = 0; //Removes all event listeners
-		});
-		return p;
+		return new Promise(function(res,rej){
+			async_constructor.call(this,res.bind(this,this),rej.bind(this,this));
+		}.bind(this));
 	}
 	async load(track){
-		//if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
-		let p = this.waitForEvent('loaded');
 		try{
 			await fetch(track.src);
 			this._player.src = track.src;
-			this.publish(new this.constructor.Event("loaded"));
+			return this.publish("loaded");
 		}catch(e){
-			this.publish(new this.constructor.Event("error"));
+			throw this.publish("loaded",{error:e});
 		}
-		return p;
 	}
 	async play(){
 		this._player.paused = false;
-		return this.publish(new this.constructor.Event("play"));
+		return this.publish("play");
 	}
 	async pause(){
 		this._player.paused = true;
-		return this.publish(new this.constructor.Event("pause"));
+		return this.publish("pause");
 	}
 	async seek(time){
 		let status = await this.getStatus();
 		this._player.time = time;
-		let p = this.publish(new this.constructor.Event("timeupdate"));
-		if(time >= status.duration) this.publish(new this.constructor.Event("ended"));
+		let p = this.publish("timeupdate");
+		if(time >= status.duration) this.publish("ended");
 		return p;
 	}
 	async fastForward(time){
@@ -79,23 +71,23 @@ export default class Player extends EventTarget{
 	}
 	async setVolume(vol){
 		this._player.volume = vol;
-		return this.publish(new this.constructor.Event("volumechange"));
+		return this.publish("volumechange");
 	}
 	async setMuted(bool){
 		this._player.muted = bool == true;
-		return this.publish(new this.constructor.Event("volumechange"));
+		return this.publish("volumechange");
 	}
 	async stop(){
 		await this.pause();
 		await this.seek(0);
-		return this.publish(new this.constructor.Event("stop"));
+		return this.publish("stop");
 	}
 	async getStatus(){
 		return this._player;
 	}
-	async publish(event){
-		event.status = await this.getStatus();
-		return super.publish(event);
+	async publish(type,options = {}){
+		options.status = await this.getStatus();
+		return super.publish(type,options);
 	}
 	static isValidTrack(track){
 		let p = this.Track.prototype.isPrototypeOf(track);
