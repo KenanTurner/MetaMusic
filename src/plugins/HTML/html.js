@@ -26,21 +26,13 @@ export default class HTML extends Player{
 			return new HTML.Track(JSON.parse(json));
 		}
 	}
-	constructor(){
-		super(true);
-		this._player = new Audio();
-		
-		let f = function(type,options){
-			return function(){
-				this.publish(new this.constructor.Event(type,type==='error'? {error:this._player.error}: {}));
-			}.bind(this);
-		}.bind(this);
-		this._player.addEventListener('play',f('play'));
-		this._player.addEventListener('pause',f('pause'));
-		this._player.addEventListener('ended',f('ended'));
-		this._player.addEventListener('error',f('error'));
-		this._player.addEventListener('timeupdate',f('timeupdate'));
-		this._player.addEventListener('volumechange',f('volumechange'));
+	constructor(async_constructor = function(res){res()}){
+		super(function(res,rej){
+			this._player = new Audio();
+			this._player.addEventListener('ended',this.publish.bind(this,"ended",{}));
+			this._player.addEventListener('timeupdate',this.publish.bind(this,"timeupdate",{}));
+			async_constructor.call(this,res,rej);
+		});
 	}
 	async destroy(){
 		this._player.src = '';
@@ -48,76 +40,85 @@ export default class HTML extends Player{
 		return super.destroy();
 	}
 	async load(track){
-		if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
-		let f = function(){
-			delete this._player.fixed_duration;
-			this.publish(new this.constructor.Event('loaded'));
-		}.bind(this);
-		let p = this.waitForEvent('loaded');
-		this._player.addEventListener('canplay',f,{once:true});
-		while(this._player.firstChild){
-			this._player.removeChild(this._player.lastChild);
-		}
-		if(track.sources){
-			delete this._player.src;
-			track.sources.forEach(function(obj){
-				let type = "audio/"+obj.ext;
-				switch(obj.ext){
-					case "m4a":
-						type = "audio/mp4";
-						break;
+		try{
+			await new Promise(function(res,rej){
+				this._player.addEventListener('error',rej,{once:true});
+				this._player.addEventListener('canplay',res,{once:true});
+				if(track.sources){
+					while(this._player.firstChild){ this._player.lastChild.remove(); }
+					delete this._player.src;
+					track.sources.forEach(function({src,ext}){
+						let type = "audio/"+ext;
+						switch(ext){
+							case "m4a": //fix type ext
+								type = "audio/mp4";
+								break;
+						}
+						let source = document.createElement("source");
+						source.src = src;
+						source.type = type;
+						this._player.appendChild(source);
+					}.bind(this));
+				}else{
+					this._player.src = track.src;
 				}
-				this._player.appendChild(createNode("source",{src:obj.src,type}));
+				this._player.load();
 			}.bind(this));
-		}else{
-			this._player.src = track.src;
+			return this.publish("loaded");
+		}catch(e){
+			throw this.publish("loaded",{error:e});
 		}
-		this._player.load();
-		return p;
 	}
 	async play(){
-		let status = await this.getStatus();
-		let p = this.waitForEvent('play');
-		if(!status.paused) this.publish(new this.constructor.Event('play'));
-		this._player.play();
-		return p;
+		try{
+			await this._player.play();
+			return this.publish("play");
+		}catch(e){
+			throw this.publish("play",{error:e});
+		}
 	}
 	async pause(){
-		let status = await this.getStatus();
-		let p = this.waitForEvent('pause');
-		if(status.paused) this.publish(new this.constructor.Event('pause'));
-		this._player.pause();
-		return p;
+		try{
+			await this._player.pause();
+			return this.publish("pause");
+		}catch(e){
+			throw this.publish("pause",{error:e});
+		}
 	}
 	async seek(time){
-		let status = await this.getStatus();
-		let p = this.waitForEvent('timeupdate');
-		if(status.time === time) this.publish(new this.constructor.Event('timeupdate'));
-		this._player.currentTime = time;
-		return p;
+		try{
+			let status = await this.getStatus();
+			this._player.currentTime = time;
+			if(time >= status.duration) this.publish("ended");
+			return this.publish("timeupdate");
+		}catch(e){
+			throw this.publish("timeupdate",{error:e});
+		}
 	}
 	async fastForward(time){
 		let status = await this.getStatus();
 		return this.seek(status.time + time);
 	}
 	async setVolume(vol){
-		let status = await this.getStatus();
-		let p = this.waitForEvent('volumechange');
-		if(status.volume == vol) this.publish(new this.constructor.Event('volumechange'));
-		this._player.volume = vol;
-		return p
+		try{
+			this._player.volume = vol;
+			return this.publish("volumechange");
+		}catch(e){
+			throw this.publish("volumechange",{error:e});
+		}
 	}
 	async setMuted(bool){
-		let status = await this.getStatus();
-		let p = this.waitForEvent('volumechange');
-		if(status.muted == bool) this.publish(new this.constructor.Event('volumechange'));
-		this._player.muted = bool;
-		return p;
+		try{
+			this._player.muted = bool;
+			return this.publish("volumechange");
+		}catch(e){
+			throw this.publish("volumechange",{error:e});
+		}
 	}
 	async stop(){
 		await this.pause();
 		await this.seek(0);
-		return this.publish(new this.constructor.Event("stop"));
+		return this.publish("stop");
 	}
 	async getStatus(){
 		let obj = {};
@@ -135,7 +136,7 @@ export default class HTML extends Player{
 	}
 	async fixDuration(){
 		let player = new Audio(this._player.currentSrc);
-		let duration = await new Promise(async function(res,rej){
+		let duration = await new Promise(function(res,rej){
 			player.addEventListener("error",rej);
 			player.addEventListener("durationchange",function(e){
 				if(this.duration!=Infinity){
@@ -151,17 +152,4 @@ export default class HTML extends Player{
 		});
 		this._player.fixed_duration = duration;
 	};
-}
-function createNode(tag_name,options = {},class_list = [],child_nodes = []){
-	let el = document.createElement(tag_name);
-	for(let key in options){
-		el[key] = options[key];
-	}
-	class_list.forEach(function(cl){
-		el.classList.add(cl);
-	});
-	child_nodes.forEach(function(node){
-		el.appendChild(node);
-	});
-	return el;
 }

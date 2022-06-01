@@ -27,70 +27,67 @@ export default class YT extends Player{
 			return new YT.Track(JSON.parse(json));
 		}
 	}
-	constructor(){
-		super(false);
-		this._iframe_id = "_YT_"+Math.random().toString(36).substring(7);
-		if(!this.constructor._YT) init(this.constructor);
-		
-		let div = document.createElement("div");
-		div.id = this._iframe_id;
-		div.style.display = "none";
-		div.style.pointerEvents = "none";
-		document.body.append(div);
-		
-		let player_vars = {
-			height: "144",
-			width: "100%",
-			playerVars: {'controls': 0,'disablekb':1,'fs':0,'modestbranding':1,'playsinline':1},
-		}
-		this.constructor._YT.ready(function(){
-			let f = function(g){
-				return function(evt){
-					return this[g](evt);
-				}.bind(this);
-			}.bind(this)
-			this._player = new window.YT.Player(this._iframe_id, player_vars);
+	constructor(async_constructor = function(res){res()}){
+		super(async function(res,rej){
+			this._iframe_id = "_YT_"+Math.random().toString(36).substring(7);
+			if(!this.constructor._YT) init(this.constructor);
+			
+			let div = document.createElement("div");
+			div.id = this._iframe_id;
+			div.style.display = "none";
+			div.style.pointerEvents = "none";
+			document.body.append(div);
+			
+			let player_vars = {
+				height: "144",
+				width: "100%",
+				playerVars: {'controls': 0,'disablekb':1,'fs':0,'modestbranding':1,'playsinline':1},
+			}
+			await new Promise(function(res,rej){
+				this.constructor._YT.ready(res);
+			}.bind(this));
+			this._player = new YT.Player(this._iframe_id, player_vars);
 			this._player.addEventListener("onStateChange", function(evt){
-				if(evt.data === window.YT.PlayerState.PLAYING){ //PLAYING
+				if(evt.data === YT.PlayerState.PLAYING){ //PLAYING
 					this._player._timer = setInterval(function(){
-						this.publish(new this.constructor.Event("timeupdate"));
+						this.publish("timeupdate");
 					}.bind(this), 100);
 				}
-				if(evt.data !== window.YT.PlayerState.PLAYING) clearInterval(this._player._timer);
+				if(evt.data !== YT.PlayerState.PLAYING) clearInterval(this._player._timer);
 			}.bind(this));
 			this._player.addEventListener("onStateChange", function(evt){
-				console.debug("YT State Change: ",evt.data);
+				//console.debug("YT State Change: ",evt.data);
 				switch(evt.data){
 					/*case YT.PlayerState.UNSTARTED: //unstarted: -1
 						self._publish('abort'); //not really abort
 						break;*/
 					case window.YT.PlayerState.ENDED: //ended: 0
-						this.publish(new this.constructor.Event("ended"));
+						this.publish("ended");
 						break;
 					case window.YT.PlayerState.PLAYING: //playing: 1
-						this.publish(new this.constructor.Event("play"));
+						this.publish("play");
 						break;
 					case window.YT.PlayerState.PAUSED: //paused: 2
-						this.publish(new this.constructor.Event("pause"));
+						this.publish("pause");
 						break;
 					/*case YT.PlayerState.BUFFERING: //buffering: 3
 						//self._publish('buffering'); //buffering
 						break;*/
 					case window.YT.PlayerState.CUED: //video cued: 5
-						this.publish(new this.constructor.Event("cued"));
+						this.publish("cued");
 						break;
 				}
 			}.bind(this));
 			this._player.addEventListener("onError", function(evt){
-				this.publish(new this.constructor.Event("error",{error:evt}));
+				this.publish("error",{error:evt});
 			}.bind(this));
-			this._player.addEventListener('onReady', function(evt){
-				this.ready = true;
+			await new Promise(function(res,rej){
+				this._player.addEventListener('onReady',res);
 			}.bind(this));
-		}.bind(this));
+			async_constructor.call(this,res,rej);
+		});
 	}
 	async load(track){
-		if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
 		let status = await this.getStatus();
 		let p = this.waitForEvent('cued');
 		try{
@@ -101,14 +98,14 @@ export default class YT extends Player{
 				await this.setVolume(status.volume);
 			}
 		}catch(error){
-			this.publish(new this.constructor.Event("error",{error}));
+			this.publish("error",{error});
 		}
 		await p; //video cued
 		await this.setVolume(0); //mute player
 		await this.play(); //start player
 		await this.stop(); //stop player
 		await this.setVolume(status.volume); //unmute player
-		return this.publish(new this.constructor.Event("loaded"));
+		return this.publish("loaded");
 	}
 	async waitForChange(f,value,step=50,...args){
 		let result = await f(...args);
@@ -121,14 +118,14 @@ export default class YT extends Player{
 	async play(){
 		let status = await this.getStatus();
 		let p = this.waitForEvent('play');
-		if(!status.paused) return this.publish(new this.constructor.Event('play'));
+		if(!status.paused) return this.publish('play');
 		this._player.playVideo();
 		return p;
 	}
 	async pause(){
 		let status = await this.getStatus();
 		let p = this.waitForEvent('pause');
-		if(status.paused) return this.publish(new this.constructor.Event('pause'));
+		if(status.paused) return this.publish('pause');
 		this._player.pauseVideo();
 		return p;
 	}
@@ -140,7 +137,7 @@ export default class YT extends Player{
 		if(time < status.duration-1 && status.time !== time){
 			await this.waitForChange(this.getStatus.bind(this),status.time,50,'time');
 		}
-		this.publish(new this.constructor.Event('timeupdate'));
+		this.publish('timeupdate');
 		return p;
 	}
 	async setVolume(vol){
@@ -150,7 +147,7 @@ export default class YT extends Player{
 		if(vol !== status.volume){
 			await this.waitForChange(this.getStatus.bind(this),status.volume,50,'volume');
 		}
-		this.publish(new this.constructor.Event('volumechange'));
+		this.publish('volumechange');
 		return p;
 	}
 	async setMuted(bool){
@@ -159,13 +156,13 @@ export default class YT extends Player{
 		if(bool !== status.muted){
 			await this.waitForChange(this.getStatus.bind(this),status.muted,50,'muted');
 		}
-		return this.publish(new this.constructor.Event('volumechange'));
+		return this.publish('volumechange');
 	}
 	async stop(){
 		let p = this.waitForEvent('cued');
 		this._player.stopVideo();
 		await p;
-		return this.publish(new this.constructor.Event('stop'));
+		return this.publish('stop');
 	}
 	async getStatus(key){
 		let data = {

@@ -30,57 +30,37 @@ export default class SC extends Player{
 			return new SC.Track(JSON.parse(json));
 		}
 	}
-	constructor(){
-		super(false);
-		this._iframe_id = "_SC_"+Math.random().toString(36).substring(7);
-		if(!this.constructor._SC) init(this.constructor);
-		this._createSC();
-	}
-	async _createSC(src){
-		var div = document.createElement("iframe");
-			div.id = this._iframe_id;
-			div.style.display = "none";
-			div.style.width = "100%";
-			div.style.height = "144";
-			div.scrolling = "no";
-			div.frameborder = "no";
-			div.allow = "autoplay";
-			div.src = "https://w.soundcloud.com/player/?url="+src;
-			div.sandbox = "allow-scripts allow-same-origin";
-		document.body.append(div);
-		
-		this._iframe = div;
-		this._player = this.constructor._SC.Widget(div);
-		let SC = window.SC //Grab SC from global scope
-		await new Promise(function(res,rej){
-			this._player.bind(SC.Widget.Events.READY,res);
-		}.bind(this));
-		this._addEventListeners();
-		this.ready = true;
-	}
-	_addEventListeners(){
-		let SC = window.SC //Grab SC from global scope
-		this._player.bind(SC.Widget.Events.PLAY_PROGRESS, function() {
-			this.publish(new this.constructor.Event("timeupdate"));
-		}.bind(this));
-		this._player.bind(SC.Widget.Events.PLAY, function() {
-			this.publish(new this.constructor.Event("play"));
-		}.bind(this));
-		this._player.bind(SC.Widget.Events.PAUSE, function() {
-			this.publish(new this.constructor.Event("pause"));
-		}.bind(this));
-		this._player.bind(SC.Widget.Events.SEEK, function() {
-			this.publish(new this.constructor.Event("timeupdate"));
-		}.bind(this));
-		this._player.bind(SC.Widget.Events.FINISH, function() {
-			this.publish(new this.constructor.Event("ended"));
-		}.bind(this));
-		this._player.bind(SC.Widget.Events.ERROR, function() {
-			this.publish(new this.constructor.Event("error"));
-		}.bind(this));
+	constructor(async_constructor = function(res){res()}){
+		super(async function(res,rej){
+			if(!this.constructor._SC) init(this.constructor);
+			this._iframe_id = "_SC_"+Math.random().toString(36).substring(7);
+			let div = document.createElement("iframe");
+				div.id = this._iframe_id;
+				div.style.display = "none";
+				div.style.width = "100%";
+				div.style.height = "144";
+				div.scrolling = "no";
+				div.frameborder = "no";
+				div.allow = "autoplay";
+				div.src = "https://w.soundcloud.com/player/?url=";
+				div.sandbox = "allow-scripts allow-same-origin";
+			document.body.append(div);
+			
+			this._iframe = div;
+			this._player = this.constructor._SC.Widget(div);
+			this._player.bind(this.constructor._SC.Widget.Events.PLAY_PROGRESS, this.publish.bind(this,"timeupdate",{}));
+			this._player.bind(this.constructor._SC.Widget.Events.PLAY, this.publish.bind(this,"play",{}));
+			this._player.bind(this.constructor._SC.Widget.Events.PAUSE, this.publish.bind(this,"pause",{}));
+			this._player.bind(this.constructor._SC.Widget.Events.SEEK, this.publish.bind(this,"timeupdate",{}));
+			this._player.bind(this.constructor._SC.Widget.Events.FINISH, this.publish.bind(this,"ended",{}));
+			await new Promise(function(res,rej){
+				this._player.bind(this.constructor._SC.Widget.Events.READY,res);
+			}.bind(this));
+			
+			async_constructor.call(this,res,rej);
+		});
 	}
 	async load(track){
-		if(!this.constructor.isValidTrack(track)) throw new Error("Invalid Filetype");
 		let status = await this.getStatus();
 		let p = this.waitForEvent('loaded');
 		await new Promise(function(res,rej){
@@ -98,9 +78,10 @@ export default class SC extends Player{
 				start_track: 0,
 				callback: res,
 			}
+			this._player.bind(this.constructor._SC.Widget.Events.ERROR, rej);
 			this._player.load(track.src,o);
 		}.bind(this));
-		this.publish(new this.constructor.Event("loaded"));
+		this.publish("loaded");
 		return p;
 	}
 	async play(){
@@ -111,7 +92,7 @@ export default class SC extends Player{
 	async pause(){
 		let status = await this.getStatus();
 		let p = this.waitForEvent('pause');
-		if(status.paused) return this.publish(new this.constructor.Event('pause'));
+		if(status.paused) return this.publish('pause');
 		this._player.pause();
 		return p;
 	}
@@ -120,9 +101,9 @@ export default class SC extends Player{
 		let p = this.waitForEvent('timeupdate');
 		this._player.seekTo(time*1000);
 		if(time >= status.duration && status.paused){
-			this.publish(new this.constructor.Event('ended'));
+			this.publish('ended');
 		}
-		if(time === status.time) this.publish(new this.constructor.Event('timeupdate'));
+		if(time === status.time) this.publish('timeupdate');
 		return p;
 	}
 	async setVolume(vol){
@@ -132,7 +113,7 @@ export default class SC extends Player{
 		if(vol !== status.volume){
 			await this.waitForChange(this.getStatus.bind(this),status.volume,50,'volume');
 		}
-		this.publish(new this.constructor.Event('volumechange'));
+		this.publish('volumechange');
 		return p;
 	}
 	async waitForChange(f,value,step=50,...args){

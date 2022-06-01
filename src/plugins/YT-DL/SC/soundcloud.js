@@ -26,10 +26,4 @@ export default class SC extends YTDL{
 			return new SC.Track(JSON.parse(json));
 		}
 	}
-	async seek(time){
-		let status = await this.getStatus();
-		let p = await super.seek(time);
-		if(time >= status.duration) this.publish(new this.constructor.Event('ended'));
-		return p;
-	}
 }
