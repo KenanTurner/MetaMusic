@@ -19,7 +19,7 @@ export default class ConsoleComponent extends HTMLElement{
 		}.bind(this));
 		this.command.addEventListener("keydown",function(e){
 			if(e.key === 'Enter' || e.keyCode === 13){
-				this.eval.click();
+				if(!e.shiftKey) this.eval.click();
 			}
 		}.bind(this));
 		
