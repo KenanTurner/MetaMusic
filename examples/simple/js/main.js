@@ -11,11 +11,15 @@ let pause_btn = document.getElementById("pause");
 let stop_btn = document.getElementById("stop");
 let src_box = document.getElementById("src");
 
-window.html = new HTML();
-html.subscribe({type:'error',callback:function(err){
+window.html = await new HTML();
+html.subscribe('all',{error:function(err){
 	console.error(err);
 	alert("There was an error playing the requested file");
 }});
+html.subscribe('all',{callback:function(e){
+	console.debug(e);
+}});
+
 
 let track = new HTML.Track({src:src_box.value,title:"title"});
 
@@ -27,6 +31,4 @@ load_btn.addEventListener('click',function(){
 play_btn.addEventListener('click',html.enqueue.bind(html,'play'));
 pause_btn.addEventListener('click',html.enqueue.bind(html,'pause'));
 stop_btn.addEventListener('click',html.enqueue.bind(html,'stop'));
-
-await html.waitForEvent('ready');
 load_btn.click();

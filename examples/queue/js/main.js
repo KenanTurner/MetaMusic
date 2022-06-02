@@ -21,12 +21,12 @@ if(window.location.href.includes('.github.io/')){
 	console.warn("Bandcamp playback has been disabled. See the README for more information.");
 }
 
-window.mm = new MetaMusic();
-mm.subscribe({type:'error',callback:function(err){
+window.mm = await new MetaMusic();
+mm.subscribe('all',{error:function(err){
 	console.error(err);
 	alert("There was an error playing the requested file");
 }});
-mm.subscribe({type:'all',callback:function(e){console.debug(e)}});
+mm.subscribe('all',{callback:function(e){console.debug(e)}});
 
 let tracks = [
 	new HTML.Track({title:"Scott's Factory",src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4"}),
@@ -72,9 +72,9 @@ function isPaused(bool){
 play_btn.addEventListener('click',isPaused(false));
 pause_btn.addEventListener('click',isPaused(true));
 stop_btn.addEventListener('click',isPaused(true));
-mm.subscribe({type:'done',callback:isPaused(true)});
+mm.subscribe('done',{callback:isPaused(true)});
 
-mm.subscribe({type:'loaded',callback:function(e){
+mm.subscribe('loaded',{callback:function(e){
 	mm.queue.tracks.forEach(function(t){
 		t.css('remove','playing');
 	});
@@ -88,5 +88,4 @@ mm.queue.tracks.forEach(function(t){
 	queue.appendChild(t.toHTML());
 });
 
-await mm.waitForEvent('ready');
 mm.load(tracks[0]);

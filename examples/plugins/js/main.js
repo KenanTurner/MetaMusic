@@ -15,18 +15,18 @@ if(window.location.href.includes('.github.io/')){
 	console.warn("Bandcamp playback has been disabled. See the README for more information.");
 }
 	
-window.mm = new MetaMusic();
-mm.subscribe({type:'error',callback:function(err){
+window.mm = await new MetaMusic();
+mm.subscribe('all',{error:function(err){
 	console.error(err);
 	alert("There was an error playing the requested file");
 }});
-mm.subscribe({type:'all',callback:function(e){console.debug(e)}});
+mm.subscribe('all',{callback:function(e){console.debug(e)}});
 
 let plugins = {
-	HTML: {title:"Default (HTML Audio)",src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4"},
-	YT: {title:"Youtube",src:"https://www.youtube.com/watch?v=zhG7aorm0RI"},
-	BC: {title:"Bandcamp",src:"https://the8bitbigband.bandcamp.com/track/want-you-gone-feat-benny-benack-iii-from-portal-2"},
-	SC: {title:"Soundcloud",src:"https://soundcloud.com/aivisura/kk-cruisin-interstate-5-remix"},
+	HTML: new HTML.Track({title:"Default (HTML Audio)",src:"https://v.redd.it/6m47mro5xpv51/DASH_audio.mp4"}),
+	YT: new YT.Track({title:"Youtube",src:"https://www.youtube.com/watch?v=zhG7aorm0RI"}),
+	BC: new BC.Track({title:"Bandcamp",src:"https://the8bitbigband.bandcamp.com/track/want-you-gone-feat-benny-benack-iii-from-portal-2"}),
+	SC: new SC.Track({title:"Soundcloud",src:"https://soundcloud.com/aivisura/kk-cruisin-interstate-5-remix"}),
 }
 
 let load_btn = document.getElementById("load");
@@ -40,9 +40,8 @@ let plugin_btn = document.getElementById('plugins');
 load_btn.addEventListener('click',function(){
 	let src = src_box.value;
 	let p = plugin_btn.value;
-	let obj = plugins[p];
-	obj.src = src;
-	let track = new MetaMusic.players[plugin_btn.value].Track(obj);
+	let track = plugins[p];
+	track.src = src;
 	mm.clear();
 	mm.enqueue('load',track);
 });
@@ -51,22 +50,14 @@ plugin_btn.addEventListener('change',function(e){
 		return alert("Bandcamp playback has been disabled. See the README for more information.");
 	}
 	let p = this.value;
-	let track = new MetaMusic.players[p].Track(plugins[p]);
+	let track = plugins[p];
 	src_box.value = track.src;
 	mm.clear();
+	mm.enqueue("stop");
 	mm.enqueue('load',track);
 });
 
-
-let f = function(f,...args){
-    return function(){
-		mm.enqueue(f,...args);
-	}
-}
 play_btn.addEventListener('click',mm.enqueue.bind(mm,'play'));
 pause_btn.addEventListener('click',mm.enqueue.bind(mm,'pause'));
 stop_btn.addEventListener('click',mm.enqueue.bind(mm,'stop'));
-
-
-await mm.waitForEvent('ready');
 plugin_btn.dispatchEvent(new Event('change'));

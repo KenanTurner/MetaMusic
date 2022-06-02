@@ -22,12 +22,12 @@ if(window.location.href.includes('.github.io/')){
 	console.warn("Bandcamp playback has been disabled. See the README for more information.");
 }
 
-window.mm = new MetaMusic();
-mm.subscribe({type:'error',callback:function(err){
+window.mm = await new MetaMusic();
+mm.subscribe('all',{error:function(err){
 	console.error(err);
 	alert("There was an error playing the requested file");
 }});
-mm.subscribe({type:'all',callback:function(e){console.debug(e)}});
+mm.subscribe('all',{callback:function(e){console.debug(e)}});
 
 let previous_btn = document.getElementById("previous");
 let backward_btn = document.getElementById("backward");
@@ -77,9 +77,9 @@ function isPaused(bool){
 play_btn.addEventListener('click',isPaused(false));
 pause_btn.addEventListener('click',isPaused(true));
 stop_btn.addEventListener('click',isPaused(true));
-mm.subscribe({type:'done',callback:isPaused(true)});
+mm.subscribe('done',{callback:isPaused(true)});
 
-mm.subscribe({type:'loaded',callback:function(e){
+mm.subscribe('loaded',{callback:function(e){
 	mm.queue.tracks.forEach(function(t){
 		t.css('remove','playing');
 	});
