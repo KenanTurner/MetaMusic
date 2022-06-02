@@ -70,7 +70,7 @@ export default class Queue extends Album{
 		});
 		return obj;
 	}
-	async publish(type,options){
+	async publish(type,options = {}){
 		if(this.current_track) options.current_track = this.current_track.clone();
 		return super.publish(type,options);
 	}
