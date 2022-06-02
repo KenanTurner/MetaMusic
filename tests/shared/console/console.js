@@ -1,37 +1,5 @@
-import EventTarget from '/src/event-target.js';
-import Component from '/tests/shared/component.js';
-export default class ConsoleComponent extends Component{
-	static template = document.createElement('template');
-	constructor(){
-		super();
-		this.output = this.shadowRoot.querySelector("#output");
-		this.input = this.shadowRoot.querySelector("#input");
-		this.eval = this.shadowRoot.querySelector("#eval");
-		this.command = this.shadowRoot.querySelector("#command");
-		this.eval.addEventListener("click",function(){
-			if(this.command.value === "") return;
-			window.top.console.log(this.command.value);
-			this.exec(this.command.value);
-			this.command.value = "";
-		}.bind(this));
-		this.command.addEventListener("keydown",function(e){
-			if(e.key === 'Enter' || e.keyCode === 13){
-				this.eval.click();
-			}
-		}.bind(this));
-	}
-	exec(str){
-		try{
-			let t = window.top.eval(str); //may God have mercy on my soul
-			window.top.console.log(t);
-		}catch(e){
-			window.top.console.error(e);
-		}
-	}
-}
-ConsoleComponent.template.innerHTML = await(await fetch('/tests/shared/console.html')).text();
-customElements.define('console-component',ConsoleComponent);
-
+import EventTarget from './event-target.js';
+import ConsoleComponent from './component.js';
 const console = EventTarget.observe(window.top.console);
 const container = new ConsoleComponent();
 

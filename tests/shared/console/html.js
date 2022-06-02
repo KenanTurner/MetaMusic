@@ -1,4 +1,4 @@
-<style>
+const innerHTML = `<style>
 :host > * {
 	padding: 0px;
 	margin: 0px;
@@ -59,4 +59,5 @@
 <div class="input" id="input">
 	<button id="eval" class="eval">&gt;</button>
 	<input id="command" class="command" autocomplete="off" autocapitalize="off" spellcheck="false">
-</div>
+</div>`;
+export default innerHTML;
