@@ -159,6 +159,8 @@ export default class YT extends Player{
 		return this.publish('volumechange');
 	}
 	async stop(){
+		let status = await this.getStatus();
+		if(status.src === "https://www.youtube.com/watch") return this.publish('stop');
 		let p = this.waitForEvent('cued');
 		this._player.stopVideo();
 		await p;
