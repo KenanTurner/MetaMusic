@@ -43,8 +43,10 @@ const innerHTML = `<style>
 }
 .output > * > *{
 	all: unset;
+	padding-right: 8px;
 	white-space: pre-wrap;
 	word-wrap: break-word;
+	overflow: auto;
 }
 .warn {
 	background: hsl(51deg 100% 9.1%);
