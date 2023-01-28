@@ -1,3 +1,5 @@
+# Development has moved to [WhoopRadioDesktop](https://github.com/KenanTurner/WhoopRadioDesktop)
+
 # MetaMusic
 
 Play HTML audio, Youtube, Soundcloud, and Bandcamp with a single javascript library!
